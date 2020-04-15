@@ -1,0 +1,14 @@
+
+[Unit]
+Description=uWSGI instance to serve polyfemos_web
+After=network.target
+
+[Service]
+User={{ user }}
+Group={{ group }}
+WorkingDirectory={{ working_dir }}
+Environment="PATH={{ env_dir }}/bin"
+ExecStart={{ env_dir }}/bin/uwsgi --ini polyfemos_web.ini
+
+[Install]
+WantedBy=multi-user.target

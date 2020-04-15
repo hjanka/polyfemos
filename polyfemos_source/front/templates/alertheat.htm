@@ -1,0 +1,93 @@
+{#
+This file is part of Polyfemos.
+
+Polyfemos is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or any later version.
+
+Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+details.
+
+You should have received a copy of the GNU Lesser General Public License and
+GNU General Public License along with Polyfemos. If not, see
+<https://www.gnu.org/licenses/>.
+
+Author: Henrik Jänkävaara
+Copyright: 2019, University of Oulu, Sodankyla Geophysical Observatory
+License: GNU Lesser General Public License v3.0 or later
+         (https://spdx.org/licenses/LGPL-3.0-or-later.html)
+#}
+
+{% extends 'base.htm' %}
+
+{% block head %}
+  {% include 'datepicker.htm' %}
+{% endblock %}
+
+{% block title %} Alert Heat Table {% endblock %}
+
+{% block content %}
+
+<form method="post" action="/alertheat">
+  {{ form.csrf_token }}
+  <table class="monospace">
+    <tr>
+      <td class="form-cell">{{ form.startdate.label }}</td>
+      <td class="form-cell">{{ form.startdate(class_="datepicker", size="10px") }}</td>
+      <td class="form-cell">{{ form.points_per_thbb.label }}</td>
+      <td class="form-cell">{{ form.points_per_thbb() }}</td>
+    </tr>
+    <tr>
+      <td class="form-cell">{{ form.enddate.label }}</td>
+      <td class="form-cell">{{ form.enddate(class_="datepicker", size="10px") }}</td>
+      <td class="form-cell">{{ form.points_per_tib.label }}</td>
+      <td class="form-cell">{{ form.points_per_tib() }}</td>
+    </tr>
+    <tr>
+      <td class="form-cell">{{ form.log_color.label }}</td>
+      <td class="form-cell">{{ form.log_color() }}</td>
+      <td class="form-cell">{{ form.submit }}</td>
+      <td></td>
+    </tr>
+  </table>
+</form>
+
+
+<table class="monospace soh-table">
+  <tr>
+    <th></th>
+  {% for station_id in station_ids %}
+    <th class="rotate">
+      <div class="rotate">
+        <span class="rotate">
+          {{ station_id }}
+        </span>
+      </div>
+    </th>
+  {% endfor %}
+  </tr>
+{% for sohpar_name in sohpar_names %}
+  <tr>
+    <th>{{ sohpar_name }}</th>
+  {% for station_id in station_ids %}
+    {% set key = station_id+sohpar_name %}
+    {% set value = '' %}
+    {% if key in alertdict %}
+      {% set value = alertdict[station_id+sohpar_name] %}
+    <td>
+      <div class="tooltip" style="background-color: {{ value['color'] }};">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="tooltiptext">{{ value['tooltip'] }}</span>
+      </div>
+    </td>
+    {% else %}
+    <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    {% endif %}
+  {% endfor %}
+  </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

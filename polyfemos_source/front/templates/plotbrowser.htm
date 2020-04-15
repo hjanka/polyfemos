@@ -1,0 +1,182 @@
+{#
+This file is part of Polyfemos.
+
+Polyfemos is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or any later version.
+
+Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+details.
+
+You should have received a copy of the GNU Lesser General Public License and
+GNU General Public License along with Polyfemos. If not, see
+<https://www.gnu.org/licenses/>.
+
+Author: Henrik Jänkävaara
+Copyright: 2019, University of Oulu, Sodankyla Geophysical Observatory
+License: GNU Lesser General Public License v3.0 or later
+         (https://spdx.org/licenses/LGPL-3.0-or-later.html)
+#}
+
+{% extends 'base.htm' %}
+
+{% block head %}
+  <link href="https://cdn.pydata.org/bokeh/release/bokeh-{{ bokeh_version }}.min.css" rel="stylesheet">
+  <link href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-{{ bokeh_version }}.min.css" rel="stylesheet">
+  <link href="https://cdn.pydata.org/bokeh/release/bokeh-tables-{{ bokeh_version }}.min.css" rel="stylesheet">
+
+  <script src="https://cdn.pydata.org/bokeh/release/bokeh-{{ bokeh_version }}.min.js"></script>
+  <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-{{ bokeh_version }}.min.js"></script>
+  <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-{{ bokeh_version }}.min.js"></script>
+
+  {% include 'datepicker.htm' %}
+{% endblock %}
+
+{% block title %} Plot Browser {% endblock %}
+
+{% block content %}
+
+
+<form method="post" action="/plotbrowser">
+  {{ form.csrf_token }}
+  <table class="monospace">
+    <tr>
+      <td class="valign-top">
+
+        <table>
+          <tr>
+            <td class="form-cell">{{ form.startdate.label }}</td>
+            <td class="form-cell">{{ form.startdate(class_="datepicker", size="10px") }}</td>
+            <td class="form-cell">{{ form.rirv.label }}</td>
+            <td class="form-cell">{{ form.rirv() }}</td>
+          </tr>
+          <tr>
+            <td class="form-cell">{{ form.enddate.label }}</td>
+            <td class="form-cell">{{ form.enddate(class_="datepicker", size="10px") }}</td>
+            <td class="form-cell">{{ form.ridv.label }}</td>
+            <td class="form-cell">{{ form.ridv() }}</td>
+          </tr>
+          <tr>
+            <td class="form-cell">{{ form.headerdate.label }}</td>
+            <td class="form-cell">{{ form.headerdate(class_="datepicker", size="10px") }}</td>
+            <td class="form-cell">{{ form.decimate.label }}</td>
+            <td class="form-cell">{{ form.decimate() }}</td>
+          </tr>
+          <tr>
+            <td class="form-cell">{{ form.fromfileformat.label }}</td>
+            <td class="form-cell">{{ form.fromfileformat() }}</td>
+            <td class="form-cell">{{ form.track_len.label }}</td>
+            <td class="form-cell">{{ form.track_len() }}</td>
+          </tr>
+        </table>
+
+        <table>
+        {% for subfield in form.aor %}
+          <tr>
+            <td class="valign-bottom pb-aor-radio" rowspan="2">{{ subfield.label }}</td>
+            <td class="valign-bottom" rowspan="2">{{ subfield }}</td>
+          {% for kwarg in aorkwargs[subfield.data] %}
+            <td class="valign-bottom">{{ kwarg.label }}</td>
+          {% endfor %}
+          </tr>
+          <tr>
+          {% for kwarg in aorkwargs[subfield.data] %}
+            <td class="valign-bottom">{{ kwarg(size="3") }}</td>
+          {% endfor %}
+          </tr>
+        {% endfor %}
+        </table>
+
+      </td>
+      <td class="valign-top">
+
+        <table>
+          <tr>
+            <td class="valign-top">{{ form.station_ids(size="17") }}</td>
+            <td class="valign-top">{{ form.sohpar_names(size="17") }}</td>
+            <td class="valign-top">{{ form.submit }}</td>
+          </tr>
+        </table>
+
+      </td>
+
+      <td class="valign-top">
+
+        <div class="pb-msg-container">
+
+          The order of function executions:<br>
+
+          <table>
+            <tr><td>1.   </td><td>Remove irrationals       </td></tr>
+            <tr><td>2.   </td><td>Advanced outlier removal </td></tr>
+            <tr><td>3.*  </td><td>Remove NaNs              </td></tr>
+            <tr><td>3.** </td><td>Remove identical values  </td></tr>
+            <tr><td>4.** </td><td>Decimate                 </td></tr>
+            <tr><td>*    </td><td>statistics table only    </td></tr>
+            <tr><td>**   </td><td>plot only                </td></tr>
+          </table>
+
+          <p class="pb-msg">
+            In order to calculate 'NEZ' offset values, the data
+            is always read from '*.stf' files.
+          </p>
+
+          {% for msg in message_lines %}
+          <p class="pb-msg">
+            {{ msg }}
+          </p>
+          {% endfor %}
+
+        </div>
+      </td>
+    </tr>
+  </table>
+</form>
+
+
+<table class="monospace">
+{% for plot in plots %}
+  {% if plot['plotscript'] %}
+  <tr>
+    <td class="valign-top pb-plot-cell">
+      {{ plot['plotdiv']|safe }}
+      {{ plot['plotscript']|safe }}
+    </td>
+    <td class="valign-top">
+
+      <table class="pb-plot-stats-info">
+        <tr>
+          <th class="pb-plot-stats-info-col-1"></th>
+          <th class="pb-plot-stats-info-col-2"></th>
+          <th class="pb-plot-stats-info-col-3"></th>
+        </tr>
+      {% for row in plot['stats_table'] %}
+        <tr>
+        {% for r in row %}
+          <td>{{ r }}</td>
+        {% endfor %}
+        </tr>
+      {% endfor %}
+      </table>
+
+      <br>
+
+      <div class="pb-info-div">
+      {% for line in plot['infolines'] %}
+        {{ line }}<br>
+      {% endfor %}
+        <br>
+      </div>
+      
+    </td>
+  </tr>
+  {% endif %}
+{% endfor %}
+</table>
+
+
+{% endblock %}
+
+

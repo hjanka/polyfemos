@@ -1,0 +1,158 @@
+{#
+This file is part of Polyfemos.
+
+Polyfemos is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or any later version.
+
+Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+details.
+
+You should have received a copy of the GNU Lesser General Public License and
+GNU General Public License along with Polyfemos. If not, see
+<https://www.gnu.org/licenses/>.
+
+Author: Henrik Jänkävaara
+Copyright: 2019, University of Oulu, Sodankyla Geophysical Observatory
+License: GNU Lesser General Public License v3.0 or later
+         (https://spdx.org/licenses/LGPL-3.0-or-later.html)
+#}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+
+  <style>
+    {{ color_styles }}
+  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?version=0">
+  <link rel="icon" href="{{ url_for('static', filename='polyfemos_favicon_32.ico') }}">
+
+  <script>
+    var keyFuncDict = {};
+    var fired = false;
+    document.onkeydown = function(event) {
+      if (!fired) {
+        keyCode = event.keyCode;
+        console.log(keyCode, document.activeElement.type)
+        fired = true;
+        if (document.activeElement.type == "text") {
+        }
+        else if (keyCode in keyFuncDict) {
+          keyFuncDict[event.keyCode]();
+        }    
+      }
+    }
+    document.onkeyup = function(event) {
+      console.log("key up")
+      fired = false;
+    }
+    function toHome() {
+      window.location.href = "{{ url_for('home') }}";
+    }
+    function toSohTable() {
+      window.location.href = "{{ url_for('sohtable') }}";
+    }
+    function toSohMap() {
+      window.location.href = "{{ url_for('sohmap') }}";
+    }
+    function toPlots() {
+      window.location.href = "{{ url_for('plotbrowser') }}";
+    }
+    function toDCBrowser() {
+      window.location.href = "{{ url_for('datacoveragebrowser') }}";
+    }
+    function toDCImage() {
+      window.location.href = "{{ url_for('datacoverageimage') }}";
+    }
+    function toSummary() {
+      window.location.href = "{{ url_for('summary') }}";
+    }
+    function toAlertHeat() {
+      window.location.href = "{{ url_for('alertheat') }}";
+    }
+    function toDocumentation() {
+      window.location.href = "{{ url_for('index_alias') }}documentation_index.html";
+    }
+    function toIndex() {
+      window.location.href = "{{ url_for('index_alias') }}";
+    }
+    function goBack() {
+      window.location.href = "javascript:history.back()";
+    }
+    function submitForm() {
+      document.getElementById("submit").click();
+    }
+    keyFuncDict[81] = toHome;
+    keyFuncDict[87] = toSohTable;
+    keyFuncDict[69] = toSohMap;
+    keyFuncDict[82] = toPlots;
+    keyFuncDict[84] = toDCBrowser;
+    keyFuncDict[89] = toDCImage;
+    keyFuncDict[85] = toSummary;
+    keyFuncDict[73] = toAlertHeat;
+    keyFuncDict[79] = toDocumentation;
+    keyFuncDict[80] = toIndex;
+    keyFuncDict[8] = goBack;
+    keyFuncDict[13] = submitForm;
+  </script>
+  
+  {% block head %}
+  {% endblock %}
+  <title>
+    {% block title %}
+    {% endblock %}
+  </title>
+</head>
+
+<body>
+  <table class="base-link-table">
+    <tr>
+      <td class="base-link-cell ">
+        <a href="{{ url_for('home') }}" class="red-link monospace">
+          Home
+        </a>
+      </td>
+      <td class="base-link-cell base-gap-cell"><span class="base-gap">&#8226;</span></td>
+      <td class="base-link-cell ">
+        <a href="{{ url_for('sohtable') }}" class="red-link monospace">
+          Table
+        </a>
+      </td>
+      <td class="base-link-cell base-gap-cell"><span class="base-gap">&#8226;</span></td>
+      <td class="base-link-cell ">
+        <a href="{{ url_for('sohmap') }}" class="red-link monospace">
+          Map
+        </a>
+      </td>
+      <td class="base-link-cell base-gap-cell"><span class="base-gap">&#8226;</span></td>
+      <td class="base-link-cell ">
+        <a href="{{ url_for('plotbrowser') }}" class="red-link monospace">
+          Plots
+        </a>
+      </td>
+      <td class="base-link-cell base-gap-cell"><span class="base-gap">&#8226;</span></td>
+      <td class="base-link-cell ">
+        <span class="base-gap monospace">
+          {{ network_code }}
+        </span>
+      </td>
+    </tr>
+  </table>
+
+  {% block content %}
+  {% endblock %}
+
+  <div class="base-end-margin"></div>
+
+  <span class="base-timestr monospace">
+  {% for str_ in timestr %}
+    {{ str_ }}<br>
+  {% endfor %}
+  </span>
+
+</body>
+</html> 

@@ -1,0 +1,91 @@
+{#
+This file is part of Polyfemos.
+
+Polyfemos is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or any later version.
+
+Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+details.
+
+You should have received a copy of the GNU Lesser General Public License and
+GNU General Public License along with Polyfemos. If not, see
+<https://www.gnu.org/licenses/>.
+
+Author: Henrik Jänkävaara
+Copyright: 2019, University of Oulu, Sodankyla Geophysical Observatory
+License: GNU Lesser General Public License v3.0 or later
+         (https://spdx.org/licenses/LGPL-3.0-or-later.html)
+#}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    {{ color_styles }}
+  </style>
+  <link rel= "stylesheet" href= "{{ url_for('static',filename='styles.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='polyfemos_favicon_32.ico') }}">
+
+  <title>Polyfemos</title>
+</head>
+
+<body class="index">
+
+  <div class="index-container">
+
+    <p class="monospace index">
+      Polyfemos web<br>
+      =============
+    </p>
+
+    <p class="monospace index">
+      Polyfemos provides a state of health data processing web application for
+      observatory measurement equipment monitoring. The program features
+      data visualization, statictical analysis, data coverage and realtimeness
+      monitoring and problem detecting and locating.
+    </p>
+
+    <p class="monospace index">
+      The application provides a realtime status information of
+      stations' conditions and informs about the possible problems with 
+      the network.
+    </p>
+
+    <ul class="monospace index">
+      The application features:<br>
+      <li> State of health map, a visual presentation of the general status of the network.</li>
+      <li> State of health table, similar to the map but delivers more information.</li>
+      <li> Data coverage browser to scan the data coverage.</li>
+      <li> Statistical summaries of different state of health parameters of the stations.</li>
+      <li> Plot browser, an interactive plotter to visualize the state of health data.</li>
+    </ul>
+
+    <p class="monospace index">
+      <a href="{{ url_for('home') }}" class="red-link monospace">ENTER</a>
+    </p>
+
+    <table class="monospace">
+      <tr>
+        <td class="index-ou-logo">
+            <img src="{{ url_for('static',filename='ou_logo_en.svg') }}" 
+                alt="University of Oulu logo">
+        </td>
+        <td class="index-signature">
+          Sodankyl&auml; Geophysical Observatory
+        </td>
+      </tr>
+    </table>
+
+  </div>
+  
+</body>
+
+</html> 
+
+
+
+

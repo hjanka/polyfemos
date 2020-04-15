@@ -1,0 +1,41 @@
+
+access_log {{ nginx_log_dir }}/nginx_access.log;
+error_log {{ nginx_log_dir }}/nginx_error.log;
+
+server {
+
+    listen 80;
+    server_name {{ server_name }};
+
+    location ~ ^/[^\n]+$ {
+        include sites-available/polyfemos_location.conf;
+        include sites-available/polyfemos_private_location.conf;
+    }
+
+    location = / {
+        include sites-available/polyfemos_location.conf;
+        include sites-available/polyfemos_public_location.conf;
+    }
+
+    location = /index {
+        include sites-available/polyfemos_location.conf;
+        include sites-available/polyfemos_public_location.conf;
+    }
+
+    location = /static/styles.css {
+        include sites-available/polyfemos_location.conf;
+        include sites-available/polyfemos_public_location.conf;
+    }
+
+    location = /static/ou_logo_en.svg {
+        include sites-available/polyfemos_location.conf;
+        include sites-available/polyfemos_public_location.conf;
+    }
+}
+
+server {
+    listen 80;
+    server_name {{ server_ip }};
+
+    return 301 $scheme://{{ server_name }}$request_uri;
+}

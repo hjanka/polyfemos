@@ -1,0 +1,94 @@
+{#
+This file is part of Polyfemos.
+
+Polyfemos is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or any later version.
+
+Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+details.
+
+You should have received a copy of the GNU Lesser General Public License and
+GNU General Public License along with Polyfemos. If not, see
+<https://www.gnu.org/licenses/>.
+
+Author: Henrik Jänkävaara
+Copyright: 2019, University of Oulu, Sodankyla Geophysical Observatory
+License: GNU Lesser General Public License v3.0 or later
+         (https://spdx.org/licenses/LGPL-3.0-or-later.html)
+#}
+
+{% extends 'base.htm' %}
+
+{% block head %}
+  <meta http-equiv="refresh" content="900">
+  <script>
+    function subDay() {
+      document.getElementById("submit_sd").click();
+    }
+    function addDay() {
+      document.getElementById("submit_pd").click();
+    }
+    keyFuncDict[37] = subDay;
+    keyFuncDict[39] = addDay;
+  </script>
+  {% include 'datepicker.htm' %}
+{% endblock %}
+
+{% block title %} SOH Table {% endblock %}
+
+{% block content %}
+
+<form method="post" action="/sohtable">
+  {{ form.csrf_token }}
+  <table class="monospace">
+  	<tr>
+  		<td class="form-cell">{{ form.date.label }} {{ form.date(class_="datepicker", size="10px", value=form.date.data) }}</td>
+      <td class="form-cell">{{ form.realtimeness_bool.label }}</td>
+      <td class="form-cell">{{ form.realtimeness_bool() }}</td>
+      <td class="form-cell">{{ form.realtimeness_limit.label }} {{ form.realtimeness_limit(size="5px") }}</td>
+  	</tr>
+  	<tr>
+  		<td class="form-cell">{{ form.submit_sd }} {{ form.submit_pd }}</td>
+  		<td class="form-cell">{{ form.show_all.label }}</td>
+  		<td class="form-cell">{{ form.show_all() }}</td>
+  		<td class="form-cell">{{ form.submit }}</td>
+  	</tr>
+  </table>
+</form>
+
+<table class="monospace soh-table">
+	<tr>
+		<th>{{ header }}</th>
+	{% for station_id in station_ids %}
+		<th class="rotate">
+      <div class="rotate">
+        <span class="rotate">
+          {{ station_id }}
+        </span>
+      </div>
+    </th>
+	{% endfor %}
+	</tr>
+{% for sohpar_name in sohpar_names %}
+	<tr>
+		<th>{{ sohpar_name }}</th>
+	{% for station_id in station_ids %}
+		{% set key = station_id+sohpar_name %}
+		{% set value = 'none' %}
+		{% if key in alertdict %}
+			{% set value = alertdict[station_id+sohpar_name] %}
+		{% endif %}
+		<td class="st-soh-table-cell st-soh-table-cell-{{ value }}"> 
+			<a href="/plotbrowser?b=1&date={{ form.date.data }}&station_id={{ station_id }}&sohpar_name={{ sohpar_name }}">
+				&nbsp;&nbsp;&nbsp;&nbsp;
+			</a>
+		</td>
+	{% endfor %}
+	</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

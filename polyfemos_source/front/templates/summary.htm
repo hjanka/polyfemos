@@ -1,0 +1,95 @@
+{#
+This file is part of Polyfemos.
+
+Polyfemos is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or any later version.
+
+Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+details.
+
+You should have received a copy of the GNU Lesser General Public License and
+GNU General Public License along with Polyfemos. If not, see
+<https://www.gnu.org/licenses/>.
+
+Author: Henrik Jänkävaara
+Copyright: 2019, University of Oulu, Sodankyla Geophysical Observatory
+License: GNU Lesser General Public License v3.0 or later
+         (https://spdx.org/licenses/LGPL-3.0-or-later.html)
+#}
+
+{% extends 'base.htm' %}
+
+{% block head %}
+  <script src="{{ url_for('static',filename='sorttable.js') }}"></script>
+  {% include 'datepicker.htm' %}
+{% endblock %}
+
+{% block title %} Statistics Summary {% endblock %}
+
+{% block content %}
+
+<form method="post" action="/summary">
+  <table class="monospace">
+    {{ form.csrf_token }}
+    <tr>
+      <td rowspan="5" valign="top">{{ form.station_ids(size="7") }}</td>
+      <td rowspan="5" valign="top">{{ form.sohpar_names(size="7") }}</td>
+      <td class="form-cell">{{ form.startdate.label }}</td>
+      <td class="form-cell">{{ form.startdate(class_="datepicker", size="10px") }}</td>
+      <td class="form-cell">{{ form.rirv.label }}</td>
+      <td class="form-cell">{{ form.rirv() }}</td>
+      <td rowspan="5" valign="top" class="form-cell">
+        * 
+      {% for line in aorinfolines %}
+        {{ line }}<br>
+      {% endfor %}
+      </td>
+    </tr>
+    <tr>
+      <td class="form-cell">{{ form.enddate.label }}</td>
+      <td class="form-cell">{{ form.enddate(class_="datepicker", size="10px") }}</td>
+      <td class="form-cell">{{ form.aor.label }}*</td>
+      <td class="form-cell">{{ form.aor() }}</td>
+    </tr>
+    <tr>
+      <td class="form-cell">{{ form.headerdate.label }}</td>
+      <td class="form-cell">{{ form.headerdate(class_="datepicker", size="10px") }}</td>
+      <td class="form-cell">{{ form.csv_requested.label }}</td>
+      <td class="form-cell">{{ form.csv_requested() }}</td>
+    </tr>
+    <tr>
+      <td class="form-cell">{{ form.fromfileformat.label }}</td>
+      <td class="form-cell">{{ form.fromfileformat() }}</td>
+      <td class="form-cell">{{ form.submit }}</td>
+      <td class="form-cell">{{ exectime }}</td>
+    </tr>
+  </table>
+</form>
+
+
+<table class="ss-table sortable monospace">
+  <thead>
+    <tr>
+    {% for cellvalue in header %}
+      <th>{{ cellvalue }}</th>
+    {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+    {% for cellvalue in row %}
+      <td>{{ cellvalue }}</td>
+    {% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+
+{% endblock %}
+
+

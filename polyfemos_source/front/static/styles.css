@@ -1,0 +1,339 @@
+/*
+This file is part of Polyfemos.
+
+Polyfemos is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or any later version.
+
+Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+details.
+
+You should have received a copy of the GNU Lesser General Public License and
+GNU General Public License along with Polyfemos. If not, see
+<https://www.gnu.org/licenses/>.
+
+Author: Henrik Jänkävaara
+Copyright: 2019, University of Oulu, Sodankyla Geophysical Observatory
+License: GNU Lesser General Public License v3.0 or later
+         (https://spdx.org/licenses/LGPL-3.0-or-later.html)
+*/
+
+body {
+  background-color: var(--grey-1);
+  color: var(--black);
+}
+
+hr {
+  border: 1px solid var(--grey-3);
+}
+
+ul {
+  list-style-type: none;
+}
+ul li:before {
+  content: '-';
+  margin-left: -20px;
+  position: absolute;
+}
+
+.monospace {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.valign-top {
+  vertical-align: top;
+}
+.valign-bottom {
+  vertical-align: bottom;
+}
+
+.form-cell {
+   padding: 0px 10px 0px 10px;
+   text-align: left;
+}
+
+a:link.red-link {
+  color: var(--red-3); 
+  text-decoration: none;
+}
+a:visited.red-link {
+  color: var(--red-3); 
+  text-decoration: none;
+}
+a:hover.red-link {
+  color: var(--red-2); 
+  text-decoration: underline;
+}
+a:active.red-link {
+  color: var(--red-1); 
+  text-decoration: none;
+}
+
+
+
+/* Datepicker */
+
+input.datepicker {
+  z-index: 2; 
+}
+
+
+
+/* Base */
+
+.base-gap {
+  color: var(--green);
+}
+.base-gap-cell {
+  text-align: center;
+  width: 15px;
+}
+
+.base-end-margin {
+  margin: 150px 0px 0px 0px;
+}
+
+.base-link-table {
+  margin: 10px 10px 25px 10px;
+}
+.base-link-cell {
+  /*width: 60px;*/
+  /*text-align: center;*/
+}
+
+.base-timestr {
+  background-color: var(--grey-2);
+  bottom: 30px;
+  color: var(--black);
+  height: auto;
+  overflow: auto;
+  position: fixed;
+  right: 10px;
+  width: auto;
+  z-index: 2;
+}
+.base-timestr:hover {
+  /*visibility: hidden;*/
+}
+
+
+
+/* Index */
+
+.index-container {
+  width: 520px;
+}
+
+body.index {
+  background-color: var(--grey-1);
+}
+
+p.index {
+  color: var(--blue);
+  margin: 20px 0px 20px 20px;
+  width: 100%;
+}
+
+ul.index {
+  color: var(--blue);
+  width: 96%;
+}
+
+td.index-ou-logo {
+  padding: 20px 20px 20px 20px;
+  vertical-align: top;
+  width: 40%;
+}
+td.index-signature {
+  color: var(--blue); 
+  padding: 20px 20px 20px 20px;
+  vertical-align: top;
+  width: 60%;
+}
+
+
+
+/* Home */
+
+.home-links {
+  font-size: 20px;
+  margin: 30px 0px 0px 40px;
+}
+.home-links tr:hover {
+  background-color: var(--grey-2);
+}
+.home-links tr:hover td.home-runic-cell {
+  background-color: var(--red-1);
+}
+td.home-runic-cell {
+  color: var(--red-3); 
+  text-align: center;
+  width: 50px;
+}
+
+
+
+/* SOH Table + Alert Heat Table */
+
+td.st-soh-table-cell-0 {
+  background-color: var(--alert-green);
+}
+td.st-soh-table-cell-1 {
+  background-color: var(--alert-yellow);
+}
+td.st-soh-table-cell-2 {
+  background-color: var(--alert-red);
+}
+td.st-soh-table-cell-nan {
+  background-color: var(--grey-3);
+}
+td.st-soh-table-cell-none {
+  background-color: var(--grey-2);
+}
+td.st-soh-table-cell a {
+  color: var(--black);
+  text-decoration: none;
+}
+
+.soh-table {
+  border: 0px solid var(--black);
+  border-spacing: 7px;
+}
+.soh-table td {
+  border: 1px solid var(--grey-4);
+}
+.soh-table th { 
+  font-weight: normal; 
+}
+
+th.rotate {
+  height: 80px;
+  white-space: nowrap;
+}
+div.rotate {
+  transform: 
+    translate(2px, 25px)
+    rotate(315deg);
+  width: 30px;
+}
+span.rotate {
+  border-bottom: 0px solid var(--grey-3);
+  padding: 5px 10px;
+}
+
+.tooltip {
+  cursor: default;
+  /*cursor: help;*/
+  display: inline-block;
+  position: relative;
+}
+.tooltiptext {
+  white-space: pre;
+}
+.tooltip .tooltiptext {
+  background-color: var(--green);
+  border-radius: 6px;
+  color: var(--white);
+  padding: 5px 0;
+  position: absolute;
+  text-align: center;
+  visibility: hidden;
+  width: 120px;
+  z-index: 1;
+}
+.tooltip:hover .tooltiptext {
+  cursor: default;
+  visibility: visible;
+}
+
+
+
+/* Summary Table */
+
+.ss-table {
+  border: 0px solid var(--black);
+  border-spacing: 3px;
+  margin-top: 10px;
+}
+.ss-table tr {
+  background-color: var(--grey-2);
+}
+.ss-table th {
+  background-color: var(--grey-4);
+  color: var(--white);
+  font-weight: normal; 
+}
+
+.ss-table tr:nth-child(even) {
+  background-color: var(--grey-3);
+}
+.ss-table td:nth-child(n+2) {
+  width: 100px;
+  text-align: right;
+}
+.ss-table td:nth-child(1), 
+.ss-table td:nth-child(2) {
+  width: 100px;
+  text-align: left;
+}
+
+
+
+/* SOH Map */
+
+.sm-container {
+  height: 900px;
+}
+#sm-image {
+  max-height: 100%;
+  max-width: auto;
+}
+
+
+
+/* Plot Browser */
+
+.pb-msg {
+  width: 400px;
+}
+.pb-msg-container {
+  padding: 0px 0px 0px 40px;
+}
+
+.pb-plot-cell {
+  padding: 0px 10px 0px 20px;
+}
+.pb-plot-stats-info {
+  padding: 20px 0px 0px 0px;
+  text-align: right;
+  width: 300px;
+}
+.pb-plot-stats-info-col-1 {
+  width: 45%;
+}
+.pb-plot-stats-info-col-2 {
+  width: 45%;
+}
+.pb-plot-stats-info-col-3 {
+  width: 10%;
+}
+
+.pb-aor-radio {
+  text-align: right;
+}
+.pb-info-div {
+  margin: 10px 0px 0px 10px;
+}
+
+div.bk-root {
+  margin: 10px 0px 0px 10px;
+  z-index: 1;
+}
+div.bk-plotdiv {
+  /*box-shadow: 20px 20px #000000;*/
+  /*height: 50%;*/
+  /*width: 50%;*/
+}
+

@@ -1,0 +1,132 @@
+{#
+This file is part of Polyfemos.
+
+Polyfemos is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or any later version.
+
+Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+details.
+
+You should have received a copy of the GNU Lesser General Public License and
+GNU General Public License along with Polyfemos. If not, see
+<https://www.gnu.org/licenses/>.
+
+Author: Henrik Jänkävaara
+Copyright: 2019, University of Oulu, Sodankyla Geophysical Observatory
+License: GNU Lesser General Public License v3.0 or later
+         (https://spdx.org/licenses/LGPL-3.0-or-later.html)
+#}
+
+{% extends 'base.htm' %}
+
+{% block head %}
+{% endblock %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+
+<table class="home-links">
+  <tr>
+    <td class="home-runic-cell"> &#5834;&#5839; </td>
+    <td>
+      <a href="{{ url_for('sohtable') }}"
+          class="red-link monospace">
+        SOH Table
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td class="home-runic-cell"> &#5834;&#5847; </td>
+    <td>
+      <a href="{{ url_for('sohmap') }}"
+          class="red-link monospace">
+        SOH Map
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td class="home-runic-cell"> &#5832;&#5842; </td>
+    <td>
+      <a href="{{ url_for('plotbrowser') }}"
+          class="red-link monospace">
+        Plot Browser
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td class="home-runic-cell"> &#5854;&#5810;&#5842; </td>
+    <td>
+      <a href="{{ url_for('datacoveragebrowser') }}"
+          class="red-link monospace">
+        Data Coverage Browser
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td class="home-runic-cell"> &#5854;&#5810;&#5825; </td>
+    <td>
+      <a href="{{ url_for('datacoverageimage') }}"
+          class="red-link monospace">
+        Data Coverage Image
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td class="home-runic-cell"> &#5834;&#5834; </td>
+    <td>
+      <a href="{{ url_for('summary') }}"
+          class="red-link monospace">
+        Statistics Summary
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td class="home-runic-cell"> &#5800;&#5818;&#5839; </td>
+    <td>
+      <a href="{{ url_for('alertheat') }}"
+          class="red-link monospace">
+        Alert Heat Table
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td class="home-runic-cell"> &#5854; </td>
+    <td>
+      <a href="{{ url_for('index_alias') }}documentation_index.html" 
+          class="red-link monospace">
+        Documentation
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td class="home-runic-cell"> &#5825; </td>
+    <td>
+      <a href="{{ url_for('index_alias') }}" 
+          class="red-link monospace">
+        Index
+      </a>
+    </td>
+  </tr>
+</table>
+
+
+<form method="post", action="/home">
+  <table class="home-links monospace">
+    {{ form.csrf_token }}
+    <tr>
+      <td class="form-cell">{{ form.network_code.label }}</td>
+      <td class="form-cell">{{ form.network_code(onchange="this.form.submit()") }}</td>
+    </tr>
+  </table>
+</form>
+
+<p class="home-links monospace">
+  This site uses cookies to work properly.
+</p>
+
+{% endblock %}
+
