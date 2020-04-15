@@ -1,0 +1,737 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.sohplot.sohplot &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.front.sohplot.sohplot</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Class :class:`~polyfemos.front.sohplot.sohplot.SOHPlot` for reading and</span>
+<span class="sd">plotting state of health data</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="p">(</span><span class="n">DatetimeTickFormatter</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">FuncTickFormatter</span><span class="p">,</span>
+                          <span class="n">Range1d</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util.messenger</span> <span class="k">import</span> <span class="n">messenger</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">fileutils</span>
+<span class="kn">from</span> <span class="nn">polyfemos.data</span> <span class="k">import</span> <span class="n">statistics</span>
+<span class="kn">from</span> <span class="nn">polyfemos.almanac.utils</span> <span class="k">import</span> <span class="n">parse_date</span><span class="p">,</span> <span class="n">get_jY</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">userdef</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front.sohplot</span> <span class="k">import</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">outfilefields</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front.sohplot.datacontainer</span> <span class="k">import</span> <span class="n">DataPoint</span><span class="p">,</span> <span class="n">DataContainer</span>
+
+
+<div class="viewcode-block" id="_get_line_source"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.html#polyfemos.front.sohplot.sohplot._get_line_source">[docs]</a><span class="k">def</span> <span class="nf">_get_line_source</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">datarealtimeness</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type data: list</span>
+<span class="sd">    :param data: a list consisting of</span>
+<span class="sd">        :class:`~polyfemos.front.sohplot.datacontainer.DataPoint` instances</span>
+<span class="sd">    :type datarealtimeness: bool, optional</span>
+<span class="sd">    :param datarealtimeness: If ``True``, datarealtimeness starttime value</span>
+<span class="sd">        will be used to plot &#39;square&#39; plots.</span>
+<span class="sd">    :rtype: :class:`~bokeh.models.sources.ColumnDataSource`</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">xs_str</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">xs_str_ordinal</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">add_xy</span><span class="p">(</span><span class="n">dp</span><span class="p">):</span>
+        <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">get_timezone_naive_datetime</span><span class="p">())</span>
+        <span class="n">xs_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">get_dtstr</span><span class="p">())</span>
+        <span class="n">xs_str_ordinal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">get_ordinal</span><span class="p">())</span>
+        <span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="c1"># Only for plotting &#39;square&#39; plot in the case of datarealtimeness</span>
+        <span class="c1"># using z values starttimes</span>
+        <span class="k">if</span> <span class="n">datarealtimeness</span><span class="p">:</span>
+            <span class="n">starttime</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">dict_</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">get_z</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">dict_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">starttime</span> <span class="o">=</span> <span class="n">dict_</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;starttime&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">starttime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dpm1</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">new_dp</span> <span class="o">=</span> <span class="n">DataPoint</span><span class="p">(</span><span class="n">dtstr</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_dp</span> <span class="o">!=</span> <span class="n">dpm1</span><span class="p">:</span>
+                    <span class="n">add_xy</span><span class="p">(</span><span class="n">new_dp</span><span class="p">)</span>
+        <span class="n">add_xy</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span>
+
+    <span class="n">line_source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;xs&#39;</span><span class="p">:</span> <span class="n">xs</span><span class="p">,</span>  <span class="c1"># python datetime object as X axis, local timezone</span>
+            <span class="s1">&#39;ys&#39;</span><span class="p">:</span> <span class="n">ys</span><span class="p">,</span>
+            <span class="s1">&#39;xs_str&#39;</span><span class="p">:</span> <span class="n">xs_str</span><span class="p">,</span>  <span class="c1"># string of datetime for displayed in tooltip</span>
+            <span class="s1">&#39;xs_str_ordinal&#39;</span><span class="p">:</span> <span class="n">xs_str_ordinal</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">line_source</span></div>
+
+
+<div class="viewcode-block" id="_plot_line_source"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.html#polyfemos.front.sohplot.sohplot._plot_line_source">[docs]</a><span class="k">def</span> <span class="nf">_plot_line_source</span><span class="p">(</span><span class="n">bokeh_figure</span><span class="p">,</span> <span class="n">line_source</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#000000&quot;</span><span class="p">,</span> <span class="n">cross</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type bokeh_figure: :class:`~bokeh.plotting.figure.Figure`</span>
+<span class="sd">    :param bokeh_figure:</span>
+<span class="sd">    :type line_source: :class:`~bokeh.models.sources.ColumnDataSource`</span>
+<span class="sd">    :param line_source:</span>
+<span class="sd">    :type color: str, optional</span>
+<span class="sd">    :param color: color of the line or cross as string containing RGB value</span>
+<span class="sd">        as hexadecimals (#RRBBGG), defaults to black</span>
+<span class="sd">    :type cross: bool, optional</span>
+<span class="sd">    :param cross: defaults to ``False``. If ``True``, crosses are plotted</span>
+<span class="sd">        in any case. If ``False``, the cross marker is used for plotting</span>
+<span class="sd">        If only 1 datapoint is present.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># If only one datapoint is present, use the cross marker</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line_source</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;xs&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">cross</span><span class="p">:</span>
+        <span class="n">line_</span> <span class="o">=</span> <span class="n">bokeh_figure</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span>
+            <span class="s1">&#39;xs&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ys&#39;</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">line_source</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">line_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;line&#39;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">line_</span> <span class="o">=</span> <span class="n">bokeh_figure</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+            <span class="s1">&#39;xs&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ys&#39;</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">line_source</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">line_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;line&#39;</span>
+        <span class="p">)</span>
+    <span class="n">line_</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="SOHPlot"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot">[docs]</a><span class="k">class</span> <span class="nc">SOHPlot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for parsing and plotting the state of health data of given</span>
+<span class="sd">    station and sohpar combination.</span>
+
+<span class="sd">    Reads soh text files (the format is fixed).</span>
+<span class="sd">    Plots the data from startdate to enddate.</span>
+<span class="sd">    Creates statistical summary of the data.</span>
+<span class="sd">    Removal of irrational values and advanced outlier removal possible.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SOHPlot.__init__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station_id</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sohpar_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">startdate</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">enddate</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">headerdate</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outlierremfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">remove_identicals</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">remove_irrationals</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">advanced_outlier_removal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">fext</span><span class="o">=</span><span class="s2">&quot;stf&quot;</span><span class="p">,</span> <span class="n">track_datalen</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        On initialization of SOHPlot, the data and header information are</span>
+<span class="sd">        collected from the sohtextfiles. Optionally, irrational and</span>
+<span class="sd">        outlying values are removed.</span>
+
+<span class="sd">        ``startdate``, ``enddate`` and ``headerdate`` are parsed into</span>
+<span class="sd">        python :class:`~datetime.date` instances using</span>
+<span class="sd">        :func:`~polyfemos.almanac.utils.parse_date` function.</span>
+
+<span class="sd">        :type station_id: str</span>
+<span class="sd">        :param station_id: Station id in format ``NETWORK.STATION``,</span>
+<span class="sd">            for example: ``FN.MSF``</span>
+<span class="sd">        :type sohpar_name: str</span>
+<span class="sd">        :param sohpar_name: State of health parameter available in sohtextfile.</span>
+<span class="sd">        :type startdate: str</span>
+<span class="sd">        :param startdate: The first date of the plotting timespan</span>
+<span class="sd">        :type enddate: str</span>
+<span class="sd">        :param enddate: The last date of the plotting timespan</span>
+<span class="sd">        :type headerdate: str</span>
+<span class="sd">        :param headerdate: The header information of this date&#39;s sohtextfile</span>
+<span class="sd">            is used.</span>
+<span class="sd">        :type outlierremfunc: func</span>
+<span class="sd">        :param outlierremfunc: Defaults to ``None``. If no value is given,</span>
+<span class="sd">            ``outlierremfunc`` for advanced outlier removal is retrieved</span>
+<span class="sd">            using :func:`~polyfemos.front.userdef.summary_outlierremfuncs`.</span>
+<span class="sd">            For more info see</span>
+<span class="sd">            :meth:`~polyfemos.front.sohplot.datacontainer.DataContainer.outlier_removal`.</span>
+<span class="sd">        :type remove_identicals: bool, optional</span>
+<span class="sd">        :param remove_identicals: defaults to ``False``. If ``True``,</span>
+<span class="sd">            values with identical x and y values are removed.</span>
+<span class="sd">            see :class:`~polyfemos.front.sohplot.datacontainer.DataContainer`</span>
+<span class="sd">            for more info</span>
+<span class="sd">        :type remove_irrationals: bool, optional</span>
+<span class="sd">        :param remove_irrationals: defaults to ``False``, see</span>
+<span class="sd">            :meth:`~polyfemos.front.sohplot.datacontainer.DataContainer.remove_irrationals`</span>
+<span class="sd">            for more info.</span>
+<span class="sd">        :type advanced_outlier_removal: bool, optional</span>
+<span class="sd">        :param advanced_outlier_removal: defaults to ``False``</span>
+<span class="sd">        :type fext: str, optional</span>
+<span class="sd">        :param fext: defaults to &quot;stf&quot;, select &quot;stf&quot; or &quot;csv&quot;,</span>
+<span class="sd">            defines the datafile format which is read</span>
+<span class="sd">        :type track_datalen: bool, optional</span>
+<span class="sd">        :param track_datalen: Defaults to ``False``, If ``True``, the amount</span>
+<span class="sd">            of datapoints, nans, etc., is monitored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">offsets</span><span class="o">.</span><span class="n">init_definitions</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_id</span> <span class="o">=</span> <span class="n">station_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span> <span class="o">=</span> <span class="n">sohpar_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">startdate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">enddate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">headerdate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">headerdate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">headerdate</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">headerdate</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span> <span class="o">=</span> <span class="n">DataContainer</span><span class="p">(</span>
+            <span class="n">track_datalen</span><span class="o">=</span><span class="n">track_datalen</span><span class="p">,</span>
+            <span class="n">remove_identicals</span><span class="o">=</span><span class="n">remove_identicals</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">statistics_dict</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># If selected sohpar is N, E or Z offset and thus needs conversion</span>
+        <span class="n">nez</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span> <span class="ow">in</span> <span class="n">offsets</span><span class="o">.</span><span class="n">NEZ_OFFSETS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_header</span><span class="p">(</span><span class="n">nez</span><span class="o">=</span><span class="n">nez</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nez</span> <span class="ow">or</span> <span class="n">fext</span> <span class="o">==</span> <span class="s2">&quot;stf&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_read_stf_data</span><span class="p">(</span><span class="n">nez</span><span class="o">=</span><span class="n">nez</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">fext</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_read_csv_data</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">add_identical_removal_info</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">remove_irrationals</span><span class="p">:</span>
+            <span class="n">irlims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;IRLIMS&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">remove_irrationals</span><span class="p">(</span><span class="n">irlims</span><span class="o">=</span><span class="n">irlims</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">advanced_outlier_removal</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">outlierremfunc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">outlierremfunc</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">summary_outlierremfuncs</span><span class="p">(</span>
+                    <span class="n">station_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span> <span class="n">sohpar_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">outlier_removal</span><span class="p">(</span><span class="n">outlierremfunc</span><span class="o">=</span><span class="n">outlierremfunc</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SOHPlot.get_info"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        :return: A list containing info notes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">get_info</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SOHPlot.get_statistics_dict"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot.get_statistics_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_statistics_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        :return: see :func:`~polyfemos.data.statistics.get_statistics_dict`</span>
+<span class="sd">            for more info</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">statistics_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statistics_dict</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">get_statistics_dict</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">get_ys_wo_nans</span><span class="p">(),</span>
+                <span class="n">thresholds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;YELLOW&quot;</span><span class="p">],</span>
+                <span class="n">unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;UNIT&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">statistics_dict</span></div>
+
+<div class="viewcode-block" id="SOHPlot.get_statistics_table"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot.get_statistics_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_statistics_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        :return: see :func:`~polyfemos.data.statistics.get_statistics_table`</span>
+<span class="sd">            for more info</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">statistics</span><span class="o">.</span><span class="n">get_statistics_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_statistics_dict</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="SOHPlot.get_plot_components"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot.get_plot_components">[docs]</a>    <span class="k">def</span> <span class="nf">get_plot_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decimate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type decimate: bool, optional</span>
+<span class="sd">        :param decimate: defaults to ``True``,</span>
+<span class="sd">            see :func:`~polyfemos.front.sohplot.sohplot.SOHPlot._get_plot`</span>
+<span class="sd">        :rtype: str, str</span>
+<span class="sd">        :return: script and div html blocks, see</span>
+<span class="sd">            :func:`~bokeh.embed.components` for more information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">figure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_plot</span><span class="p">(</span><span class="n">decimate</span><span class="o">=</span><span class="n">decimate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">figure</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">components</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SOHPlot._get_filepath"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot._get_filepath">[docs]</a>    <span class="k">def</span> <span class="nf">_get_filepath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">fpf</span><span class="p">,</span> <span class="n">extension</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type date: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        :param date:</span>
+<span class="sd">            is constructed from the ``root`` and ``fpf``, &#39;root/fpf(args)&#39;</span>
+<span class="sd">        :type fpf: func</span>
+<span class="sd">        :param fpf: filepath format function</span>
+<span class="sd">        :type extension: str</span>
+<span class="sd">        :param extension: file extension</span>
+<span class="sd">        :type force: bool</span>
+<span class="sd">        :param force: see :func:`~polyfemos.front.request.filepath`</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: path to file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">julday</span><span class="p">,</span> <span class="n">year</span> <span class="o">=</span> <span class="n">get_jY</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+        <span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">fpf</span><span class="p">(</span>
+            <span class="n">parname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span><span class="p">,</span>
+            <span class="n">network_code</span><span class="o">=</span><span class="n">network_code</span><span class="p">,</span>
+            <span class="n">station_code</span><span class="o">=</span><span class="n">station_code</span><span class="p">,</span>
+            <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span>
+            <span class="n">julday</span><span class="o">=</span><span class="n">julday</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">filepath</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">extension</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SOHPlot._get_csv_filepath"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot._get_csv_filepath">[docs]</a>    <span class="k">def</span> <span class="nf">_get_csv_filepath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.csv&quot;</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type date: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        :param date:</span>
+<span class="sd">        :type force: bool</span>
+<span class="sd">        :param force: see :func:`~polyfemos.front.request.filepath`</span>
+<span class="sd">        :type extension: str</span>
+<span class="sd">        :param extension: file extension, defaults to ``&quot;.csv&quot;``</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: Filepath following the filepathformat defined in</span>
+<span class="sd">            YAML config files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_filepath</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">userdef</span><span class="o">.</span><span class="n">filepathformats</span><span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">),</span>
+                                  <span class="n">extension</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SOHPlot._get_stf_filepath"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot._get_stf_filepath">[docs]</a>    <span class="k">def</span> <span class="nf">_get_stf_filepath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type date: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        :param date:</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: Filepath following the filepathformat defined in</span>
+<span class="sd">            YAML config files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_filepath</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">userdef</span><span class="o">.</span><span class="n">filepathformats</span><span class="p">(</span><span class="s2">&quot;stf&quot;</span><span class="p">),</span> <span class="s2">&quot;.stf&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SOHPlot._read_header"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot._read_header">[docs]</a>    <span class="k">def</span> <span class="nf">_read_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nez</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads and parses the header information from the sohtextfile.</span>
+<span class="sd">        Header block ends when &#39;DATA&#39; text is encountered.</span>
+
+<span class="sd">        :type nez: bool, optional</span>
+<span class="sd">        :param nez: defaults to ``False``, for UWV to NEZ conversion,</span>
+<span class="sd">            sensor information from the stf header is needed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">outfilefields</span><span class="o">.</span><span class="n">STF_HEADER</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Fill the header with default values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;H_LINES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">rowstart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span> <span class="k">else</span> <span class="s2">&quot;_&quot;</span>
+        <span class="k">if</span> <span class="n">nez</span><span class="p">:</span>
+            <span class="n">rowstart</span> <span class="o">=</span> <span class="n">rowstart</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_stf_filepath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headerdate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Trying read the header of non existing &#39;stf&#39; file.&quot;</span>
+            <span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">rowsof</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">rowstart</span><span class="p">):</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">outfilefields</span><span class="o">.</span><span class="n">STF_HEADER</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">outfilefields</span><span class="o">.</span><span class="n">STF_HEADER</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">](</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;DATA&quot;</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="n">h_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;YELLOW&quot;</span><span class="p">]</span> \
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;ORANGE&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;RED&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;H_LINES&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">h_lines</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">to</span><span class="o">.</span><span class="n">isNaN</span><span class="p">(</span><span class="n">line</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="SOHPlot._read_stf_data"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot._read_stf_data">[docs]</a>    <span class="k">def</span> <span class="nf">_read_stf_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nez</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads and parses the data from sohtextfiles.</span>
+
+<span class="sd">        :type nez: bool, optional</span>
+<span class="sd">        :param nez: defaults to ``False``. If selected sohpar is N, E or Z</span>
+<span class="sd">            offset, values for U, W and V offsets has to be read.</span>
+<span class="sd">            For information about UWV to NEZ conversion see</span>
+<span class="sd">            :class:`~polyfemos.front.sohplot.offsets.UWVOffsets`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uwvo</span> <span class="o">=</span> <span class="n">offsets</span><span class="o">.</span><span class="n">UWVOffsets</span><span class="p">()</span>
+        <span class="n">stored_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">runningdate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">runningdate</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span><span class="p">):</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_stf_filepath</span><span class="p">(</span><span class="n">runningdate</span><span class="p">)</span>
+            <span class="n">data_scope</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">runningdate</span> <span class="o">+=</span> <span class="mi">86400</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">rowsof</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+                <span class="c1"># Data values are read after &#39;DATA&#39; text is encountered</span>
+                <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;DATA&quot;</span><span class="p">:</span>
+                    <span class="n">data_scope</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">data_scope</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">stored_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">stored_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nez</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">uwvo</span><span class="o">.</span><span class="n">offsets</span><span class="p">:</span>
+                <span class="n">uwvo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+                <span class="c1"># If U, W and V offset values are defined, conversion</span>
+                <span class="c1"># can be done</span>
+                <span class="n">sensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;SENSOR&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">uwvo</span> <span class="ow">and</span> <span class="n">sensor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">dt</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> \
+                        <span class="n">uwvo</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">sensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">uwvo</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span><span class="p">:</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">utcdatetime</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Could not convert &#39;</span><span class="si">{}</span><span class="s2">&#39; to utcdatetime.&quot;</span> \
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">dp</span> <span class="o">=</span> <span class="n">DataPoint</span><span class="p">(</span><span class="n">utcdatetime</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">dp</span><span class="o">.</span><span class="n">set_z</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SOHPlot._read_csv_data"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot._read_csv_data">[docs]</a>    <span class="k">def</span> <span class="nf">_read_csv_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the data from sohcsv files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">starttimestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">timestamp</span>
+        <span class="n">endtimestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">+</span> <span class="mi">86399</span>
+        <span class="n">redd_filepaths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">added_days</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">exclude_added_days</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">fn</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">redd_filepaths</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">redd_filepaths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fn</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">dptimestamp</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">float_</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">dptimestamp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">starttimestamp</span> <span class="o">&lt;=</span> <span class="n">dptimestamp</span> <span class="o">&lt;=</span> <span class="n">endtimestamp</span><span class="p">:</span>
+                    <span class="n">day</span> <span class="o">=</span> <span class="n">dptimestamp</span> <span class="o">//</span> <span class="mi">86400</span>
+                    <span class="k">if</span> <span class="n">exclude_added_days</span> <span class="ow">and</span> <span class="n">day</span> <span class="ow">in</span> <span class="n">added_days</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">exclude_added_days</span><span class="p">:</span>
+                        <span class="n">added_days</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+                    <span class="n">dp</span> <span class="o">=</span> <span class="n">DataPoint</span><span class="p">(</span><span class="n">timestamp</span><span class="o">=</span><span class="n">dptimestamp</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">dp</span><span class="o">.</span><span class="n">set_z</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span>
+
+        <span class="n">runningdate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startdate</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">runningdate</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enddate</span><span class="p">):</span>
+
+            <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_csv_filepath</span><span class="p">(</span>
+                <span class="n">runningdate</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">retro_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_csv_filepath</span><span class="p">(</span>
+                <span class="n">runningdate</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.retro.csv&quot;</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">read_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="n">read_file</span><span class="p">(</span><span class="n">retro_filepath</span><span class="p">,</span> <span class="n">exclude_added_days</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">runningdate</span> <span class="o">+=</span> <span class="mi">86400</span></div>
+
+<div class="viewcode-block" id="SOHPlot._get_plot"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.sohplot.SOHPlot.html#polyfemos.front.sohplot.sohplot.SOHPlot._get_plot">[docs]</a>    <span class="k">def</span> <span class="nf">_get_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decimate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a 2D bokeh figure, time in x axis. By default, the data is</span>
+<span class="sd">        plotted as a line, lines are separated if any number of nan values</span>
+<span class="sd">        are between continuous set of valid values. If line consists of only</span>
+<span class="sd">        one value, cross marker used instead of a line.</span>
+<span class="sd">        Colors are as follows:</span>
+
+<span class="sd">        - Red, actual data</span>
+<span class="sd">        - Brighter red, horizontal lines defined by ``H_LINES``</span>
+<span class="sd">        - Dark green, outlier datapoints</span>
+
+<span class="sd">        :type decimate: bool, optional</span>
+<span class="sd">        :param decimate: defaults to ``True``. If ``True``, data is decimated.</span>
+<span class="sd">        :rtype: :class:`~bokeh.plotting.figure.Figure`</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">BG_ALPHA</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">PLOT_W</span> <span class="o">=</span> <span class="mi">550</span>
+        <span class="n">PLOT_H</span> <span class="o">=</span> <span class="mi">480</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">decimate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">decimate</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="n">dp0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">datapoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dp1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">datapoints</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> - </span><span class="si">{}</span><span class="s2">&quot;</span> \
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span><span class="p">,</span>
+                    <span class="n">dp0</span><span class="o">.</span><span class="n">get_ordinal</span><span class="p">(),</span> <span class="n">dp1</span><span class="o">.</span><span class="n">get_ordinal</span><span class="p">())</span>
+
+        <span class="n">tools_to_use</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="s1">&#39;pan&#39;</span><span class="p">,</span> <span class="s1">&#39;box_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;wheel_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="s1">&#39;save&#39;</span><span class="p">]</span>
+
+        <span class="n">bokehfig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span>
+            <span class="n">plot_width</span><span class="o">=</span><span class="n">PLOT_W</span><span class="p">,</span>
+            <span class="n">plot_height</span><span class="o">=</span><span class="n">PLOT_H</span><span class="p">,</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">tools_to_use</span><span class="p">,</span>
+            <span class="n">x_axis_type</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+            <span class="n">output_backend</span><span class="o">=</span><span class="s2">&quot;webgl&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">border_fill_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">GREY_1</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">outline_line_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">GREY_2</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">background_fill_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">GREY_3</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">background_fill_alpha</span> <span class="o">=</span> <span class="n">BG_ALPHA</span>
+
+        <span class="n">tempunit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;UNIT&quot;</span><span class="p">]</span>
+        <span class="n">tempunit</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">tempunit</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="k">else</span> <span class="s2">&quot; (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tempunit</span><span class="p">)</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span> <span class="o">+</span> <span class="n">tempunit</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="s2">&quot;UTC Time&quot;</span>
+
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label_text_font</span> <span class="o">=</span> <span class="s2">&quot;Courier&quot;</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label_text_font</span> <span class="o">=</span> <span class="s2">&quot;Courier&quot;</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text_font</span> <span class="o">=</span> <span class="s2">&quot;Courier&quot;</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label_text_font_style</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label_text_font_style</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text_font_style</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label_text_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label_text_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span>
+
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_line_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_line_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_label_text_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">GREY_4</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">major_label_text_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">GREY_4</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">minor_tick_line_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">minor_tick_line_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_tick_line_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span>
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">major_tick_line_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span>
+
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">grid_line_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">GREY_2</span>
+
+        <span class="n">y_lim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;PLOTLIMS&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">y_lim</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_lim</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">bokehfig</span><span class="o">.</span><span class="n">y_range</span> <span class="o">=</span> <span class="n">Range1d</span><span class="p">(</span><span class="o">*</span><span class="nb">tuple</span><span class="p">(</span><span class="n">y_lim</span><span class="p">))</span>
+
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">major_label_orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">ticklabelcode</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">ticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ticklabelcode</span><span class="p">:</span>
+            <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="n">FuncTickFormatter</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">ticklabelcode</span><span class="p">)</span>
+            <span class="n">bokehfig</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">major_label_orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">/</span> <span class="mi">16</span>
+
+        <span class="c1"># Horisontal lines, multiline</span>
+        <span class="n">multiline_xs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">multiline_ys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;H_LINES&quot;</span><span class="p">]:</span>
+            <span class="n">multiline_xs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                <span class="n">dp0</span><span class="o">.</span><span class="n">get_timezone_naive_datetime</span><span class="p">(),</span>
+                <span class="n">dp1</span><span class="o">.</span><span class="n">get_timezone_naive_datetime</span><span class="p">()</span>
+            <span class="p">])</span>
+            <span class="n">multiline_ys</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+        <span class="c1"># Multiline data</span>
+        <span class="n">multiline_source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;mlxs&#39;</span><span class="p">:</span> <span class="n">multiline_xs</span><span class="p">,</span>
+                <span class="s1">&#39;mlys&#39;</span><span class="p">:</span> <span class="n">multiline_ys</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">bokehfig</span><span class="o">.</span><span class="n">multi_line</span><span class="p">(</span>
+            <span class="s1">&#39;mlxs&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mlys&#39;</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">multiline_source</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">RED_1</span><span class="p">,</span>
+            <span class="n">line_width</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+
+        <span class="n">datarealtimeness</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">sohpar_name</span> <span class="o">==</span> <span class="n">userdef</span><span class="o">.</span><span class="n">definitions</span><span class="p">(</span><span class="s2">&quot;datarealtimeness&quot;</span><span class="p">)</span>
+
+        <span class="n">all_data_split</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">datapoints</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">all_data_split</span><span class="p">:</span>
+            <span class="n">main_line_source</span> <span class="o">=</span> \
+                <span class="n">_get_line_source</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">datarealtimeness</span><span class="o">=</span><span class="n">datarealtimeness</span><span class="p">)</span>
+            <span class="n">_plot_line_source</span><span class="p">(</span><span class="n">bokehfig</span><span class="p">,</span> <span class="n">main_line_source</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">RED_3</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">outlier_datapoints</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">outlier_data_split</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_container</span><span class="o">.</span><span class="n">outlier_datapoints</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">od</span> <span class="ow">in</span> <span class="n">outlier_data_split</span><span class="p">:</span>
+                <span class="n">outlier_line_source</span> <span class="o">=</span> \
+                    <span class="n">_get_line_source</span><span class="p">(</span><span class="n">od</span><span class="p">,</span> <span class="n">datarealtimeness</span><span class="o">=</span><span class="n">datarealtimeness</span><span class="p">)</span>
+                <span class="n">_plot_line_source</span><span class="p">(</span><span class="n">bokehfig</span><span class="p">,</span> <span class="n">outlier_line_source</span><span class="p">,</span>
+                                  <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">cross</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">hover</span> <span class="o">=</span> <span class="n">bokehfig</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">HoverTool</span><span class="p">))</span>
+
+        <span class="n">hover</span><span class="o">.</span><span class="n">tooltips</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s2">&quot;@ys&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;@xs_str&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;ordinal&quot;</span><span class="p">,</span> <span class="s2">&quot;@xs_str_ordinal&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">hover</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;mouse&#39;</span>
+        <span class="n">hover</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">]</span>
+
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="n">DatetimeTickFormatter</span><span class="p">(</span>
+            <span class="n">hours</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y %H:%M&quot;</span><span class="p">],</span>
+            <span class="n">days</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">],</span>
+            <span class="n">months</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;%m/%Y&quot;</span><span class="p">],</span>
+            <span class="n">years</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;%Y&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">bokehfig</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_label_orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">5</span>
+        <span class="k">return</span> <span class="n">bokehfig</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.util.messenger &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.util.messenger</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for printing and debugging</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+
+
+<div class="viewcode-block" id="debugger"><a class="viewcode-back" href="../../../autogen/polyfemos.util.messenger.html#polyfemos.util.messenger.debugger">[docs]</a><span class="k">def</span> <span class="nf">debugger</span><span class="p">(</span><span class="n">func_</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator for monitoring function calls and returns</span>
+
+<span class="sd">    :type func\_: func</span>
+<span class="sd">    :param func\_:</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">messenger</span><span class="p">(</span><span class="s2">&quot;&gt; ENTERING function: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func_</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="s2">&quot;M&quot;</span><span class="p">)</span>
+        <span class="c1"># messenger(&quot;args: &quot; + args.__repr__(), &quot;M&quot;)</span>
+        <span class="c1"># messenger(&quot;kwargs: &quot; + kwargs.__repr__(), &quot;M&quot;)</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">messenger</span><span class="p">(</span><span class="s2">&quot;&lt; EXITING function: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func_</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="s2">&quot;M&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rv</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="messenger"><a class="viewcode-back" href="../../../autogen/polyfemos.util.messenger.html#polyfemos.util.messenger.messenger">[docs]</a><span class="k">def</span> <span class="nf">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">showpid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">quit_if_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Every print command around the program should</span>
+<span class="sd">    be called using this function.</span>
+
+<span class="sd">    :type msg: str</span>
+<span class="sd">    :param msg: The message to be printed</span>
+<span class="sd">    :type option: str</span>
+<span class="sd">    :param option: Choose a string the ``msg`` will start with</span>
+<span class="sd">    :type showpid: bool, optional</span>
+<span class="sd">    :param showpid: defaults to ``True``, useful if multiprocessing is used,</span>
+<span class="sd">        Shows the PID of the process outputting the ``msg``</span>
+<span class="sd">    :type quiet: bool, optional</span>
+<span class="sd">    :param quiet: defaults to ``False``, if ``True`` prints only</span>
+<span class="sd">        error messages</span>
+<span class="sd">    :type quit_if_error: bool, optional</span>
+<span class="sd">    :param quit_if_error: defaults to ``True``, program execution is</span>
+<span class="sd">        terminated if error occurs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">quiet</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="s2">&quot;E&quot;</span> <span class="ow">in</span> <span class="n">option</span> <span class="k">else</span> <span class="n">quiet</span>
+    <span class="k">if</span> <span class="n">quiet</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="s2">&quot;  &quot;</span><span class="p">,</span>  <span class="c1"># Message</span>
+        <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># Null</span>
+        <span class="s2">&quot;R&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt; &quot;</span><span class="p">,</span>  <span class="c1"># Runflow</span>
+        <span class="s2">&quot;W&quot;</span><span class="p">:</span> <span class="s2">&quot;  Warning: &quot;</span><span class="p">,</span>  <span class="c1"># Warning</span>
+        <span class="s2">&quot;E&quot;</span><span class="p">:</span> <span class="s2">&quot;  Error:   &quot;</span><span class="p">,</span>  <span class="c1"># Error</span>
+        <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="s2">&quot;  Invalid filepath: &quot;</span><span class="p">,</span>
+        <span class="s2">&quot;O&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># Other</span>
+        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"># &quot;</span><span class="p">,</span>  <span class="c1"># NB</span>
+    <span class="p">}</span>
+
+    <span class="n">startstr</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">showpid</span><span class="p">:</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">current_process</span><span class="p">()</span><span class="o">.</span><span class="n">pid</span>
+        <span class="n">startstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">pid-</span><span class="si">{1}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">startstr</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">pid</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s2">&quot;E&quot;</span> <span class="ow">in</span> <span class="n">option</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">str_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)):</span>
+        <span class="n">startstr</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">startstr</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="k">else</span> <span class="n">startstr</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">startstr</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">str_</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s2">&quot;E&quot;</span> <span class="ow">in</span> <span class="n">option</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">quit_if_error</span><span class="p">:</span>
+            <span class="n">quit</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.util.coordinator &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.util.coordinator</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Coordinate transformation functions</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">pyproj</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="k">import</span> <span class="n">SmoothBivariateSpline</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.util.messenger</span> <span class="k">import</span> <span class="n">messenger</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">fileutils</span>
+
+
+<div class="viewcode-block" id="ddm2dd"><a class="viewcode-back" href="../../../autogen/polyfemos.util.coordinator.html#polyfemos.util.coordinator.ddm2dd">[docs]</a><span class="k">def</span> <span class="nf">ddm2dd</span><span class="p">(</span><span class="n">degs</span><span class="p">,</span> <span class="n">mins</span><span class="p">,</span> <span class="n">letter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type degs: numlike</span>
+<span class="sd">    :param degs: coordinate degrees</span>
+<span class="sd">    :type mins: numlike</span>
+<span class="sd">    :param mins: coordinate decimal minutes</span>
+<span class="sd">    :type letter: str</span>
+<span class="sd">    :param letter: ``N``, ``S``, ``E``, or ``W``</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :return: coordinate as decimal degrees</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">letter</span> <span class="ow">in</span> <span class="s2">&quot;SW&quot;</span><span class="p">]</span>
+    <span class="n">decimaldegrees</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">degs</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">mins</span><span class="p">)</span> <span class="o">/</span> <span class="mf">60.</span>
+    <span class="k">return</span> <span class="n">decimaldegrees</span></div>
+
+
+<div class="viewcode-block" id="transform_from_ozi_map"><a class="viewcode-back" href="../../../autogen/polyfemos.util.coordinator.html#polyfemos.util.coordinator.transform_from_ozi_map">[docs]</a><span class="k">def</span> <span class="nf">transform_from_ozi_map</span><span class="p">(</span><span class="n">mapfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads `OziExplorer &lt;https://www.oziexplorer4.com/w/&gt;`_</span>
+<span class="sd">    map files and returns a function to convert</span>
+<span class="sd">    WGS84 coordinates to pixels.</span>
+
+<span class="sd">    The map file can be created manually and it</span>
+<span class="sd">    should contain at least the following mandatory lines:</span>
+
+<span class="sd">    .. code-block:: text</span>
+
+<span class="sd">        Point01,xy, 110, 159,in, deg, 68, 47.222,N, 22, 46.498,E, grid, , , , N</span>
+<span class="sd">        Point02,xy, 219, 159,in, deg, 68, 50.001,N, 25, 32.324,E, grid, , , , N</span>
+<span class="sd">        Point03,xy, 329, 159,in, deg, 68, 50.063,N, 28, 20.055,E, grid, , , , N</span>
+<span class="sd">        Point04,xy, 110, 318,in, deg, 67, 19.826,N, 23, 2.020,E, grid, , , , N</span>
+<span class="sd">        Point05,xy, 219, 318,in, deg, 67, 22.408,N, 25, 37.707,E, grid, , , , N</span>
+<span class="sd">        Point06,xy, 329, 318,in, deg, 67, 22.466,N, 28, 15.139,E, grid, , , , N</span>
+<span class="sd">        Point07,xy, 110, 476,in, deg, 65, 52.937,N, 23, 15.536,E, grid, , , , N</span>
+<span class="sd">        Point08,xy, 219, 476,in, deg, 65, 55.346,N, 25, 42.393,E, grid, , , , N</span>
+<span class="sd">        Point09,xy, 329, 476,in, deg, 65, 55.401,N, 28, 10.860,E, grid, , , , N</span>
+
+<span class="sd">    .. code-block:: text</span>
+
+<span class="sd">        MMPLL,1, 19.499680, 70.147437</span>
+<span class="sd">        MMPLL,2, 31.374991, 70.251143</span>
+<span class="sd">        MMPLL,3, 30.424810, 64.431702</span>
+<span class="sd">        MMPLL,4, 21.120046, 64.353722</span>
+
+<span class="sd">    Each line is treated as a list of elements separated with commas,</span>
+<span class="sd">    whitespaces are removed.</span>
+<span class="sd">    The &#39;Point&#39; entries are used to create the conversion and</span>
+<span class="sd">    the &#39;MMPLL&#39; entries define the extrapolation area.</span>
+<span class="sd">    In &#39;Point&#39; entries indices 2 and 3 are pixel coordinates and</span>
+<span class="sd">    indices from 6 to 11 are the corresponding WGS84 coordinates</span>
+<span class="sd">    (indices 2 and 3 in the &#39;MMPLL&#39; entry).</span>
+
+<span class="sd">    Lines that do not start with either &#39;MMPLL&#39; or &#39;Point&#39; are skipped.</span>
+
+<span class="sd">    :type mapfile: str</span>
+<span class="sd">    :param mapfile: path to OziExplorer map file</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: A function taking WGS84 longitude and latitude as arguments</span>
+<span class="sd">        and returning pixel xy-coordinates as a tuple.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">corners</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">rowsof</span><span class="p">(</span><span class="n">mapfile</span><span class="p">,</span> <span class="n">delims</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;MMPLL&quot;</span><span class="p">:</span>
+            <span class="n">corners</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])])</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">12</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Point&quot;</span><span class="p">):</span>
+            <span class="n">px</span><span class="p">,</span> <span class="n">py</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+            <span class="n">lon</span> <span class="o">=</span> <span class="n">ddm2dd</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">[</span><span class="mi">9</span><span class="p">:</span><span class="mi">12</span><span class="p">])</span>
+            <span class="n">lat</span> <span class="o">=</span> <span class="n">ddm2dd</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">9</span><span class="p">])</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">])</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">corners</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span>
+
+    <span class="n">bx0</span><span class="p">,</span> <span class="n">bx1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">corners</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">corners</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">by0</span><span class="p">,</span> <span class="n">by1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">corners</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">corners</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">lons</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">lats</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">pxs</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">pys</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">sx</span> <span class="o">=</span> <span class="n">SmoothBivariateSpline</span><span class="p">(</span>
+        <span class="n">lons</span><span class="p">,</span> <span class="n">lats</span><span class="p">,</span> <span class="n">pxs</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">[</span><span class="n">bx0</span><span class="p">,</span> <span class="n">bx1</span><span class="p">,</span> <span class="n">by0</span><span class="p">,</span> <span class="n">by1</span><span class="p">],</span> <span class="n">kx</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ky</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sy</span> <span class="o">=</span> <span class="n">SmoothBivariateSpline</span><span class="p">(</span>
+        <span class="n">lons</span><span class="p">,</span> <span class="n">lats</span><span class="p">,</span> <span class="n">pys</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">[</span><span class="n">bx0</span><span class="p">,</span> <span class="n">bx1</span><span class="p">,</span> <span class="n">by0</span><span class="p">,</span> <span class="n">by1</span><span class="p">],</span> <span class="n">kx</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ky</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">:</span> <span class="p">(</span><span class="n">sx</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">),</span> <span class="n">sy</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_transform"><a class="viewcode-back" href="../../../autogen/polyfemos.util.coordinator.html#polyfemos.util.coordinator.get_transform">[docs]</a><span class="k">def</span> <span class="nf">get_transform</span><span class="p">(</span><span class="n">from_epsg</span><span class="p">,</span> <span class="n">to_epsg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type from_epsg: str</span>
+<span class="sd">    :param from_epsg: EPSG code of the original coordinate system</span>
+<span class="sd">    :type to_epsg: str</span>
+<span class="sd">    :param to_epsg: EPSG code of the resulting coordinate system</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: A coordinate transformation function taking xy-coordinates</span>
+<span class="sd">        in ``from_epsg`` coordinate system and returning xy-coordinates in</span>
+<span class="sd">        ``to_epsg`` coordinate system</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">from_coords</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="s2">&quot;+init=EPSG:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_epsg</span><span class="p">))</span>
+        <span class="n">to_coords</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="s2">&quot;+init=EPSG:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">to_epsg</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No coordinate conversion available for ESPGs from &quot;</span> \
+              <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; to &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_epsg</span><span class="p">,</span> <span class="n">to_epsg</span><span class="p">)</span>
+        <span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">from_coords</span><span class="p">,</span> <span class="n">to_coords</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

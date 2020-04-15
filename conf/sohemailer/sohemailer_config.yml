@@ -1,0 +1,35 @@
+
+from: "john.doe@example.com"
+passwd: "****************"
+
+to: [
+  "john.smith@example.com",
+]
+
+subject: "State of Health alert"
+
+alert_filepathformat: "~/polyfemos/data_out/FN/sohalerts/&YEAR/&NETWORK/&STATION/&NETWORK.&STATION.&YEAR.&JULDAY"
+
+station_ids: [ 
+  "FN.MSF",
+  "FN.OUL",
+  "FN.RNF",
+  "FN.SGF",
+]
+
+sohpars:
+  - Digitizer_input_voltage
+  - Digitizer_input_current
+  - Digitizer_temperature
+  - Timing_error
+  - Offset_U
+  - Offset_W
+  - Offset_V
+  - Data_realtimeness_BHZ
+  - Data_coverage_day_BHZ
+  - Timing_quality_BHZ
+  - Timestamp_error_BHZ
+  - Latitude
+  - Longitude
+
+

@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.sohplot.offsets &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.front.sohplot.offsets</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains class :class:`~polyfemos.front.sohplot.offsets.UWVOffsets`.</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">userdef</span>
+
+
+<span class="n">OFFSET_U</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">OFFSET_W</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">OFFSET_V</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">OFFSET_N</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">OFFSET_E</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">OFFSET_Z</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">NEZ_OFFSETS</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="init_definitions"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.offsets.html#polyfemos.front.sohplot.offsets.init_definitions">[docs]</a><span class="k">def</span> <span class="nf">init_definitions</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Updates the definition values with userdefined values</span>
+<span class="sd">    from YAML files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">OFFSET_U</span>
+    <span class="n">OFFSET_U</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">definitions</span><span class="p">(</span><span class="s2">&quot;offset_u&quot;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">OFFSET_W</span>
+    <span class="n">OFFSET_W</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">definitions</span><span class="p">(</span><span class="s2">&quot;offset_w&quot;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">OFFSET_V</span>
+    <span class="n">OFFSET_V</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">definitions</span><span class="p">(</span><span class="s2">&quot;offset_v&quot;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">OFFSET_N</span>
+    <span class="n">OFFSET_N</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">definitions</span><span class="p">(</span><span class="s2">&quot;offset_n&quot;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">OFFSET_E</span>
+    <span class="n">OFFSET_E</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">definitions</span><span class="p">(</span><span class="s2">&quot;offset_e&quot;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">OFFSET_Z</span>
+    <span class="n">OFFSET_Z</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">definitions</span><span class="p">(</span><span class="s2">&quot;offset_z&quot;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">NEZ_OFFSETS</span>
+    <span class="n">NEZ_OFFSETS</span> <span class="o">=</span> <span class="p">{</span><span class="n">OFFSET_N</span><span class="p">,</span> <span class="n">OFFSET_E</span><span class="p">,</span> <span class="n">OFFSET_Z</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="UWVOffsets"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.offsets.UWVOffsets.html#polyfemos.front.sohplot.offsets.UWVOffsets">[docs]</a><span class="k">class</span> <span class="nc">UWVOffsets</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for UWV to NEZ conversion</span>
+
+<span class="sd">    The transforming function for each sensor is defined in</span>
+<span class="sd">    :func:`~polyfemos.front.userdef.transform_func`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="UWVOffsets.__init__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.offsets.UWVOffsets.html#polyfemos.front.sohplot.offsets.UWVOffsets.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">init_definitions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UWVOffsets.clear"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.offsets.UWVOffsets.html#polyfemos.front.sohplot.offsets.UWVOffsets.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes ``self.offsets`` attribute into it&#39;s default value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">OFFSET_U</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;NaN&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">},</span>
+            <span class="n">OFFSET_W</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;NaN&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">},</span>
+            <span class="n">OFFSET_V</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;NaN&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">},</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="UWVOffsets.update"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.offsets.UWVOffsets.html#polyfemos.front.sohplot.offsets.UWVOffsets.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtstr</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stores given ``value`` to offset U, W or V.</span>
+
+<span class="sd">        :type dtstr: str</span>
+<span class="sd">        :param dtstr: datetime compatible string or other value compatible</span>
+<span class="sd">            with :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param key: Which offset is updated, U, W or V</span>
+<span class="sd">        :type value: str</span>
+<span class="sd">        :param value: string representing float value of the offset,</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">float_</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">utcdatetime</span><span class="p">(</span><span class="n">dtstr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UWVOffsets.transform"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.offsets.UWVOffsets.html#polyfemos.front.sohplot.offsets.UWVOffsets.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform offsets, UWV to NEZ</span>
+
+<span class="sd">        :type sensor: str</span>
+<span class="sd">        :param sensor: Which transformation function is used,</span>
+<span class="sd">            defined in :func:`~polyfemos.front.userdef.transform_func`</span>
+<span class="sd">        :type conponent: str</span>
+<span class="sd">        :param conponent: Which component after transformation is returned,</span>
+<span class="sd">            N, E or Z.</span>
+<span class="sd">        :rtype: :class:`~obspy.core.utcdatetime.UTCDateTime`, float</span>
+<span class="sd">        :return: timevalue and value of N, E or Z offset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">OFFSET_U</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">OFFSET_W</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">OFFSET_V</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="c1"># Transform UWV to NEZ</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">transform_func</span><span class="p">(</span><span class="n">sensor</span><span class="p">)(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="c1"># make list of time values</span>
+        <span class="n">list_</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">OFFSET_U</span><span class="p">][</span><span class="s2">&quot;dt&quot;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">OFFSET_W</span><span class="p">][</span><span class="s2">&quot;dt&quot;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">OFFSET_V</span><span class="p">][</span><span class="s2">&quot;dt&quot;</span><span class="p">],</span>
+        <span class="p">]</span>
+        <span class="c1"># Takes the middle timestamp as the offset time value</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">list_</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">dt</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">dt</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="n">z</span><span class="p">}[</span><span class="n">component</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="UWVOffsets.isnan"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.offsets.UWVOffsets.html#polyfemos.front.sohplot.offsets.UWVOffsets.isnan">[docs]</a>    <span class="k">def</span> <span class="nf">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if every value (U, W and V) is defined. If every one is defined,</span>
+<span class="sd">        the coordinate transformation can be done.</span>
+
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: returns ``False`` if the coordinate trasformation is possible.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;NaN&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="UWVOffsets.__bool__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.offsets.UWVOffsets.html#polyfemos.front.sohplot.offsets.UWVOffsets.__bool__">[docs]</a>    <span class="k">def</span> <span class="nf">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: returns ``True`` if the coordinate trasformation is possible.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isnan</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

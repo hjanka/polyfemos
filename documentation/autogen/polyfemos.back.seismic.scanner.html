@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.seismic.scanner &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.back.station" href="polyfemos.back.station.html" />
+    <link rel="prev" title="polyfemos.back.seismic.lumberjack" href="polyfemos.back.seismic.lumberjack.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-polyfemos.back.seismic.scanner">
+<span id="polyfemos-back-seismic-scanner"></span><h1>polyfemos.back.seismic.scanner<a class="headerlink" href="#module-polyfemos.back.seismic.scanner" title="Permalink to this headline">¶</a></h1>
+<p>Scans available mseed files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2019, University of Oulu, Sodankyla Geophysical Observatory</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GNU Lesser General Public License v3.0 or later
+(<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">https://spdx.org/licenses/LGPL-3.0-or-later.html</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Public Functions</p>
+<dl class="function">
+<dt id="polyfemos.back.seismic.scanner.data_coverage_image">
+<code class="sig-prename descclassname">polyfemos.back.seismic.scanner.</code><code class="sig-name descname">data_coverage_image</code><span class="sig-paren">(</span><em class="sig-param">flags</em>, <em class="sig-param">starttime</em>, <em class="sig-param">endtime</em>, <em class="sig-param">network_code</em>, <em class="sig-param">station_codes</em>, <em class="sig-param">channel_codes</em>, <em class="sig-param">datafilepathfunc</em>, <em class="sig-param">outfilepathfunc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/scanner.html#data_coverage_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.scanner.data_coverage_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates data coverage images using
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.imaging.scripts.scan.Scanner.html#obspy.imaging.scripts.scan.Scanner" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scanner</span></code></a>.</p>
+<p>The available seismic data is scanned between times <code class="docutils literal notranslate"><span class="pre">starttime</span></code>
+and <code class="docutils literal notranslate"><span class="pre">endtime</span></code>. All channel and station combinations are included in the
+scan (<code class="docutils literal notranslate"><span class="pre">channel_codes</span></code> and <code class="docutils literal notranslate"><span class="pre">station_codes</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Flag variables from
+<a class="reference internal" href="polyfemos.back.interpreter.Interpreter.html#polyfemos.back.interpreter.Interpreter" title="polyfemos.back.interpreter.Interpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interpreter</span></code></a></p></li>
+<li><p><strong>startime</strong> (<a class="reference internal" href="polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal" title="polyfemos.almanac.ordinal.Ordinal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ordinal</span></code></a>) – </p></li>
+<li><p><strong>endtime</strong> (<a class="reference internal" href="polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal" title="polyfemos.almanac.ordinal.Ordinal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ordinal</span></code></a>) – </p></li>
+<li><p><strong>network_code</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Network code as a string, e.g. “FN”</p></li>
+<li><p><strong>station_codes</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of string consisting of station codes,
+e.g. <code class="docutils literal notranslate"><span class="pre">[&quot;MSF&quot;,</span> <span class="pre">&quot;SGF&quot;,</span> <span class="pre">...]</span></code>.</p></li>
+<li><p><strong>channel_codes</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of string consisting of channel codes,
+e.g. <code class="docutils literal notranslate"><span class="pre">[&quot;HHZ&quot;,</span> <span class="pre">&quot;HHE&quot;,</span> <span class="pre">...]</span></code>.</p></li>
+<li><p><strong>datafilepathfunc</strong> (<em>func</em>) – A function returning filepaths to be included
+in the scan.</p></li>
+<li><p><strong>outfilepathfunc</strong> (<em>func</em>) – If the <code class="docutils literal notranslate"><span class="pre">outfilepathfunc</span></code> returns different
+filepaths with changing stations or channels etc., separate scanner
+plots are created with each different filepath.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.scanner.get_data_coverage_figure">
+<code class="sig-prename descclassname">polyfemos.back.seismic.scanner.</code><code class="sig-name descname">get_data_coverage_figure</code><span class="sig-paren">(</span><em class="sig-param">station_ids</em>, <em class="sig-param">channel_codes</em>, <em class="sig-param">startdate</em>, <em class="sig-param">enddate</em>, <em class="sig-param">datafilepathfunc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/scanner.html#get_data_coverage_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.scanner.get_data_coverage_figure" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>station_ids</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – station ids as a list of strings</p></li>
+<li><p><strong>channel_codes</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – data channel codes as a list of strings</p></li>
+<li><p><strong>startdate</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>) – scanning startdate</p></li>
+<li><p><strong>enddate</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>) – scanning enddate</p></li>
+<li><p><strong>filepathfunc</strong> (<em>func</em>) – A dynamic filepath, wildcards can be used since
+<a class="reference external" href="https://docs.python.org/3.7/library/glob.html#glob.glob" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">glob()</span></code></a> is use to process filepaths after the
+arguments are filled in.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Figure</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>scanner plot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.scanner.null_figure">
+<code class="sig-prename descclassname">polyfemos.back.seismic.scanner.</code><code class="sig-name descname">null_figure</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/scanner.html#null_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.scanner.null_figure" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Figure</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Empty figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../back.html">Backend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.filewriter.html">polyfemos.back.filewriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.interpreter.html">polyfemos.back.interpreter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.main.html">polyfemos.back.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.parameter.html">polyfemos.back.parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.edlogreader.html">polyfemos.back.seismic.edlogreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.lumberjack.html">polyfemos.back.seismic.lumberjack</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">polyfemos.back.seismic.scanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.station.html">polyfemos.back.station</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../back.html">Backend modules</a><ul>
+      <li>Previous: <a href="polyfemos.back.seismic.lumberjack.html" title="previous chapter">polyfemos.back.seismic.lumberjack</a></li>
+      <li>Next: <a href="polyfemos.back.station.html" title="next chapter">polyfemos.back.station</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.back.seismic.scanner.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

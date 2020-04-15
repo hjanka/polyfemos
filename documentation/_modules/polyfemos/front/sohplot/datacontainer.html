@@ -1,0 +1,645 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.sohplot.datacontainer &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.front.sohplot.datacontainer</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes for handling datapoints</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">dateutil</span> <span class="k">import</span> <span class="n">tz</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util.messenger</span> <span class="k">import</span> <span class="n">messenger</span>
+
+
+<div class="viewcode-block" id="remove_timezone_other"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.html#polyfemos.front.sohplot.datacontainer.remove_timezone_other">[docs]</a><span class="k">def</span> <span class="nf">remove_timezone_other</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type dt: :class:`~datetime.datetime`</span>
+<span class="sd">    :param dt:</span>
+<span class="sd">    :rtype: :class:`~datetime.datetime`</span>
+<span class="sd">    :return: a datetime instance without timezone</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Atleast with Python 3.5 and 3.7 The next line works</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="remove_timezone_py36"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.html#polyfemos.front.sohplot.datacontainer.remove_timezone_py36">[docs]</a><span class="k">def</span> <span class="nf">remove_timezone_py36</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used with python 3.6</span>
+
+<span class="sd">    :type dt: :class:`~datetime.datetime`</span>
+<span class="sd">    :param dt:</span>
+<span class="sd">    :rtype: :class:`~datetime.datetime`</span>
+<span class="sd">    :return: a datetime instance without timezone</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="remove_timezone_py37"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.html#polyfemos.front.sohplot.datacontainer.remove_timezone_py37">[docs]</a><span class="k">def</span> <span class="nf">remove_timezone_py37</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type dt: :class:`~datetime.datetime`</span>
+<span class="sd">    :param dt:</span>
+<span class="sd">    :rtype: :class:`~datetime.datetime`</span>
+<span class="sd">    :return: the function does nothing to the datetime object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">dt</span></div>
+
+
+<span class="n">_timezone_removal_functions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;3.6&quot;</span><span class="p">:</span> <span class="n">remove_timezone_py36</span><span class="p">,</span>
+    <span class="s2">&quot;3.7&quot;</span><span class="p">:</span> <span class="n">remove_timezone_py37</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Bokeh has complications with different python version</span>
+<span class="n">python_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[:</span><span class="mi">2</span><span class="p">]))</span>
+<span class="n">remove_timezone</span> <span class="o">=</span> <span class="n">remove_timezone_other</span>
+<span class="k">if</span> <span class="n">python_version</span> <span class="ow">in</span> <span class="n">_timezone_removal_functions</span><span class="p">:</span>
+    <span class="n">remove_timezone</span> <span class="o">=</span> <span class="n">_timezone_removal_functions</span><span class="p">[</span><span class="n">python_version</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="_track_datalen"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.html#polyfemos.front.sohplot.datacontainer._track_datalen">[docs]</a><span class="k">def</span> <span class="nf">_track_datalen</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator to be used with</span>
+<span class="sd">    :class:`~polyfemos.front.sohplot.datacontainer.DataContainer`</span>
+<span class="sd">    to keep track of the</span>
+<span class="sd">    datapoint amount and quantity of nan values. At the moment the</span>
+<span class="sd">    looping of the datapoints is not very optimized.</span>
+
+<span class="sd">    :type method: func</span>
+<span class="sd">    :param method: A decorated method</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_datalen</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;in method: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">)</span>
+            <span class="n">orig_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">orig_nan_len</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_nans</span><span class="p">()</span>
+        <span class="n">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_datalen</span><span class="p">:</span>
+            <span class="n">new_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">new_nan_len</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_nans</span><span class="p">()</span>
+            <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:*&lt;19}</span><span class="s2">**&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span><span class="p">)</span>
+            <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;dps:*</span><span class="si">{:*&gt;7}</span><span class="s2">*&gt;*</span><span class="si">{:*&lt;7}</span><span class="s2">*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">orig_len</span><span class="p">,</span> <span class="n">new_len</span><span class="p">)</span>
+            <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;nans:*</span><span class="si">{:*&gt;7}</span><span class="s2">*&gt;*</span><span class="si">{:*&lt;7}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">orig_nan_len</span><span class="p">,</span> <span class="n">new_nan_len</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add2info</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="DataPoint"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint">[docs]</a><span class="k">class</span> <span class="nc">DataPoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A structlike class to store one datapoint in timeseries data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DataPoint.__init__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtstr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">utcdatetime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The data must have timevalue, given either ``dtstr``, ``timestamp``</span>
+<span class="sd">        or ``utcdatetime``.</span>
+<span class="sd">        ``z`` is an optional axis containing arbitrary string values following</span>
+<span class="sd">        python dictionary syntax</span>
+
+<span class="sd">        :type dtstr: str</span>
+<span class="sd">        :param dtstr: utcdatetime compatible string representing time value</span>
+<span class="sd">        :type timestamp: float</span>
+<span class="sd">        :param timestamp:</span>
+<span class="sd">        :type utcdatetime: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        :param utcdatetime:</span>
+<span class="sd">        :type y: str or numlike</span>
+<span class="sd">        :param y: string representing float number, if invalid string is</span>
+<span class="sd">            provided, ``y`` will be ``nan``</span>
+<span class="sd">        :type z: str, optional</span>
+<span class="sd">        :param z: Additional arbitrary values contained in string following</span>
+<span class="sd">            python dict syntax</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dtstr</span> <span class="o">=</span> <span class="n">dtstr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__timestamp</span> <span class="o">=</span> <span class="n">timestamp</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__utcdatetime</span> <span class="o">=</span> <span class="n">utcdatetime</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__datetime</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ordinal</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__timezone_naive_datetime</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hash</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">invalid_value</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">))(</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataPoint.get_utcdatetime"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.get_utcdatetime">[docs]</a>    <span class="k">def</span> <span class="nf">get_utcdatetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If ``self.__utcdatetime`` is not previously defined,</span>
+<span class="sd">        the value is read using ``self.__dtstr`` or</span>
+<span class="sd">        ``self.__timestamp``. If either of those is not provided,</span>
+<span class="sd">        error is thrown.</span>
+
+<span class="sd">        :rtype: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__utcdatetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__utcdatetime</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dtstr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__utcdatetime</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">utcdatetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dtstr</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__timestamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__utcdatetime</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">utcdatetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__timestamp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__utcdatetime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;DataPoint has no valid timevalue&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__utcdatetime</span></div>
+
+<div class="viewcode-block" id="DataPoint.get_dtstr"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.get_dtstr">[docs]</a>    <span class="k">def</span> <span class="nf">get_dtstr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: string representation of the timevalue</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dtstr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dtstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_utcdatetime</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dtstr</span></div>
+
+<div class="viewcode-block" id="DataPoint.get_timestamp"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        :return: timestamp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__timestamp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_utcdatetime</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__timestamp</span></div>
+
+<div class="viewcode-block" id="DataPoint.get_datetime"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.get_datetime">[docs]</a>    <span class="k">def</span> <span class="nf">get_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: :class:`~datetime.datetime`</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__datetime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__datetime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_utcdatetime</span><span class="p">()</span><span class="o">.</span><span class="n">datetime</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__datetime</span></div>
+
+<div class="viewcode-block" id="DataPoint.get_ordinal"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.get_ordinal">[docs]</a>    <span class="k">def</span> <span class="nf">get_ordinal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: year and the day of the yeat as a string in format</span>
+<span class="sd">            ``YEAR.JULDAY``, e.g. ``2019.023``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ordinal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__ordinal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_utcdatetime</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%j&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ordinal</span></div>
+
+<div class="viewcode-block" id="DataPoint.get_timezone_naive_datetime"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.get_timezone_naive_datetime">[docs]</a>    <span class="k">def</span> <span class="nf">get_timezone_naive_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: :class:`~datetime.datetime`</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__timezone_naive_datetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__timezone_naive_datetime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__timezone_naive_datetime</span> <span class="o">=</span> <span class="n">remove_timezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_datetime</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__timezone_naive_datetime</span></div>
+
+<div class="viewcode-block" id="DataPoint.set_z"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.set_z">[docs]</a>    <span class="k">def</span> <span class="nf">set_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type value: str</span>
+<span class="sd">        :param value: Value to be set to ``z`` attribute</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="DataPoint.get_z"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.get_z">[docs]</a>    <span class="k">def</span> <span class="nf">get_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        :return: Returns the value of ``z`` attribute. If the type was not</span>
+<span class="sd">            previously converted from string to dictionary, the conversion</span>
+<span class="sd">            is done in addition.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">dict_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span></div>
+
+<div class="viewcode-block" id="DataPoint.ifz"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.ifz">[docs]</a>    <span class="k">def</span> <span class="nf">ifz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: return ``True`` if ``z`` has a value set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="DataPoint.isnan"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.isnan">[docs]</a>    <span class="k">def</span> <span class="nf">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: Checks if ``y`` is nan</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataPoint.isnotnan"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.isnotnan">[docs]</a>    <span class="k">def</span> <span class="nf">isnotnan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: return ``True`` if ``y`` is not nan</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isnan</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DataPoint.tonan"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.tonan">[docs]</a>    <span class="k">def</span> <span class="nf">tonan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the ``y`` attribute to nan. If ``inplace`` is ``False``, a</span>
+<span class="sd">        copy of :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">        is returned. Note the mutability of the</span>
+<span class="sd">        :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">        instance if ``inplace`` is ``True``.</span>
+
+<span class="sd">        :type inplace: bool, optional</span>
+<span class="sd">        :param inplace: defaults to ``True``</span>
+<span class="sd">        :rtype: :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">tonan</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DataPoint.copy"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">        :return: returs a copy of the current</span>
+<span class="sd">            :class:`~polyfemos.front.sohplot.datacontainer.DataPoint` instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DataPoint</span><span class="p">(</span><span class="n">timestamp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__timestamp</span><span class="p">,</span> <span class="n">dtstr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__dtstr</span><span class="p">,</span>
+                         <span class="n">utcdatetime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__utcdatetime</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataPoint.__str__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: A some kind of string representation of the values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_dtstr</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataPoint.__bool__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.__bool__">[docs]</a>    <span class="k">def</span> <span class="nf">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: returns ``True`` if ``y`` is not nan</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isnotnan</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DataPoint.__eq__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compares the timestamp and y values between ``self`` and ``other``.</span>
+<span class="sd">        If both values are iedntical, returns ``True``.</span>
+
+<span class="sd">        :type other: :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">        :param other:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isnan</span><span class="p">()</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">isnan</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">y</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="DataPoint.__ne__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.__ne__">[docs]</a>    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type other: :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">        :param other:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: opposite of the</span>
+<span class="sd">            :meth:`~polyfemos.front.sohplot.datacontainer.DataPoint.__eq__`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span></div>
+
+<div class="viewcode-block" id="DataPoint.__hash__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint.__hash__">[docs]</a>    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :return: hashed tuple containing ``self.__timestamp`` and</span>
+<span class="sd">            ``self.y`` values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hash</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__hash</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hash</span></div></div>
+
+
+<div class="viewcode-block" id="DataContainer"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer">[docs]</a><span class="k">class</span> <span class="nc">DataContainer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to handle timeseries data consisting of</span>
+<span class="sd">    :class:`~polyfemos.front.sohplot.datacontainer.DataPoint` instances.</span>
+
+<span class="sd">    The class has ``__setitem__`` and ``__getitem__`` methods so it works like</span>
+<span class="sd">    dictionary on that part.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DataContainer.__init__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track_datalen</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">remove_identicals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type track_datalen: bool, optional</span>
+<span class="sd">        :param track_datalen: Defaults to ``False``, If ``True``, the amount</span>
+<span class="sd">            of datapoints, nans, etc., is monitored.</span>
+<span class="sd">        :type remove_identicals: bool, optional</span>
+<span class="sd">        :param remove_identicals: defaults to ``False``. If ``True``,</span>
+<span class="sd">            values with identical x and y values are removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_datalen</span> <span class="o">=</span> <span class="n">track_datalen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_identicals</span> <span class="o">=</span> <span class="n">remove_identicals</span>
+        <span class="c1"># A list containing DataPoint instances</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># After advanced outlier removal, this list contains the outlier</span>
+        <span class="c1"># datapoints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outlier_datapoints</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ys_wo_nans</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__info</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__added_datapoint_hashes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__identical_count</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="DataContainer.add2info"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.add2info">[docs]</a>    <span class="k">def</span> <span class="nf">add2info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type str\_: str</span>
+<span class="sd">        :param str\_: A notes appended to ``self.__info`` list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataContainer.get_info"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        :return: A list containing the info notes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__info</span></div>
+
+<div class="viewcode-block" id="DataContainer.append"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If ``self.remove_identicals`` is ``True``,</span>
+<span class="sd">        the datapoint is not included if it has identical x and y values</span>
+<span class="sd">        as one of the already added datapoints.</span>
+
+<span class="sd">        :type value: :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">        :param value: Addends</span>
+<span class="sd">            :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">            instance to ``self.datapoints``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_identicals</span><span class="p">:</span>
+            <span class="n">dphash</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dphash</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__added_datapoint_hashes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__added_datapoint_hashes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dphash</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__identical_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataContainer.sort"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sorts ``self.datapoints`` comparing timestamp values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span> <span class="o">=</span> \
+            <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">dp</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DataContainer.add_identical_removal_info"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.add_identical_removal_info">[docs]</a>    <span class="k">def</span> <span class="nf">add_identical_removal_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds original datapoint and nan amounts and identical datapoint</span>
+<span class="sd">        information to ``self.__info``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_datalen</span><span class="p">:</span>
+            <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;dps:*</span><span class="si">{:*&lt;7}</span><span class="s2">* nans:*</span><span class="si">{:*&lt;7}</span><span class="s2">*&quot;</span> \
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_nans</span><span class="p">())</span>
+            <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;identicals removed:*</span><span class="si">{:*&lt;7}</span><span class="s2">*&quot;</span> \
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__identical_count</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add2info</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataContainer.remove_irrationals"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.remove_irrationals">[docs]</a>    <span class="nd">@_track_datalen</span>
+    <span class="k">def</span> <span class="nf">remove_irrationals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">irlims</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">        instance&#39;s ``y`` value is not within the interval</span>
+<span class="sd">        (including both ends) defined by ``irlims``, the ``y``</span>
+<span class="sd">        is set to nan in place.</span>
+
+<span class="sd">        :type irlims: list</span>
+<span class="sd">        :param irlims: lower and upper limit for irrational values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">irlims</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">irlims</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">irlims</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">irlims</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">irlims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">dp</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="n">irlims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">dp</span><span class="o">.</span><span class="n">isnan</span><span class="p">():</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dp</span><span class="o">.</span><span class="n">tonan</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DataContainer.outlier_removal"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.outlier_removal">[docs]</a>    <span class="nd">@_track_datalen</span>
+    <span class="k">def</span> <span class="nf">outlier_removal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outlierremfunc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies advanced outlier removal to ``datapoints`` attribute.</span>
+<span class="sd">        Changes ``y`` values of outlying datapoints into nan, while</span>
+<span class="sd">        simultaneously creating dataset ``self.outlier_datapoints``,</span>
+<span class="sd">        which contains the outliers.</span>
+
+<span class="sd">        Some functions for removing outliers are in</span>
+<span class="sd">        :mod:`~polyfemos.data.outlierremover`.</span>
+
+<span class="sd">        :type outlierremfunc: func</span>
+<span class="sd">        :param outlierremfunc: a function to remove outliers, arguments of the</span>
+<span class="sd">            ``outlierremfunc`` has to be predefined, except the actual data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If outlierremfunc is not a function, do nothing</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">outlierremfunc</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">tempdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(),</span> <span class="n">dp</span><span class="o">.</span><span class="n">y</span><span class="p">]</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span>
+        <span class="p">])</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">outlierremfunc</span><span class="p">(</span><span class="n">tempdata</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">outlier_datapoints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">dp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">):</span>
+            <span class="n">copydp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+                <span class="n">dp</span><span class="o">.</span><span class="n">tonan</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">outlier_datapoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copydp</span><span class="o">.</span><span class="n">tonan</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="n">m</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">outlier_datapoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copydp</span><span class="o">.</span><span class="n">tonan</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">outlier_datapoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copydp</span><span class="p">)</span>
+                <span class="n">dp</span><span class="o">.</span><span class="n">tonan</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DataContainer.decimate"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.decimate">[docs]</a>    <span class="nd">@_track_datalen</span>
+    <span class="k">def</span> <span class="nf">decimate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decimates ``self.datapoints`` list by removing datapoints so that</span>
+<span class="sd">        the after decimation, the amount of datapoints in the list is not over</span>
+<span class="sd">        ``decimation_limit``, which is set to 10000.</span>
+
+<span class="sd">        Bokeh can plot 10000 datapoints with relative ease but</span>
+<span class="sd">        more datapoints than that will result in slow plotting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">decimation_limit</span> <span class="o">=</span> <span class="mf">10000.0</span>
+        <span class="n">orig_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">orig_len</span> <span class="o">&gt;=</span> <span class="n">decimation_limit</span><span class="p">:</span>
+            <span class="n">decimation_factor</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">orig_len</span> <span class="o">/</span> <span class="n">decimation_limit</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">[::</span><span class="n">decimation_factor</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DataContainer.get_ys_wo_nans"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.get_ys_wo_nans">[docs]</a>    <span class="k">def</span> <span class="nf">get_ys_wo_nans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type force: bool, optional</span>
+<span class="sd">        :param force: defaults to ``False``, if ``True`` the returned list</span>
+<span class="sd">            is recalculated in every case.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        :return: A list containing ``y`` values of</span>
+<span class="sd">            :class:`~polyfemos.front.sohplot.datacontainer.DataPoint`</span>
+<span class="sd">            instances excluding nan values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__ys_wo_nans</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">force</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__ys_wo_nans</span> <span class="o">=</span> <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">y</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span> <span class="k">if</span> <span class="n">dp</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ys_wo_nans</span></div>
+
+<div class="viewcode-block" id="DataContainer.count_nans"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.count_nans">[docs]</a>    <span class="k">def</span> <span class="nf">count_nans</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :return: A count of nan values in ``self.datapoints`` list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">dp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataContainer.__len__"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.__len__">[docs]</a>    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :return: length of ``self.datapoints``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

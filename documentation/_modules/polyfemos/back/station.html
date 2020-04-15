@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.station &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.back.station</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains classes for handling station information</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.almanac.ordinal</span> <span class="k">import</span> <span class="n">Ordinal</span>
+
+
+<div class="viewcode-block" id="get_id"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.html#polyfemos.back.station.get_id">[docs]</a><span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type network_code: str</span>
+<span class="sd">    :param network_code:</span>
+<span class="sd">    :type station_code: str</span>
+<span class="sd">    :param station_code:</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: ``network_code + &quot;.&quot; + station_code``, e.g. &quot;FN.MSF&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Station"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station">[docs]</a><span class="k">class</span> <span class="nc">Station</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for handling information of one station</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Station.__init__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network_code</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">station_code</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">location_code</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">locy</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">locx</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">epsg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">digitizer</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sensor</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">starttime</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type network_code: str</span>
+<span class="sd">        :param network_code: Network code, e.g. &quot;FN&quot;</span>
+<span class="sd">        :type station_code: str</span>
+<span class="sd">        :param station_code: Code of the station, e.g. &quot;MSF&quot;</span>
+<span class="sd">        :type location_code: str</span>
+<span class="sd">        :param location_code: Location of the station, e.g. &quot;00&quot; or empty</span>
+<span class="sd">        :type locy: float</span>
+<span class="sd">        :param locy: Y coordinate</span>
+<span class="sd">        :type locx: float</span>
+<span class="sd">        :param locx: X coordinate</span>
+<span class="sd">        :type epsg: str</span>
+<span class="sd">        :param epsg: EPSG number for ``locx`` and ``locy`` coordinates</span>
+<span class="sd">        :type digitizer: str</span>
+<span class="sd">        :param digitizer: Model/name of the station&#39;s digitizer</span>
+<span class="sd">        :type sensor: str</span>
+<span class="sd">        :param sensor: Model/name of the station&#39;s sensor</span>
+<span class="sd">        :type starttime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :param starttime:</span>
+<span class="sd">        :type endtime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :param endtime:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_code</span> <span class="o">=</span> <span class="n">network_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_code</span> <span class="o">=</span> <span class="n">station_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">station_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location_code</span> <span class="o">=</span> \
+            <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">to</span><span class="o">.</span><span class="n">isStrNaN</span><span class="p">(</span><span class="n">location_code</span><span class="p">)</span> <span class="k">else</span> <span class="n">location_code</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">locy</span> <span class="o">=</span> <span class="n">locy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locx</span> <span class="o">=</span> <span class="n">locx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsg</span> <span class="o">=</span> <span class="n">epsg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span> <span class="o">=</span> <span class="n">digitizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor</span> <span class="o">=</span> <span class="n">sensor</span>
+
+        <span class="k">if</span> <span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">:</span>
+            <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span> <span class="o">=</span> <span class="n">endtime</span><span class="p">,</span> <span class="n">starttime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span> <span class="o">=</span> <span class="n">starttime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endtime</span> <span class="o">=</span> <span class="n">endtime</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Station.get_id"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.get_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: e.g. &quot;FN.MSF&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">get_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_code</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Station.covers_time"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.covers_time">[docs]</a>    <span class="k">def</span> <span class="nf">covers_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type t0: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :param t0:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: ``True`` if ``t0`` is between ``self.starttime`` and</span>
+<span class="sd">            ``self.endtime``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;=</span> <span class="n">t0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span></div>
+
+<div class="viewcode-block" id="Station.add_parameter"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.add_parameter">[docs]</a>    <span class="k">def</span> <span class="nf">add_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type parameter: :class:`~polyfemos.back.parameter.Parameter`</span>
+<span class="sd">        :param parameter:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Station.filter_parameters"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.filter_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">filter_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filters ``self.parameters`` according to given ``kwargs``.</span>
+<span class="sd">        The values of the kwargs should be list of values, or one value.</span>
+<span class="sd">        If given keyword argument is attribute of the</span>
+<span class="sd">        :class:`~polyfemos.back.parameter.Parameter` class,</span>
+<span class="sd">        and the given value(s)</span>
+<span class="sd">        are not equal to the the parameter, the parameter is excluded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span> \
+                    <span class="ow">or</span> <span class="nb">all</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">to</span><span class="o">.</span><span class="n">isStrNaN</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span> \
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> \
+                <span class="p">[</span><span class="n">par</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="k">if</span> <span class="n">par</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Station._add_to_header"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station._add_to_header">[docs]</a>    <span class="k">def</span> <span class="nf">_add_to_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any number of ``args`` can be provided, and are processed into a</span>
+<span class="sd">        string repsentation of a list. Each arg is converted into a string as</span>
+<span class="sd">        follows:</span>
+<span class="sd">        ``None`` -&gt; ``&quot;&quot;``, empty string</span>
+<span class="sd">        ``float(&#39;nan&#39;)`` -&gt; ``&quot;NaN&quot;``</span>
+<span class="sd">        ``&quot;&quot;`` -&gt; ``&quot;NaN&quot;``</span>
+<span class="sd">        ``stringvalue -&gt; &quot;stringvalue&quot;``</span>
+<span class="sd">        ``123 -&gt; &quot;123&quot;``</span>
+
+<span class="sd">        :type field: str</span>
+<span class="sd">        :param field:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">check_arg</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">to</span><span class="o">.</span><span class="n">isNaN</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">to</span><span class="o">.</span><span class="n">strNaN</span><span class="p">()</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">arg</span> <span class="k">if</span> <span class="n">arg</span> <span class="k">else</span> <span class="n">to</span><span class="o">.</span><span class="n">strNaN</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">check_arg</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Station.create_header"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.create_header">[docs]</a>    <span class="k">def</span> <span class="nf">create_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the soh text file header</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;HEADER&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;NETWORK&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;STATION&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;LOCATION&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;SENSOR&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;DIGITIZER&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;STARTTIME&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;ENDTIME&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">endtime</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;LOCY&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">locy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;LOCX&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">locx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;EPSG&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">par</span><span class="o">.</span><span class="n">generate_header</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_header</span><span class="p">(</span><span class="s2">&quot;DATA&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Station.get_header"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.get_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type force: bool, optional</span>
+<span class="sd">        :param force: defaults to ``False``, if ``True`` the header is</span>
+<span class="sd">            recreated even if it already exists</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: the header of the &#39;stf&#39; file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">force</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_header</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span></div>
+
+<div class="viewcode-block" id="Station._compare"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station._compare">[docs]</a>    <span class="k">def</span> <span class="nf">_compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compares starttimes of the stations ``self`` and ``other``.</span>
+<span class="sd">        If station ids do not match, always returns ``False``.</span>
+
+<span class="sd">        :type op: func</span>
+<span class="sd">        :param op: comparison operation, e.g. :func:`~operator.lt`</span>
+<span class="sd">        :type other: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">        :param other:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">!=</span> <span class="n">other</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Station.__lt__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.__lt__">[docs]</a>    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        see :meth:`~polyfemos.back.station.Station._compare` for more info</span>
+
+<span class="sd">        :type other: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">        :param other:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">lt</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Station.__gt__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.__gt__">[docs]</a>    <span class="k">def</span> <span class="nf">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        see :meth:`~polyfemos.back.station.Station._compare` for more info</span>
+
+<span class="sd">        :type other: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">        :param other:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">gt</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Station.__le__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.__le__">[docs]</a>    <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        see :meth:`~polyfemos.back.station.Station._compare` for more info</span>
+
+<span class="sd">        :type other: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">        :param other:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">le</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Station.__ge__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.__ge__">[docs]</a>    <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        see :meth:`~polyfemos.back.station.Station._compare` for more info</span>
+
+<span class="sd">        :type other: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">        :param other:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Station.__eq__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type other: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">        :param other:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: returns ``True`` if ids of ``self`` and ``other``</span>
+<span class="sd">            are identical</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">id</span></div>
+
+<div class="viewcode-block" id="Station.__ne__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.__ne__">[docs]</a>    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type other: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">        :param other:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: opposite of :meth:`~polyfemos.back.station.Station.__eq__`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span></div>
+
+<div class="viewcode-block" id="Station.__str__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: somekind of string to represent the station</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{:8}{:28}{:28}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">endtime</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Station.__len__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Station.html#polyfemos.back.station.Station.__len__">[docs]</a>    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :return: How many parameters the station has</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Stations"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Stations.html#polyfemos.back.station.Stations">[docs]</a><span class="k">class</span> <span class="nc">Stations</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for containing and handling multiple</span>
+<span class="sd">    :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">    instances</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Stations.__init__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Stations.html#polyfemos.back.station.Stations.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__stations</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__last_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Stations.add_station"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Stations.html#polyfemos.back.station.Stations.add_station">[docs]</a>    <span class="k">def</span> <span class="nf">add_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds ``station`` to ``self.__stations``.</span>
+<span class="sd">        If successsfully added, the id of the ``station`` is saved as</span>
+<span class="sd">        ``self.__last_id``. ``self.__last_id`` will always contain the is of</span>
+<span class="sd">        the last successfully added station.</span>
+
+<span class="sd">        :type station: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">        :param station:</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: ``True`` if ``station`` was successfully added to the</span>
+<span class="sd">            ``self.__stations``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">id_</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">if</span> <span class="n">id_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stations</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__stations</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Check if the given start or endtime are already present</span>
+            <span class="c1"># with the given id</span>
+            <span class="n">prod</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__stations</span><span class="p">[</span><span class="n">id_</span><span class="p">],</span>
+                <span class="p">[</span><span class="n">station</span><span class="o">.</span><span class="n">starttime</span><span class="p">,</span> <span class="n">station</span><span class="o">.</span><span class="n">endtime</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">covers_time</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">prod</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__stations</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__last_id</span> <span class="o">=</span> <span class="n">id_</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Stations.get_station"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Stations.html#polyfemos.back.station.Stations.get_station">[docs]</a>    <span class="k">def</span> <span class="nf">get_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">,</span> <span class="n">t0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type network_code: str</span>
+<span class="sd">        :param network_code:</span>
+<span class="sd">        :type station_code: str</span>
+<span class="sd">        :param station_code:</span>
+<span class="sd">        :type t0: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :param t0:</span>
+<span class="sd">        :rtype: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">        :return: returns station instances matching the given ``network_code``</span>
+<span class="sd">            and ``station_code``, and including ``t0`` within it&#39;s time</span>
+<span class="sd">            interval</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">id_</span> <span class="o">=</span> <span class="n">get_id</span><span class="p">(</span><span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">id_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">station</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stations</span><span class="p">[</span><span class="n">id_</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">station</span><span class="o">.</span><span class="n">covers_time</span><span class="p">(</span><span class="n">t0</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">station</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Stations.add_parameter"><a class="viewcode-back" href="../../../autogen/polyfemos.back.station.Stations.html#polyfemos.back.station.Stations.add_parameter">[docs]</a>    <span class="k">def</span> <span class="nf">add_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds ``parameter`` to the last station with id ``self.__last_id``</span>
+
+<span class="sd">        :type parameter: :class:`~polyfemos.back.parameter.Parameter`</span>
+<span class="sd">        :param parameter:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__stations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__last_id</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">station1</span> <span class="o">=</span> <span class="n">Station</span><span class="p">(</span>
+        <span class="n">station_code</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span>
+        <span class="n">starttime</span><span class="o">=</span><span class="n">Ordinal</span><span class="p">(</span><span class="mi">1970</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">endtime</span><span class="o">=</span><span class="n">Ordinal</span><span class="p">(</span><span class="mi">1975</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">station2</span> <span class="o">=</span> <span class="n">Station</span><span class="p">(</span>
+        <span class="n">station_code</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span>
+        <span class="n">starttime</span><span class="o">=</span><span class="n">Ordinal</span><span class="p">(</span><span class="mi">1975</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">endtime</span><span class="o">=</span><span class="n">Ordinal</span><span class="p">(</span><span class="mi">2001</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">station3</span> <span class="o">=</span> <span class="n">Station</span><span class="p">(</span>
+        <span class="n">station_code</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span>
+        <span class="n">starttime</span><span class="o">=</span><span class="n">Ordinal</span><span class="p">(</span><span class="mi">1970</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">endtime</span><span class="o">=</span><span class="n">Ordinal</span><span class="p">(</span><span class="mi">2001</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">stations</span> <span class="o">=</span> <span class="n">Stations</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">stations</span><span class="o">.</span><span class="n">add_station</span><span class="p">(</span><span class="n">station1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">stations</span><span class="o">.</span><span class="n">add_station</span><span class="p">(</span><span class="n">station2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">stations</span><span class="o">.</span><span class="n">add_station</span><span class="p">(</span><span class="n">station3</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">&lt;</span> <span class="n">station2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">&lt;=</span> <span class="n">station2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">&gt;</span> <span class="n">station2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">&gt;=</span> <span class="n">station2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">&lt;</span> <span class="n">station3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">&lt;=</span> <span class="n">station3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">&gt;</span> <span class="n">station3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">&gt;=</span> <span class="n">station3</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">==</span> <span class="n">station2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">==</span> <span class="n">station3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">!=</span> <span class="n">station2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station1</span> <span class="o">!=</span> <span class="n">station3</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

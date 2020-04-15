@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.scripts.test_front_paths &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.scripts.test_front_paths</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test polyfemos frontend paths</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">ArgumentParser</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">resources</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">fileutils</span>
+
+
+<span class="n">_funcs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">,</span>
+    <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="check_paths"><a class="viewcode-back" href="../../../autogen/polyfemos.scripts.test_front_paths.html#polyfemos.scripts.test_front_paths.check_paths">[docs]</a><span class="k">def</span> <span class="nf">check_paths</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">ford</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type paths: dict</span>
+<span class="sd">    :param paths: dictionary containing paths</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key:</span>
+<span class="sd">    :type priority: str</span>
+<span class="sd">    :param priority:</span>
+<span class="sd">    :type ford: str</span>
+<span class="sd">    :param ford: &quot;file&quot; or &quot;dir&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warning</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">_funcs</span><span class="p">[</span><span class="n">ford</span><span class="p">]</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">key</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; - No path &#39;</span><span class="si">{}</span><span class="s2">&#39; defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">warning</span> <span class="o">|=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">staticfilepath</span><span class="p">(</span><span class="n">paths</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; - </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ford</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">func</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; exists.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; does not exist.&quot;</span>
+        <span class="n">warning</span> <span class="o">|=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">warning</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; - Warning, priority: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">priority</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<span class="n">_global_paths</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;working_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;nginx_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;env_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;service_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;passwd_file&quot;</span><span class="p">,</span> <span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;webusagelog_file&quot;</span><span class="p">,</span> <span class="s2">&quot;MED&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;nginx_log_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;MED&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;uwsgi_log_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;MED&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;ttf_file&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;doc_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+<span class="p">]</span>
+<span class="n">_network_paths</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># paths</span>
+    <span class="p">[</span><span class="s2">&quot;dci_file&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;map_file&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">],</span>
+    <span class="c1"># filepathformats</span>
+    <span class="p">[</span><span class="s2">&quot;stf&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;alert&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;rawdata&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+<span class="p">]</span>
+<span class="n">_network_fpfs</span> <span class="o">=</span> <span class="p">[</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../autogen/polyfemos.scripts.test_front_paths.html#polyfemos.scripts.test_front_paths.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursively checks folders for YAML files for defined paths.</span>
+
+<span class="sd">    :type argv: list</span>
+<span class="sd">    :param argv: command line arguments</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="s1">&#39;polyfemos-tfp&#39;</span><span class="p">,</span>
+                            <span class="n">description</span><span class="o">=</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;YAML file or directory containing YAML files.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-w&#39;</span><span class="p">,</span> <span class="s1">&#39;--wanted&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Specific path to be requested from YAML files.&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">path</span>
+    <span class="n">wanted_path</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">wanted</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The given file/directory does not exist.&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.yml&quot;</span><span class="p">,</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">)):</span>
+        <span class="n">fns</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.yml&quot;</span><span class="p">,</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">)):</span>
+                    <span class="n">fns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">fns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wanted_path</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fn</span><span class="p">))</span>
+        <span class="n">yamlfile</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">load_yaml</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">yamlfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">_paths</span> <span class="o">=</span> <span class="n">_global_paths</span>
+        <span class="k">if</span> <span class="s2">&quot;networks&quot;</span> <span class="ow">in</span> <span class="n">fn</span><span class="p">:</span>
+            <span class="n">_paths</span> <span class="o">=</span> <span class="n">_network_paths</span>
+        <span class="n">dict_</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="s2">&quot;paths&quot;</span> <span class="ow">in</span> <span class="n">yamlfile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">wanted_path</span> <span class="ow">in</span> <span class="n">yamlfile</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">to</span><span class="o">.</span><span class="n">staticfilepath</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="n">wanted_path</span><span class="p">]))</span>
+                <span class="k">return</span>
+            <span class="k">elif</span> <span class="n">wanted_path</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">dict_</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;filepathformats&quot;</span> <span class="ow">in</span> <span class="n">yamlfile</span><span class="p">:</span>
+            <span class="n">fpfs</span> <span class="o">=</span> <span class="n">yamlfile</span><span class="p">[</span><span class="s2">&quot;filepathformats&quot;</span><span class="p">]</span>
+            <span class="n">func_</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">resources</span><span class="o">.</span><span class="n">SYMBOLS</span><span class="p">[</span><span class="s2">&quot;RESVAR&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">fpfs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">func_</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fpfs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">dict_</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fpfs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">_paths</span><span class="p">:</span>
+            <span class="n">check_paths</span><span class="p">(</span><span class="n">dict_</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

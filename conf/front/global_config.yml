@@ -1,0 +1,42 @@
+
+
+# You may generate the secret key using 'polyfemos-secret_key' command
+secret_key: "ChangeThisImmediately!"
+
+
+network_codes:
+  - FN
+
+
+users:
+  admin:
+    access_level: 1
+    allowed_networks: ["FN"]
+  user1:
+    access_level: 2
+    allowed_networks: ["FN"]
+  user2:
+    access_level: 3
+    allowed_networks: ["FN"]
+
+
+# ??? should be set to the location of the setup.sh script.
+# If the polyfemos host user does not have sudo privileges
+# Do not use '~' for home folder while defining global paths,
+# instead write the absolute path '/home/user/...'.
+paths:
+  server_ip: "123.123.123.45"
+  server_name: "polyfemos.someserver.com"
+  url: "http://polyfemos.someserver.com"
+  user: "sysop"
+  group: "www-data"
+  working_dir: "???/polyfemos" # location of the setup.sh script
+  nginx_dir: "/etc/nginx" # nginx folder
+  env_dir: "???/.conda/envs/polyfemos_env" # directory of conda environment
+  service_dir: "/etc/systemd/system" # folder for system services
+  passwd_file: "/etc/nginx/.htpasswd" # location for htpasswd file
+  webusagelog_file: "???/polyfemos/logs/front/webusage.log"
+  nginx_log_dir: "???/polyfemos/logs/front"
+  uwsgi_log_dir: "???/polyfemos/logs/front"
+  ttf_file: "/usr/share/fonts/truetype/msttcorefonts/Courier_New.ttf"
+  doc_dir: "???/polyfemos/documentation" # path to polyfemos documentation build folder

@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Setup &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Backend" href="polyfemos_readme_2_backend.html" />
+    <link rel="prev" title="General Notes" href="polyfemos_readme_0_general.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="setup">
+<h1>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h1>
+<p>This is a short tutorial describing the steps to install Polyfemos.
+SUDO privileges are needed.
+User ‘sysop’ will refer to the user (not sudo) hosting the polyfemos.
+User ‘admin’ will refer to the user with sudo privileges.</p>
+<div class="section" id="i-general">
+<h2>I General<a class="headerlink" href="#i-general" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Install ‘Anaconda’ (e.g. Anaconda3) and PIP if you haven’t already.</p></li>
+<li><p>Extract the compressed file in which everything is contained.
+Suggested location is your home folder, so that the end result is as
+follows: ‘/home/sysop/polyfemos’</p></li>
+<li><p>If wanted, move ‘data_out’ and ‘logs’ folders their preferred
+locations, or create additional folders (named for example
+‘polyfemos_logs’ and ‘polyfemos_data_out’) somewhere in your computer.</p></li>
+<li><p>Go to folder ‘/home/sysop/polyfemos’</p></li>
+<li><p>Run ‘setup1.sh’ script to install all necessary packages.
+The user you are currently logged in as, will became the host of polyfemos.
+The script assumes you have anaconda installed. No need for sudo privileges.</p></li>
+</ol>
+</div>
+<div class="section" id="ii-backend">
+<h2>II Backend<a class="headerlink" href="#ii-backend" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Check all ‘*.conf’ files and wrapper scripts in ‘conf/back’ folder</p>
+<ul class="simple">
+<li><p>All settings of the backend are defined in ‘*.conf’ files.
+By default there are three ‘*.conf’ files: ‘driving_instructions.conf’,
+‘folders.conf’ and ‘stations.conf’. For more about ‘*.conf’ files
+in chapter <a class="reference internal" href="polyfemos_readme_2_backend.html#configurationfiles"><span class="std std-ref">Configuration Files</span></a>.</p></li>
+<li><p>The program is advised to be called using bash wrapper file.
+The default file is ‘wrapper.sh’</p></li>
+</ul>
+</li>
+<li><p>Setup crontab. An example line running the backend script every minute:</p>
+<p><code class="docutils literal notranslate"><span class="pre">*</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">/home/sysop/polyfemos/conf/back/FN/wrapper.sh</span> <span class="pre">&gt;/dev/null</span> <span class="pre">2&gt;&amp;1</span></code></p>
+</li>
+</ol>
+</div>
+<div class="section" id="iii-fontend">
+<h2>III Fontend<a class="headerlink" href="#iii-fontend" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>If your user does not have sudo privileges, change your user to user with
+sudo privileges. Make sure you are in folder ‘/home/sysop/polyfemos’.
+(Note that the home folder is the home of the host of polyfemos, not
+admin’s, if the users differ that is.</p></li>
+<li><p>Check that filepaths in file ‘conf/front/global_config.yml’ exists.
+Most importantly fields ‘nginx_dir’, ‘env_dir’, and ‘service_dir’ should
+have correct file paths at this point.
+The field ‘passwd_file’ will be the used password file and
+if it doesn’t exist it will be created during the setup.</p></li>
+<li><p>Run script ‘setup2.sh’, some commands in the script ask for sudo
+privileges.</p></li>
+</ol>
+</div>
+<div class="section" id="uninstall">
+<h2>Uninstall<a class="headerlink" href="#uninstall" title="Permalink to this headline">¶</a></h2>
+<p>Polyfemos comes with additional uninstall script ‘uninstall.sh’, which may be
+used to uninstall nginx, apache2-utils and to remove polyfemos_env conda
+environment and it’s unused dependencies. Additionally, the uninstall script
+removes files created during setup, but leaves the folder
+‘/home/sysop/polyfemos’ otherwise untouched. In addition, the script doesn’t
+remove output data files or log files.</p>
+<p>If you used setup scripts ‘setup1.sh’ and ‘setup2.sh’ for installing
+polyfemos, additional information about the setup is found in files:
+‘polyfemos_installed_files.txt’ and ‘polyfemos_setup_log.txt’.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#i-general">I General</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ii-backend">II Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iii-fontend">III Fontend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uninstall">Uninstall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="documentation_index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="polyfemos_readme_0_general.html" title="previous chapter">General Notes</a></li>
+      <li>Next: <a href="polyfemos_readme_2_backend.html" title="next chapter">Backend</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/polyfemos_readme_1_setup.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

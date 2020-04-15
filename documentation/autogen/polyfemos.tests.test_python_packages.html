@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.tests.test_python_packages &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.util.coordinator" href="polyfemos.util.coordinator.html" />
+    <link rel="prev" title="polyfemos.scripts.sohemailer" href="polyfemos.scripts.sohemailer.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-polyfemos.tests.test_python_packages">
+<span id="polyfemos-tests-test-python-packages"></span><h1>polyfemos.tests.test_python_packages<a class="headerlink" href="#module-polyfemos.tests.test_python_packages" title="Permalink to this headline">¶</a></h1>
+<p>Checks if all packages required by polyfemos are installed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2019, University of Oulu, Sodankyla Geophysical Observatory</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GNU Lesser General Public License v3.0 or later
+(<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">https://spdx.org/licenses/LGPL-3.0-or-later.html</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Public Functions</p>
+<dl class="function">
+<dt id="polyfemos.tests.test_python_packages.main">
+<code class="sig-prename descclassname">polyfemos.tests.test_python_packages.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/tests/test_python_packages.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.tests.test_python_packages.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if all packages required by polyfemos are installed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.tests.test_python_packages.package_version">
+<code class="sig-prename descclassname">polyfemos.tests.test_python_packages.</code><code class="sig-name descname">package_version</code><span class="sig-paren">(</span><em class="sig-param">pkg</em>, <em class="sig-param">required</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/tests/test_python_packages.html#package_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.tests.test_python_packages.package_version" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pkg</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – package name</p></li>
+<li><p><strong>required</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – version which works with polyfemos</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>package name, installed version, required version</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.tests.test_python_packages.print_line">
+<code class="sig-prename descclassname">polyfemos.tests.test_python_packages.</code><code class="sig-name descname">print_line</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/tests/test_python_packages.html#print_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.tests.test_python_packages.print_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints given <code class="docutils literal notranslate"><span class="pre">args</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.tests.test_python_packages.python_version">
+<code class="sig-prename descclassname">polyfemos.tests.test_python_packages.</code><code class="sig-name descname">python_version</code><span class="sig-paren">(</span><em class="sig-param">pkg</em>, <em class="sig-param">required</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/tests/test_python_packages.html#python_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.tests.test_python_packages.python_version" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pkg</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – python name</p></li>
+<li><p><strong>required</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – python version which works with polyfemos</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>python name, installed python version, required python version</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.tests.test_python_packages.uwsgi_version">
+<code class="sig-prename descclassname">polyfemos.tests.test_python_packages.</code><code class="sig-name descname">uwsgi_version</code><span class="sig-paren">(</span><em class="sig-param">pkg</em>, <em class="sig-param">required</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/tests/test_python_packages.html#uwsgi_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.tests.test_python_packages.uwsgi_version" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pkg</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – uwsgi name</p></li>
+<li><p><strong>required</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – uwsgi version which works with polyfemos</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>uwsgi name, installed uwsgi version, required uwsgi version</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../front.html">Frontend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.ordinal.html">polyfemos.almanac.ordinal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.timer.html">polyfemos.almanac.timer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.utils.html">polyfemos.almanac.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.outlierremover.html">polyfemos.data.outlierremover</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.statistics.html">polyfemos.data.statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.utils.html">polyfemos.data.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.filepathparser.html">polyfemos.parser.filepathparser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.functionparser.html">polyfemos.parser.functionparser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.resources.html">polyfemos.parser.resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.typeoperator.html">polyfemos.parser.typeoperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.check_output_files.html">polyfemos.scripts.check_output_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.devserver.html">polyfemos.scripts.devserver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.render_web_templates.html">polyfemos.scripts.render_web_templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.test_front_paths.html">polyfemos.scripts.test_front_paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.sohemailer.html">polyfemos.scripts.sohemailer</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">polyfemos.tests.test_python_packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.coordinator.html">polyfemos.util.coordinator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.fileutils.html">polyfemos.util.fileutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.messenger.html">polyfemos.util.messenger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.randomizer.html">polyfemos.util.randomizer</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../other.html">Scripts, tests and other modules</a><ul>
+      <li>Previous: <a href="polyfemos.scripts.sohemailer.html" title="previous chapter">polyfemos.scripts.sohemailer</a></li>
+      <li>Next: <a href="polyfemos.util.coordinator.html" title="next chapter">polyfemos.util.coordinator</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.tests.test_python_packages.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.almanac.ordinal &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.almanac.ordinal</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains :class:`~polyfemos.almanac.ordinal.Ordinal` class</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">obspy</span> <span class="k">import</span> <span class="n">UTCDateTime</span>
+
+
+<div class="viewcode-block" id="Ordinal"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal">[docs]</a><span class="k">class</span> <span class="nc">Ordinal</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for treating dates as years and days of the year, with a</span>
+<span class="sd">    precicion of 1 day.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Ordinal.__init__"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If no arguments are given, returns the current date, at 12am UTC</span>
+
+<span class="sd">        see :class:`~obspy.core.utcdatetime.UTCDateTime` for more information</span>
+<span class="sd">        about the ``args`` and ``kwargs``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utcdt</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">):</span>
+                <span class="n">utcdt</span> <span class="o">=</span> <span class="n">arg</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">utcdt</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">utcdt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">utcdt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">julday</span><span class="o">=</span><span class="n">utcdt</span><span class="o">.</span><span class="n">julday</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ordinal.shiftdays"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.shiftdays">[docs]</a>    <span class="k">def</span> <span class="nf">shiftdays</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        see :meth:`~polyfemos.almanac.ordinal.Ordinal.__iadd__`</span>
+
+<span class="sd">        :type a: int</span>
+<span class="sd">        :param a:</span>
+<span class="sd">        :rtype: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__iadd__</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ordinal.__iadd__"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.__iadd__">[docs]</a>    <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds ``a`` days to the current date</span>
+
+<span class="sd">        :type a: int</span>
+<span class="sd">        :param a:</span>
+<span class="sd">        :rtype: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Ordinal</span><span class="p">(</span><span class="bp">self</span> <span class="o">+</span> <span class="mf">86400.</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ordinal.__isub__"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.__isub__">[docs]</a>    <span class="k">def</span> <span class="nf">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Substracts ``a`` days from the current date</span>
+
+<span class="sd">        :type a: int</span>
+<span class="sd">        :param a:</span>
+<span class="sd">        :rtype: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__iadd__</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ordinal.__format__"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.__format__">[docs]</a>    <span class="k">def</span> <span class="nf">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a possibility to use python&#39;s format function</span>
+
+<span class="sd">        &gt;&gt;&gt; &quot;{}&quot;.format(Ordinal)</span>
+
+<span class="sd">        :type a:</span>
+<span class="sd">        :param a:</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ordinal.today"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.today">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">today</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A static method</span>
+
+<span class="sd">        :rtype: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :return: A current date at 12am UTC</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Ordinal</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Ordinal.range"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.range">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A static method</span>
+
+<span class="sd">        Alternatively, ``starttime`` and ``endtime`` can be given as datatypes</span>
+<span class="sd">        accepted by :class:`~obspy.core.utcdatetime.UTCDateTime` constructor.</span>
+
+<span class="sd">        :type starttime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :param starttime:</span>
+<span class="sd">        :type endtime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :param endtime:</span>
+<span class="sd">        :type step: int, optional</span>
+<span class="sd">        :param step: defaults to 1, the step size of the date sequence</span>
+<span class="sd">            in days.</span>
+<span class="sd">        :rtype: generator</span>
+<span class="sd">        :return: A generator yielding</span>
+<span class="sd">            :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">            dates between ``starttime`` and ``endtime``, including both.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time_</span> <span class="o">=</span> <span class="n">Ordinal</span><span class="p">(</span><span class="n">starttime</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">time_</span> <span class="o">&lt;=</span> <span class="n">endtime</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">time_</span>
+            <span class="n">time_</span> <span class="o">+=</span> <span class="n">step</span></div>
+
+<div class="viewcode-block" id="Ordinal.till"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.till">[docs]</a>    <span class="k">def</span> <span class="nf">till</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endtime</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See :meth:`~polyfemos.almanac.ordinal.Ordinal.range` for more info.</span>
+
+<span class="sd">        :type endtime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">        :param endtime:</span>
+<span class="sd">        :type step: int, optional</span>
+<span class="sd">        :param step: defaults to 1, the step size of the date sequence</span>
+<span class="sd">            in days.</span>
+<span class="sd">        :rtype: generator</span>
+<span class="sd">        :return: A generator yielding</span>
+<span class="sd">            :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">            dates between ``self`` and ``endtime``, including both.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Ordinal</span><span class="p">()</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endtime</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ordinal.getstr"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.getstr">[docs]</a>    <span class="k">def</span> <span class="nf">getstr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type sep: str, optional</span>
+<span class="sd">        :param sep: defaults to hyphen</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: A string representation of the date, year and the day of the</span>
+<span class="sd">            year, separated with ``sep``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">format_</span> <span class="o">=</span> <span class="s2">&quot;%Y</span><span class="si">{}</span><span class="s2">%j&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format_</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ordinal.utcdatetime"><a class="viewcode-back" href="../../../autogen/polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal.utcdatetime">[docs]</a>    <span class="k">def</span> <span class="nf">utcdatetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        :return: returns the current</span>
+<span class="sd">            :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">            instance as :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Pretty advanced way to turn Ordinal into obspy UTCDateTime</span>
+        <span class="c1"># Don&#39;t you think. This method calls UTCDateTime.__add__ method</span>
+        <span class="c1"># in order to do the conversion.</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">+</span> <span class="mi">0</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">([</span><span class="n">Ordinal</span><span class="p">()],</span> <span class="nb">type</span><span class="p">([</span><span class="n">Ordinal</span><span class="p">()][</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">Ordinal</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">Ordinal</span><span class="p">()</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+    <span class="n">ordinal</span> <span class="o">=</span> <span class="n">Ordinal</span><span class="p">(</span><span class="s2">&quot;2018-001&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">ordinal</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ordinal</span><span class="o">.</span><span class="n">getstr</span><span class="p">(),</span> <span class="n">ordinal</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">ordinal</span><span class="o">.</span><span class="n">julday</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">ordinal</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ordinal</span><span class="o">.</span><span class="n">getstr</span><span class="p">(</span><span class="n">sep</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">ordinal</span><span class="p">))</span>
+
+    <span class="n">today</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">Ordinal</span><span class="p">(</span><span class="n">today</span><span class="p">))</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

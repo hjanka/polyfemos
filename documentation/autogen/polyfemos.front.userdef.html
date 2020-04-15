@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.userdef &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Scripts, tests and other modules" href="../other.html" />
+    <link rel="prev" title="polyfemos.front.trafficmonitor.IPStorage" href="polyfemos.front.trafficmonitor.IPStorage.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-polyfemos.front.userdef">
+<span id="polyfemos-front-userdef"></span><h1>polyfemos.front.userdef<a class="headerlink" href="#module-polyfemos.front.userdef" title="Permalink to this headline">¶</a></h1>
+<p>Provides config values from YAML files</p>
+<p>See more info in <a class="reference internal" href="../polyfemos_readme_3_frontend.html#frontendconfiguration"><span class="std std-ref">Configuration</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2019, University of Oulu, Sodankyla Geophysical Observatory</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GNU Lesser General Public License v3.0 or later
+(<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">https://spdx.org/licenses/LGPL-3.0-or-later.html</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Public Functions</p>
+<dl class="function">
+<dt id="polyfemos.front.userdef.channel_codes">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">channel_codes</code><span class="sig-paren">(</span><em class="sig-param">config_value=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#channel_codes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.channel_codes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – <code class="docutils literal notranslate"><span class="pre">channel_codes</span></code> from yaml files</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of all data channels available in polyfemos web across
+all the stations in the selected network</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.check_network_code">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">check_network_code</code><span class="sig-paren">(</span><em class="sig-param">func_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#check_network_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.check_network_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorated functions check for currently selected network code.
+The name of the decorated function is used to extract the configuration
+value from the networks configuration yaml file. If the value
+is present in the configuration file it is passed to the <code class="docutils literal notranslate"><span class="pre">func_</span></code>
+as <code class="docutils literal notranslate"><span class="pre">config_value</span></code> keyword argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func_</strong> (<em>func</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a decorated function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.datacoveragebrowser_func">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">datacoveragebrowser_func</code><span class="sig-paren">(</span><em class="sig-param">config_value=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#datacoveragebrowser_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.datacoveragebrowser_func" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <code class="docutils literal notranslate"><span class="pre">datacoveragebrowser_func</span></code> value from
+yaml files</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>see <a class="reference internal" href="#polyfemos.front.userdef.get_datacoveragebrowser_func" title="polyfemos.front.userdef.get_datacoveragebrowser_func"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_datacoveragebrowser_func()</span></code></a>
+for more info.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.definitions">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">definitions</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">config_value={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#definitions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.definitions" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – internal name for definition, e.g. ‘datarealtimeness’</p></li>
+<li><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – a dictionary from yaml files mapping
+the internal names in to their user defined values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>user defined value corresponding the internal name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.filepathformats">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">filepathformats</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">config_value={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#filepathformats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.filepathformats" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The desired filepathformat from the
+<code class="docutils literal notranslate"><span class="pre">filepathformats</span></code> dictionary</p></li>
+<li><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <code class="docutils literal notranslate"><span class="pre">filepathformats</span></code> dictionary from yaml files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.get_datacoveragebrowser_func">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">get_datacoveragebrowser_func</code><span class="sig-paren">(</span><em class="sig-param">function=''</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#get_datacoveragebrowser_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.get_datacoveragebrowser_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Available functions:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>seismic_scanner,</dt><dd><p><a class="reference internal" href="polyfemos.back.seismic.scanner.html#polyfemos.back.seismic.scanner.get_data_coverage_figure" title="polyfemos.back.seismic.scanner.get_data_coverage_figure"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data_coverage_figure()</span></code></a></p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>data coverage scanner function.
+If an invalid <code class="docutils literal notranslate"><span class="pre">function</span></code> is given, returns <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.get_network_code">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">get_network_code</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#get_network_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.get_network_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches the code of the currently selected network from cookies.
+If none is selected returns the default network code, which is the
+first entry in the <code class="docutils literal notranslate"><span class="pre">network_codes</span></code> list in <code class="docutils literal notranslate"><span class="pre">global_config.yml</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>network code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.get_outlierremfunc">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">get_outlierremfunc</code><span class="sig-paren">(</span><em class="sig-param">function=''</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#get_outlierremfunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.get_outlierremfunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Available functions:</p>
+<ul class="simple">
+<li><p>lipschitz, <a class="reference internal" href="polyfemos.data.outlierremover.html#polyfemos.data.outlierremover.lipschitz" title="polyfemos.data.outlierremover.lipschitz"><code class="xref py py-func docutils literal notranslate"><span class="pre">lipschitz()</span></code></a></p></li>
+<li><p>stalta, <a class="reference internal" href="polyfemos.data.outlierremover.html#polyfemos.data.outlierremover.stalta" title="polyfemos.data.outlierremover.stalta"><code class="xref py py-func docutils literal notranslate"><span class="pre">stalta()</span></code></a></p></li>
+<li><p>dtr, <a class="reference internal" href="polyfemos.data.outlierremover.html#polyfemos.data.outlierremover.dtr" title="polyfemos.data.outlierremover.dtr"><code class="xref py py-func docutils literal notranslate"><span class="pre">dtr()</span></code></a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>outlier removal function with additional <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>
+applied to it.
+If an invalid <code class="docutils literal notranslate"><span class="pre">function</span></code> is given, returns <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.network_codes">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">network_codes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#network_codes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.network_codes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">network_codes</span></code> list from global config yaml file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.paths">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">paths</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">config_value={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.paths" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The desired filepath from the <code class="docutils literal notranslate"><span class="pre">paths</span></code> dictionary</p></li>
+<li><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <code class="docutils literal notranslate"><span class="pre">paths</span></code> dictionary from yaml files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.secret_key">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">secret_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#secret_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.secret_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="docutils literal notranslate"><span class="pre">secret_key</span></code> entry is read from the global configuration yaml file.
+If no secret key is given in the configuration file or the default
+entry is unchanged, a different random secret key is used
+when polyfemos web is reloaded.</p>
+<p>See <a class="reference internal" href="polyfemos.util.randomizer.html#polyfemos.util.randomizer.generate_secret_key" title="polyfemos.util.randomizer.generate_secret_key"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_secret_key()</span></code></a>
+for more info.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>secret key</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.sohpars">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">sohpars</code><span class="sig-paren">(</span><em class="sig-param">visibilities={1</em>, <em class="sig-param">2}</em>, <em class="sig-param">config_value=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#sohpars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.sohpars" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>visibilities</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#set" title="(in Python v3.7)"><em>set</em></a>) – returned sohpars are selected based on given
+visibilities</p></li>
+<li><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of state of health parameter
+dictionaries from yaml files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of state of health parameter names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.station_ids">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">station_ids</code><span class="sig-paren">(</span><em class="sig-param">config_value=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#station_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.station_ids" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – <code class="docutils literal notranslate"><span class="pre">station_ids</span></code> from yaml files</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of station ids (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;FN.MSF&quot;</span></code>) visible in polyfemos web</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.summary_outlierremfunc_info">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">summary_outlierremfunc_info</code><span class="sig-paren">(</span><em class="sig-param">config_value=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#summary_outlierremfunc_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.summary_outlierremfunc_info" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>For summary table page, information about used
+advanced outlier removal options</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.summary_outlierremfuncs">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">summary_outlierremfuncs</code><span class="sig-paren">(</span><em class="sig-param">station_id=''</em>, <em class="sig-param">sohpar_name=''</em>, <em class="sig-param">config_value={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#summary_outlierremfuncs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.summary_outlierremfuncs" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>station_id</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – id of the station, e.g. “FN.MSF”</p></li>
+<li><p><strong>sohpar_name</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of the state of health parameter</p></li>
+<li><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the <code class="docutils literal notranslate"><span class="pre">summary_outlierremfuncs</span></code> dictionary
+from yaml files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>outlier removal function corresponding <code class="docutils literal notranslate"><span class="pre">station_id</span></code> and
+<code class="docutils literal notranslate"><span class="pre">sohpar_name</span></code> pair. User may define different outlier removal
+functions with different <code class="docutils literal notranslate"><span class="pre">station_id</span></code> and <code class="docutils literal notranslate"><span class="pre">sohpar_name</span></code>
+combinations. The key in the dict should be
+<code class="docutils literal notranslate"><span class="pre">station_id:sohpar_name</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">FN.RANF:Vault_temperature</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.ticklabels">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">ticklabels</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">config_value={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#ticklabels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.ticklabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>If some state of health parameters require specific
+Y axis labeling, the custom tick labels are defined here.</p>
+<p>keys of the ‘tl’ dictionary are names of the soh parameters.
+Values are JavaScript code blocks which define the tick labels.
+Word ‘tick’ in JS code will be interpreted as tick variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the soh parameter</p></li>
+<li><p><strong>config_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <code class="docutils literal notranslate"><span class="pre">ticklabels</span></code> dictionary from yaml files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>JavaScript code mapping the integer data values into
+string values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.transform_func">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">transform_func</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#transform_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.transform_func" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – internal sensor code</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>UWV to NEZ transform function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.userdef.users">
+<code class="sig-prename descclassname">polyfemos.front.userdef.</code><code class="sig-name descname">users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/userdef.html#users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.userdef.users" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">users</span></code> dictionary from global config yaml file</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../front.html">Frontend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.alertreader.html">polyfemos.front.alertreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.colors.html">polyfemos.front.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.flask_config.html">polyfemos.front.flask_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.forms.html">polyfemos.front.forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.main.html">polyfemos.front.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.request.html">polyfemos.front.request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.datacontainer.html">polyfemos.front.sohplot.datacontainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.offsets.html">polyfemos.front.sohplot.offsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.outfilefields.html">polyfemos.front.sohplot.outfilefields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.sohplot.html">polyfemos.front.sohplot.sohplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.trafficmonitor.html">polyfemos.front.trafficmonitor</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">polyfemos.front.userdef</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../front.html">Frontend modules</a><ul>
+      <li>Previous: <a href="polyfemos.front.trafficmonitor.IPStorage.html" title="previous chapter">polyfemos.front.trafficmonitor.IPStorage</a></li>
+      <li>Next: <a href="../other.html" title="next chapter">Scripts, tests and other modules</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.front.userdef.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

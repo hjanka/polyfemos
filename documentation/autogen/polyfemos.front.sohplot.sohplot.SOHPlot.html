@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.sohplot.sohplot.SOHPlot &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.front.trafficmonitor" href="polyfemos.front.trafficmonitor.html" />
+    <link rel="prev" title="polyfemos.front.sohplot.sohplot" href="polyfemos.front.sohplot.sohplot.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="polyfemos-front-sohplot-sohplot-sohplot">
+<h1>polyfemos.front.sohplot.sohplot.SOHPlot<a class="headerlink" href="#polyfemos-front-sohplot-sohplot-sohplot" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot">
+<em class="property">class </em><code class="sig-prename descclassname">polyfemos.front.sohplot.sohplot.</code><code class="sig-name descname">SOHPlot</code><span class="sig-paren">(</span><em class="sig-param">station_id=''</em>, <em class="sig-param">sohpar_name=''</em>, <em class="sig-param">startdate=''</em>, <em class="sig-param">enddate=''</em>, <em class="sig-param">headerdate=''</em>, <em class="sig-param">outlierremfunc=None</em>, <em class="sig-param">remove_identicals=False</em>, <em class="sig-param">remove_irrationals=False</em>, <em class="sig-param">advanced_outlier_removal=False</em>, <em class="sig-param">fext='stf'</em>, <em class="sig-param">track_datalen=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class for parsing and plotting the state of health data of given
+station and sohpar combination.</p>
+<p>Reads soh text files (the format is fixed).
+Plots the data from startdate to enddate.
+Creates statistical summary of the data.
+Removal of irrational values and advanced outlier removal possible.</p>
+<p class="rubric">Public Methods</p>
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">station_id=''</em>, <em class="sig-param">sohpar_name=''</em>, <em class="sig-param">startdate=''</em>, <em class="sig-param">enddate=''</em>, <em class="sig-param">headerdate=''</em>, <em class="sig-param">outlierremfunc=None</em>, <em class="sig-param">remove_identicals=False</em>, <em class="sig-param">remove_irrationals=False</em>, <em class="sig-param">advanced_outlier_removal=False</em>, <em class="sig-param">fext='stf'</em>, <em class="sig-param">track_datalen=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>On initialization of SOHPlot, the data and header information are
+collected from the sohtextfiles. Optionally, irrational and
+outlying values are removed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">startdate</span></code>, <code class="docutils literal notranslate"><span class="pre">enddate</span></code> and <code class="docutils literal notranslate"><span class="pre">headerdate</span></code> are parsed into
+python <a class="reference external" href="https://docs.python.org/3.7/library/datetime.html#datetime.date" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">date</span></code></a> instances using
+<a class="reference internal" href="polyfemos.almanac.utils.html#polyfemos.almanac.utils.parse_date" title="polyfemos.almanac.utils.parse_date"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_date()</span></code></a> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>station_id</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Station id in format <code class="docutils literal notranslate"><span class="pre">NETWORK.STATION</span></code>,
+for example: <code class="docutils literal notranslate"><span class="pre">FN.MSF</span></code></p></li>
+<li><p><strong>sohpar_name</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – State of health parameter available in sohtextfile.</p></li>
+<li><p><strong>startdate</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The first date of the plotting timespan</p></li>
+<li><p><strong>enddate</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The last date of the plotting timespan</p></li>
+<li><p><strong>headerdate</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The header information of this date’s sohtextfile
+is used.</p></li>
+<li><p><strong>outlierremfunc</strong> (<em>func</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>. If no value is given,
+<code class="docutils literal notranslate"><span class="pre">outlierremfunc</span></code> for advanced outlier removal is retrieved
+using <a class="reference internal" href="polyfemos.front.userdef.html#polyfemos.front.userdef.summary_outlierremfuncs" title="polyfemos.front.userdef.summary_outlierremfuncs"><code class="xref py py-func docutils literal notranslate"><span class="pre">summary_outlierremfuncs()</span></code></a>.
+For more info see
+<a class="reference internal" href="polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.outlier_removal" title="polyfemos.front.sohplot.datacontainer.DataContainer.outlier_removal"><code class="xref py py-meth docutils literal notranslate"><span class="pre">outlier_removal()</span></code></a>.</p></li>
+<li><p><strong>remove_identicals</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+values with identical x and y values are removed.
+see <a class="reference internal" href="polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer" title="polyfemos.front.sohplot.datacontainer.DataContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataContainer</span></code></a>
+for more info</p></li>
+<li><p><strong>remove_irrationals</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>, see
+<a class="reference internal" href="polyfemos.front.sohplot.datacontainer.DataContainer.html#polyfemos.front.sohplot.datacontainer.DataContainer.remove_irrationals" title="polyfemos.front.sohplot.datacontainer.DataContainer.remove_irrationals"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove_irrationals()</span></code></a>
+for more info.</p></li>
+<li><p><strong>advanced_outlier_removal</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><strong>fext</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – defaults to “stf”, select “stf” or “csv”,
+defines the datafile format which is read</p></li>
+<li><p><strong>track_datalen</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>, If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the amount
+of datapoints, nans, etc., is monitored.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot.get_info">
+<code class="sig-name descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot.get_info" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list containing info notes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot.get_plot_components">
+<code class="sig-name descname">get_plot_components</code><span class="sig-paren">(</span><em class="sig-param">decimate=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot.get_plot_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot.get_plot_components" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>decimate</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+see <a class="reference internal" href="#polyfemos.front.sohplot.sohplot.SOHPlot._get_plot" title="polyfemos.front.sohplot.sohplot.SOHPlot._get_plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">_get_plot()</span></code></a></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>script and div html blocks, see
+<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/embed.html#bokeh.embed.components" title="(in Bokeh v1.4.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">components()</span></code></a> for more information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot.get_statistics_dict">
+<code class="sig-name descname">get_statistics_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot.get_statistics_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot.get_statistics_dict" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>see <a class="reference internal" href="polyfemos.data.statistics.html#polyfemos.data.statistics.get_statistics_dict" title="polyfemos.data.statistics.get_statistics_dict"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_statistics_dict()</span></code></a>
+for more info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot.get_statistics_table">
+<code class="sig-name descname">get_statistics_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot.get_statistics_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot.get_statistics_table" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>see <a class="reference internal" href="polyfemos.data.statistics.html#polyfemos.data.statistics.get_statistics_table" title="polyfemos.data.statistics.get_statistics_table"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_statistics_table()</span></code></a>
+for more info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Private Methods</p>
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot._get_csv_filepath">
+<code class="sig-name descname">_get_csv_filepath</code><span class="sig-paren">(</span><em class="sig-param">date</em>, <em class="sig-param">extension='.csv'</em>, <em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot._get_csv_filepath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot._get_csv_filepath" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>date</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>) – </p></li>
+<li><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – see <a class="reference internal" href="polyfemos.front.request.html#polyfemos.front.request.filepath" title="polyfemos.front.request.filepath"><code class="xref py py-func docutils literal notranslate"><span class="pre">filepath()</span></code></a></p></li>
+<li><p><strong>extension</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – file extension, defaults to <code class="docutils literal notranslate"><span class="pre">&quot;.csv&quot;</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Filepath following the filepathformat defined in
+YAML config files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot._get_filepath">
+<code class="sig-name descname">_get_filepath</code><span class="sig-paren">(</span><em class="sig-param">date</em>, <em class="sig-param">fpf</em>, <em class="sig-param">extension</em>, <em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot._get_filepath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot._get_filepath" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>date</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>) – is constructed from the <code class="docutils literal notranslate"><span class="pre">root</span></code> and <code class="docutils literal notranslate"><span class="pre">fpf</span></code>, ‘root/fpf(args)’</p></li>
+<li><p><strong>fpf</strong> (<em>func</em>) – filepath format function</p></li>
+<li><p><strong>extension</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – file extension</p></li>
+<li><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – see <a class="reference internal" href="polyfemos.front.request.html#polyfemos.front.request.filepath" title="polyfemos.front.request.filepath"><code class="xref py py-func docutils literal notranslate"><span class="pre">filepath()</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>path to file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot._get_plot">
+<code class="sig-name descname">_get_plot</code><span class="sig-paren">(</span><em class="sig-param">decimate=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot._get_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot._get_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a 2D bokeh figure, time in x axis. By default, the data is
+plotted as a line, lines are separated if any number of nan values
+are between continuous set of valid values. If line consists of only
+one value, cross marker used instead of a line.
+Colors are as follows:</p>
+<ul class="simple">
+<li><p>Red, actual data</p></li>
+<li><p>Brighter red, horizontal lines defined by <code class="docutils literal notranslate"><span class="pre">H_LINES</span></code></p></li>
+<li><p>Dark green, outlier datapoints</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>decimate</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, data is decimated.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure" title="(in Bokeh v1.4.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Figure</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot._get_stf_filepath">
+<code class="sig-name descname">_get_stf_filepath</code><span class="sig-paren">(</span><em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot._get_stf_filepath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot._get_stf_filepath" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>date</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Filepath following the filepathformat defined in
+YAML config files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot._read_csv_data">
+<code class="sig-name descname">_read_csv_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot._read_csv_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot._read_csv_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the data from sohcsv files.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot._read_header">
+<code class="sig-name descname">_read_header</code><span class="sig-paren">(</span><em class="sig-param">nez=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot._read_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot._read_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads and parses the header information from the sohtextfile.
+Header block ends when ‘DATA’ text is encountered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nez</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>, for UWV to NEZ conversion,
+sensor information from the stf header is needed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.sohplot.SOHPlot._read_stf_data">
+<code class="sig-name descname">_read_stf_data</code><span class="sig-paren">(</span><em class="sig-param">nez=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/sohplot.html#SOHPlot._read_stf_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.sohplot.SOHPlot._read_stf_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads and parses the data from sohtextfiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nez</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>. If selected sohpar is N, E or Z
+offset, values for U, W and V offsets has to be read.
+For information about UWV to NEZ conversion see
+<a class="reference internal" href="polyfemos.front.sohplot.offsets.UWVOffsets.html#polyfemos.front.sohplot.offsets.UWVOffsets" title="polyfemos.front.sohplot.offsets.UWVOffsets"><code class="xref py py-class docutils literal notranslate"><span class="pre">UWVOffsets</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../front.html">Frontend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.alertreader.html">polyfemos.front.alertreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.colors.html">polyfemos.front.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.flask_config.html">polyfemos.front.flask_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.forms.html">polyfemos.front.forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.main.html">polyfemos.front.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.request.html">polyfemos.front.request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.datacontainer.html">polyfemos.front.sohplot.datacontainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.offsets.html">polyfemos.front.sohplot.offsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.outfilefields.html">polyfemos.front.sohplot.outfilefields</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="polyfemos.front.sohplot.sohplot.html">polyfemos.front.sohplot.sohplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.trafficmonitor.html">polyfemos.front.trafficmonitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.userdef.html">polyfemos.front.userdef</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../front.html">Frontend modules</a><ul>
+  <li><a href="polyfemos.front.sohplot.sohplot.html">polyfemos.front.sohplot.sohplot</a><ul>
+      <li>Previous: <a href="polyfemos.front.sohplot.sohplot.html" title="previous chapter">polyfemos.front.sohplot.sohplot</a></li>
+      <li>Next: <a href="polyfemos.front.trafficmonitor.html" title="next chapter">polyfemos.front.trafficmonitor</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.front.sohplot.sohplot.SOHPlot.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

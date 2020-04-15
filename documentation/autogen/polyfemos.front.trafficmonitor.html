@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.trafficmonitor &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.front.trafficmonitor.IPStorage" href="polyfemos.front.trafficmonitor.IPStorage.html" />
+    <link rel="prev" title="polyfemos.front.sohplot.sohplot.SOHPlot" href="polyfemos.front.sohplot.sohplot.SOHPlot.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-polyfemos.front.trafficmonitor">
+<span id="polyfemos-front-trafficmonitor"></span><h1>polyfemos.front.trafficmonitor<a class="headerlink" href="#module-polyfemos.front.trafficmonitor" title="Permalink to this headline">¶</a></h1>
+<p>Monitors and limits website usage</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2019, University of Oulu, Sodankyla Geophysical Observatory</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GNU Lesser General Public License v3.0 or later
+(<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">https://spdx.org/licenses/LGPL-3.0-or-later.html</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Public Functions</p>
+<dl class="function">
+<dt id="polyfemos.front.trafficmonitor.check_permission">
+<code class="sig-prename descclassname">polyfemos.front.trafficmonitor.</code><code class="sig-name descname">check_permission</code><span class="sig-paren">(</span><em class="sig-param">access_level</em>, <em class="sig-param">limit_network=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/trafficmonitor.html#check_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.trafficmonitor.check_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>The users and their access levels are defined in YAML config files.
+See <a class="reference internal" href="polyfemos.front.userdef.html#polyfemos.front.userdef.users" title="polyfemos.front.userdef.users"><code class="xref py py-func docutils literal notranslate"><span class="pre">users()</span></code></a> for more info.</p>
+<p>The local user (ip=’127.0.0.1’) has the maximum access level (1).
+An unidentified user will have the minimum access level (the function
+always returns <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>access_level</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – requested access level</p></li>
+<li><p><strong>limit_network</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the allowed
+networks of the user are checked in addition to access level.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the users access level is smaller or
+equal to requested access level (<code class="docutils literal notranslate"><span class="pre">access_level</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.trafficmonitor.gip">
+<code class="sig-prename descclassname">polyfemos.front.trafficmonitor.</code><code class="sig-name descname">gip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/trafficmonitor.html#gip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.trafficmonitor.gip" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>IP address of the user</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.trafficmonitor.gun">
+<code class="sig-prename descclassname">polyfemos.front.trafficmonitor.</code><code class="sig-name descname">gun</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/trafficmonitor.html#gun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.trafficmonitor.gun" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Username of the user</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.trafficmonitor.limit_access">
+<code class="sig-prename descclassname">polyfemos.front.trafficmonitor.</code><code class="sig-name descname">limit_access</code><span class="sig-paren">(</span><em class="sig-param">access_level=2</em>, <em class="sig-param">limit_network=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/trafficmonitor.html#limit_access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.trafficmonitor.limit_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator used limit access of users. Users with
+access level equal or greater than 3 are not permitted to enter the site.</p>
+<p>The access level check made by calling
+<a class="reference internal" href="#polyfemos.front.trafficmonitor.check_permission" title="polyfemos.front.trafficmonitor.check_permission"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_permission()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>access_level</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – requested access level, defaults to <code class="docutils literal notranslate"><span class="pre">2</span></code></p></li>
+<li><p><strong>limit_network</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the allowed
+networks of the user are checked in addition to access level.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a decorator to limit access</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.trafficmonitor.limited">
+<code class="sig-prename descclassname">polyfemos.front.trafficmonitor.</code><code class="sig-name descname">limited</code><span class="sig-paren">(</span><em class="sig-param">ipstorage</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/trafficmonitor.html#limited"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.trafficmonitor.limited" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function call limiter.
+The functions with limited decorator
+may only be called one at the time per IP address.
+Use as a decorator with arguments. This applies to users with
+access level equal or more than 2.</p>
+<p>The access level check made by calling
+<a class="reference internal" href="#polyfemos.front.trafficmonitor.check_permission" title="polyfemos.front.trafficmonitor.check_permission"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_permission()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ipstorage</strong> (<a class="reference internal" href="polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage" title="polyfemos.front.trafficmonitor.IPStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPStorage</span></code></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A decorator using
+<a class="reference internal" href="polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage" title="polyfemos.front.trafficmonitor.IPStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPStorage</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.front.trafficmonitor.logged">
+<code class="sig-prename descclassname">polyfemos.front.trafficmonitor.</code><code class="sig-name descname">logged</code><span class="sig-paren">(</span><em class="sig-param">func_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/trafficmonitor.html#logged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.trafficmonitor.logged" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator used to log usage of the functions
+Logs the time, IP address and username of the user and the function
+(<code class="docutils literal notranslate"><span class="pre">func_</span></code>) used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func_</strong> (<em>func</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage" title="polyfemos.front.trafficmonitor.IPStorage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPStorage</span></code></a>()</p></td>
+<td><p>A class which handles IP addresses of the users</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../front.html">Frontend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.alertreader.html">polyfemos.front.alertreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.colors.html">polyfemos.front.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.flask_config.html">polyfemos.front.flask_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.forms.html">polyfemos.front.forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.main.html">polyfemos.front.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.request.html">polyfemos.front.request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.datacontainer.html">polyfemos.front.sohplot.datacontainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.offsets.html">polyfemos.front.sohplot.offsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.outfilefields.html">polyfemos.front.sohplot.outfilefields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.sohplot.html">polyfemos.front.sohplot.sohplot</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">polyfemos.front.trafficmonitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.userdef.html">polyfemos.front.userdef</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../front.html">Frontend modules</a><ul>
+      <li>Previous: <a href="polyfemos.front.sohplot.sohplot.SOHPlot.html" title="previous chapter">polyfemos.front.sohplot.sohplot.SOHPlot</a></li>
+      <li>Next: <a href="polyfemos.front.trafficmonitor.IPStorage.html" title="next chapter">polyfemos.front.trafficmonitor.IPStorage</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.front.trafficmonitor.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.seismic.scanner &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.back.seismic.scanner</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Scans available mseed files.</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># I can hear myself... I think I&#39;m a bit afraid</span>
+<span class="c1"># They were drowning me</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">obspy.imaging.scripts.scan</span> <span class="k">import</span> <span class="n">Scanner</span>
+<span class="kn">from</span> <span class="nn">obspy</span> <span class="k">import</span> <span class="n">Trace</span><span class="p">,</span> <span class="n">Stream</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.almanac.ordinal</span> <span class="k">import</span> <span class="n">Ordinal</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">colors</span>
+
+
+<div class="viewcode-block" id="data_coverage_image"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.scanner.html#polyfemos.back.seismic.scanner.data_coverage_image">[docs]</a><span class="k">def</span> <span class="nf">data_coverage_image</span><span class="p">(</span><span class="n">flags</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">,</span> <span class="n">network_code</span><span class="p">,</span> <span class="n">station_codes</span><span class="p">,</span>
+                        <span class="n">channel_codes</span><span class="p">,</span> <span class="n">datafilepathfunc</span><span class="p">,</span> <span class="n">outfilepathfunc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates data coverage images using</span>
+<span class="sd">    :class:`~obspy.imaging.scripts.scan.Scanner`.</span>
+
+<span class="sd">    The available seismic data is scanned between times ``starttime``</span>
+<span class="sd">    and ``endtime``. All channel and station combinations are included in the</span>
+<span class="sd">    scan (``channel_codes`` and ``station_codes``).</span>
+
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: Flag variables from</span>
+<span class="sd">        :class:`~polyfemos.back.interpreter.Interpreter`</span>
+<span class="sd">    :type startime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">    :param startime:</span>
+<span class="sd">    :type endtime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">    :param endtime:</span>
+<span class="sd">    :type network_code: str</span>
+<span class="sd">    :param network_code: Network code as a string, e.g. &quot;FN&quot;</span>
+<span class="sd">    :type station_codes: list</span>
+<span class="sd">    :param station_codes: list of string consisting of station codes,</span>
+<span class="sd">        e.g. ``[&quot;MSF&quot;, &quot;SGF&quot;, ...]``.</span>
+<span class="sd">    :type channel_codes: list</span>
+<span class="sd">    :param channel_codes: list of string consisting of channel codes,</span>
+<span class="sd">        e.g. ``[&quot;HHZ&quot;, &quot;HHE&quot;, ...]``.</span>
+<span class="sd">    :type datafilepathfunc: func</span>
+<span class="sd">    :param datafilepathfunc: A function returning filepaths to be included</span>
+<span class="sd">        in the scan.</span>
+<span class="sd">    :type outfilepathfunc: func</span>
+<span class="sd">    :param outfilepathfunc: If the ``outfilepathfunc`` returns different</span>
+<span class="sd">        filepaths with changing stations or channels etc., separate scanner</span>
+<span class="sd">        plots are created with each different filepath.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># scanners dict stores &#39;outfilepath&#39; and their corresponding scanner</span>
+    <span class="c1"># instances</span>
+    <span class="n">scanners</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">pathkwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">added_traces</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="n">_product</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">station_codes</span><span class="p">,</span> <span class="n">channel_codes</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">station_code</span><span class="p">,</span> <span class="n">channel_code</span> <span class="ow">in</span> <span class="n">_product</span><span class="p">:</span>
+
+        <span class="n">tr_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">,</span> <span class="n">channel_code</span><span class="p">)</span>
+
+        <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;network_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network_code</span>
+        <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;station_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station_code</span>
+        <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;channel_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel_code</span>
+        <span class="c1"># Location in the seismic datafile paths is set to be anything</span>
+        <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;location_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+
+        <span class="k">for</span> <span class="n">time_</span> <span class="ow">in</span> <span class="n">Ordinal</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">):</span>
+
+            <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_</span><span class="o">.</span><span class="n">year</span>
+            <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;julday&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_</span><span class="o">.</span><span class="n">julday</span>
+
+            <span class="n">datafilepath</span> <span class="o">=</span> <span class="n">datafilepathfunc</span><span class="p">(</span><span class="o">**</span><span class="n">pathkwargs</span><span class="p">)</span>
+            <span class="n">outfilepath</span> <span class="o">=</span> <span class="n">outfilepathfunc</span><span class="p">(</span><span class="o">**</span><span class="n">pathkwargs</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">outfilepath</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scanners</span><span class="p">:</span>
+                <span class="n">scanners</span><span class="p">[</span><span class="n">outfilepath</span><span class="p">]</span> <span class="o">=</span> <span class="n">Scanner</span><span class="p">()</span>
+
+            <span class="n">file_tr_key</span> <span class="o">=</span> <span class="n">outfilepath</span> <span class="o">+</span> <span class="n">tr_id</span>
+            <span class="c1"># glob allows the usage of wildcards in the filepath</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">datafilepath</span><span class="p">):</span>
+                <span class="n">added_traces</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">file_tr_key</span><span class="p">)</span>
+                <span class="n">scanners</span><span class="p">[</span><span class="n">outfilepath</span><span class="p">]</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">file_tr_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">added_traces</span><span class="p">:</span>
+                <span class="n">tr</span> <span class="o">=</span> <span class="n">Trace</span><span class="p">()</span>
+                <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network_code</span>
+                <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">station</span> <span class="o">=</span> <span class="n">station_code</span>
+                <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel_code</span>
+                <span class="n">tr_id</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="n">Stream</span><span class="p">(</span><span class="n">traces</span><span class="o">=</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+                <span class="n">scanners</span><span class="p">[</span><span class="n">outfilepath</span><span class="p">]</span><span class="o">.</span><span class="n">add_stream</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+                <span class="n">added_traces</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">file_tr_key</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">scanner</span> <span class="ow">in</span> <span class="n">scanners</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">scanner</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">outfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="null_figure"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.scanner.html#polyfemos.back.seismic.scanner.null_figure">[docs]</a><span class="k">def</span> <span class="nf">null_figure</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :rtype: :class:`~matplotlib.figure.Figure`</span>
+<span class="sd">    :return: Empty figure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Nothing to show.&quot;</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="get_data_coverage_figure"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.scanner.html#polyfemos.back.seismic.scanner.get_data_coverage_figure">[docs]</a><span class="k">def</span> <span class="nf">get_data_coverage_figure</span><span class="p">(</span><span class="n">station_ids</span><span class="p">,</span> <span class="n">channel_codes</span><span class="p">,</span> <span class="n">startdate</span><span class="p">,</span> <span class="n">enddate</span><span class="p">,</span>
+                             <span class="n">datafilepathfunc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type station_ids: list</span>
+<span class="sd">    :param station_ids: station ids as a list of strings</span>
+<span class="sd">    :type channel_codes: list</span>
+<span class="sd">    :param channel_codes: data channel codes as a list of strings</span>
+<span class="sd">    :type startdate: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">    :param startdate: scanning startdate</span>
+<span class="sd">    :type enddate: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">    :param enddate: scanning enddate</span>
+<span class="sd">    :type filepathfunc: func</span>
+<span class="sd">    :param filepathfunc: A dynamic filepath, wildcards can be used since</span>
+<span class="sd">        :func:`~glob.glob` is use to process filepaths after the</span>
+<span class="sd">        arguments are filled in.</span>
+<span class="sd">    :rtype: :class:`~matplotlib.figure.Figure`</span>
+<span class="sd">    :return: scanner plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scanner</span> <span class="o">=</span> <span class="n">Scanner</span><span class="p">()</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pathkwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;location_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+    <span class="n">network_and_station_codes</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">station_ids</span><span class="p">)</span>
+    <span class="n">combinations</span> <span class="o">=</span> \
+        <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">network_and_station_codes</span><span class="p">,</span> <span class="n">channel_codes</span><span class="p">))</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">startdate</span>
+    <span class="n">added_channels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">date</span> <span class="o">&lt;=</span> <span class="n">enddate</span><span class="p">:</span>
+        <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span>
+        <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;julday&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">julday</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">),</span> <span class="n">channel_code</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">:</span>
+            <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;network_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network_code</span>
+            <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;station_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station_code</span>
+            <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;channel_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel_code</span>
+            <span class="n">trace_key</span> <span class="o">=</span> <span class="n">network_code</span> <span class="o">+</span> <span class="n">station_code</span> <span class="o">+</span> <span class="n">channel_code</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">datafilepathfunc</span><span class="p">(</span><span class="o">**</span><span class="n">pathkwargs</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">paths</span><span class="p">):</span>
+                <span class="n">scanner</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="n">added_channels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">trace_key</span><span class="p">)</span>
+        <span class="n">date</span> <span class="o">+=</span> <span class="mi">86400</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">added_channels</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">count</span><span class="p">:</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">count</span> <span class="o">*</span> <span class="mf">0.5</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="mf">655.35</span><span class="p">)</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">scanner</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">startdate</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="n">enddate</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">colors</span><span class="o">.</span><span class="n">WHITE</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">fig</span>
+
+    <span class="k">return</span> <span class="n">null_figure</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

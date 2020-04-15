@@ -1,0 +1,393 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.filewriter &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.back.filewriter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains classes for writing state of health files</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">fileutils</span>
+
+
+<div class="viewcode-block" id="get_csv_header"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.html#polyfemos.back.filewriter.get_csv_header">[docs]</a><span class="k">def</span> <span class="nf">get_csv_header</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type unit: str</span>
+<span class="sd">    :param unit: unit of the parameter values</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: soh csv file header as list of strings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;utctimestamp&quot;</span><span class="p">,</span> <span class="s2">&quot;value [</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unit</span><span class="p">),</span> <span class="s2">&quot;z&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_alert_header"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.html#polyfemos.back.filewriter.get_alert_header">[docs]</a><span class="k">def</span> <span class="nf">get_alert_header</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: soh alert file header as list of strings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;station_id&quot;</span><span class="p">,</span> <span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="s2">&quot;alert&quot;</span><span class="p">,</span> <span class="s2">&quot;priority&quot;</span><span class="p">,</span> <span class="s2">&quot;last_dp_ts&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="create_stfline"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.html#polyfemos.back.filewriter.create_stfline">[docs]</a><span class="k">def</span> <span class="nf">create_stfline</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">parname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type values: list</span>
+<span class="sd">    :param values: 2-3 value list, [timevalue, y, z]</span>
+<span class="sd">    :type parname: str</span>
+<span class="sd">    :param parname: parameter name</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: line for &#39;\*.stf&#39; file following the soh text file format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stfline</span> <span class="o">=</span> <span class="n">values</span><span class="p">[:]</span>
+    <span class="n">stfline</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">parname</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:30}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">stfline</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">str_</span></div>
+
+
+<div class="viewcode-block" id="create_csvline"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.html#polyfemos.back.filewriter.create_csvline">[docs]</a><span class="k">def</span> <span class="nf">create_csvline</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type values: list</span>
+<span class="sd">    :param values: 2-3 value list, [timevalue, y, z]</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: row for &#39;\*.csv&#39; file, the timevalue is replaced with</span>
+<span class="sd">        the corresponding timestamp</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span><span class="p">]</span> <span class="o">+</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
+
+
+<div class="viewcode-block" id="_check_bool"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.html#polyfemos.back.filewriter._check_bool">[docs]</a><span class="k">def</span> <span class="nf">_check_bool</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator to be used with :class:`~polyfemos.back.filewriter.FileWriter`.</span>
+<span class="sd">    The call of the decorated method is omitted if ``self._bool``</span>
+<span class="sd">    attribute is ``False``.</span>
+
+<span class="sd">    :type method: func</span>
+<span class="sd">    :param method: A decorated method</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="FileWriter"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.FileWriter.html#polyfemos.back.filewriter.FileWriter">[docs]</a><span class="k">class</span> <span class="nc">FileWriter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parent class for state of health file writer classes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="FileWriter.__init__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.FileWriter.html#polyfemos.back.filewriter.FileWriter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bool_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fp_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">retroactive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The attribute values are suitable for writing state of health</span>
+<span class="sd">        csv files by default.</span>
+
+<span class="sd">        ``self._file_writing_func`` is set to</span>
+<span class="sd">        :func:`~polyfemos.util.fileutils.write_csv`.</span>
+
+<span class="sd">        ``self._create_line_func`` is set to</span>
+<span class="sd">        :func:`~polyfemos.back.filewriter.create_csvline`.</span>
+
+<span class="sd">        :type bool\_: bool</span>
+<span class="sd">        :param bool\_: If ``False``, methods of this class do nothing,</span>
+<span class="sd">            If ``fp_func`` is not callable, ``bool_`` is set to ``False``</span>
+<span class="sd">        :type fp_func: func</span>
+<span class="sd">        :param fp_func: filepath function, e.g. FLAGs &#39;sohtextfilepath&#39;</span>
+<span class="sd">            &#39;sohalertpath&#39; or &#39;sohcsvpath&#39;. See</span>
+<span class="sd">            :meth:`~polyfemos.back.interpreter.Interpreter._init_flags`</span>
+<span class="sd">            for more information.</span>
+<span class="sd">        :type retroactive: bool</span>
+<span class="sd">        :param retroactive: defines if the retroactive mode is used.</span>
+<span class="sd">            See :meth:`~polyfemos.back.interpreter.Interpreter._init_flags`</span>
+<span class="sd">            for more info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bool_</span> <span class="o">&amp;=</span> <span class="n">callable</span><span class="p">(</span><span class="n">fp_func</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bool</span> <span class="o">=</span> <span class="n">bool_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filepath_func</span> <span class="o">=</span> <span class="n">fp_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retroactive</span> <span class="o">=</span> <span class="n">retroactive</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_suffix</span> <span class="o">=</span> <span class="s2">&quot;csv&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_writing_func</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">write_csv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_line_func</span> <span class="o">=</span> <span class="n">create_csvline</span></div>
+
+<div class="viewcode-block" id="FileWriter.get_filename"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.FileWriter.html#polyfemos.back.filewriter.FileWriter.get_filename">[docs]</a>    <span class="nd">@_check_bool</span>
+    <span class="k">def</span> <span class="nf">get_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathkwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies ``pathkwargs`` to ``self._filepath_func`` and returns</span>
+<span class="sd">        the resulting filepath. If retroactive mode is used, &#39;retro&#39;</span>
+<span class="sd">        identifier is added to the filepath.</span>
+
+<span class="sd">        :type pathkwargs: dict</span>
+<span class="sd">        :param pathkwargs: keyword arguments for ``self._filepath_func``</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">retro</span> <span class="o">=</span> <span class="s2">&quot;.retro&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retroactive</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filepath_func</span><span class="p">(</span><span class="o">**</span><span class="n">pathkwargs</span><span class="p">)</span>
+        <span class="n">fn</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">retro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suffix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fn</span></div>
+
+<div class="viewcode-block" id="FileWriter.update_header"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.FileWriter.html#polyfemos.back.filewriter.FileWriter.update_header">[docs]</a>    <span class="nd">@_check_bool</span>
+    <span class="k">def</span> <span class="nf">update_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type header: str or list</span>
+<span class="sd">        :param header: a new header applied to ``self._header``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="n">header</span></div>
+
+<div class="viewcode-block" id="FileWriter.append_line"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.FileWriter.html#polyfemos.back.filewriter.FileWriter.append_line">[docs]</a>    <span class="nd">@_check_bool</span>
+    <span class="k">def</span> <span class="nf">append_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If there is no file with a name ``filename`` in ``self._dict``,</span>
+<span class="sd">        header is added to the corersponding file entry in ``self._dict``.</span>
+
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :param filename:</span>
+<span class="sd">        :type line: list</span>
+<span class="sd">        :param line: A line to be appended into the file (``filename``)</span>
+<span class="sd">            entry in ``self._dict``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileWriter.append_data"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.FileWriter.html#polyfemos.back.filewriter.FileWriter.append_data">[docs]</a>    <span class="nd">@_check_bool</span>
+    <span class="k">def</span> <span class="nf">append_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Additional arguments ``args`` are applied to the</span>
+<span class="sd">        function ``self._create_line_func``.</span>
+
+<span class="sd">        Creates and appends a new line to file entry (``filename``)</span>
+<span class="sd">        in ``self._dict``.</span>
+
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :param filename:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_line_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_line</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileWriter.append_and_write_data"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.FileWriter.html#polyfemos.back.filewriter.FileWriter.append_and_write_data">[docs]</a>    <span class="nd">@_check_bool</span>
+    <span class="k">def</span> <span class="nf">append_and_write_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Additional arguments ``args`` are applied to the</span>
+<span class="sd">        function ``self._create_line_func``.</span>
+
+<span class="sd">        Creates and immediately writes a new line to file ``filename``.</span>
+
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :param filename:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_line_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">fileutils</span><span class="o">.</span><span class="n">append_to_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileWriter.write_files"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.FileWriter.html#polyfemos.back.filewriter.FileWriter.write_files">[docs]</a>    <span class="nd">@_check_bool</span>
+    <span class="k">def</span> <span class="nf">write_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes out every file in ``self._dict`` and deletes the data</span>
+<span class="sd">        contained in it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">filename</span><span class="p">,</span> <span class="n">rows</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file_writing_func</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span> <span class="o">=</span> <span class="p">{}</span></div></div>
+
+
+<div class="viewcode-block" id="CSVWriter"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.CSVWriter.html#polyfemos.back.filewriter.CSVWriter">[docs]</a><span class="k">class</span> <span class="nc">CSVWriter</span><span class="p">(</span><span class="n">FileWriter</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    State of health csv file (&#39;\*.csv&#39;) writer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CSVWriter.__init__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.CSVWriter.html#polyfemos.back.filewriter.CSVWriter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See :meth:`~polyfemos.back.filewriter.FileWriter.__init__`</span>
+<span class="sd">        for more info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AlertWriter"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.AlertWriter.html#polyfemos.back.filewriter.AlertWriter">[docs]</a><span class="k">class</span> <span class="nc">AlertWriter</span><span class="p">(</span><span class="n">FileWriter</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    State of health alert file (&#39;\*.alert&#39;) writer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AlertWriter.__init__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.AlertWriter.html#polyfemos.back.filewriter.AlertWriter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``self._header`` is set to a fixed value returned by</span>
+<span class="sd">        :func:`~polyfemos.back.filewriter.get_alert_header`.</span>
+
+<span class="sd">        See :meth:`~polyfemos.back.filewriter.FileWriter.__init__`</span>
+<span class="sd">        for more info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="n">get_alert_header</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_suffix</span> <span class="o">=</span> <span class="s2">&quot;alert&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="STFWriter"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.STFWriter.html#polyfemos.back.filewriter.STFWriter">[docs]</a><span class="k">class</span> <span class="nc">STFWriter</span><span class="p">(</span><span class="n">FileWriter</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    State of health text file (&#39;\*.stf&#39;) writer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="STFWriter.__init__"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.STFWriter.html#polyfemos.back.filewriter.STFWriter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``self._file_writing_func`` is set to</span>
+<span class="sd">        :func:`~polyfemos.util.fileutils.write_file`.</span>
+
+<span class="sd">        ``self._create_line_func`` is set to</span>
+<span class="sd">        :func:`~polyfemos.back.filewriter.create_stfline`.</span>
+
+<span class="sd">        See :meth:`~polyfemos.back.filewriter.FileWriter.__init__`</span>
+<span class="sd">        for more info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_writing_func</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">write_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_line_func</span> <span class="o">=</span> <span class="n">create_stfline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_suffix</span> <span class="o">=</span> <span class="s2">&quot;stf&quot;</span></div>
+
+<div class="viewcode-block" id="STFWriter.append_line"><a class="viewcode-back" href="../../../autogen/polyfemos.back.filewriter.STFWriter.html#polyfemos.back.filewriter.STFWriter.append_line">[docs]</a>    <span class="nd">@_check_bool</span>
+    <span class="k">def</span> <span class="nf">append_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If there is no file with a name ``filename`` in ``self._dict``,</span>
+<span class="sd">        header is added to the corersponding file entry in ``self._dict``.</span>
+
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :param filename:</span>
+<span class="sd">        :type line: str</span>
+<span class="sd">        :param line: Line to be appended into the file (``filename``)</span>
+<span class="sd">            entry in ``self._dict``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">+=</span> <span class="n">line</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,548 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.parser.typeoperator &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.parser.typeoperator</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions representing types used internally in polyfemos</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+
+<span class="kn">from</span> <span class="nn">obspy</span> <span class="k">import</span> <span class="n">UTCDateTime</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">resources</span><span class="p">,</span> <span class="n">functionparser</span><span class="p">,</span> <span class="n">filepathparser</span>
+<span class="kn">from</span> <span class="nn">polyfemos.almanac.ordinal</span> <span class="k">import</span> <span class="n">Ordinal</span>
+
+
+<div class="viewcode-block" id="check_type"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.check_type">[docs]</a><span class="k">def</span> <span class="nf">check_type</span><span class="p">(</span><span class="n">func_</span><span class="p">,</span> <span class="n">invalid_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator to be composed with function where ``ValueError``</span>
+<span class="sd">    or ``TypeError`` might occur.</span>
+<span class="sd">    If the error occurs while ``func_`` is called, the return value of the</span>
+<span class="sd">    ``func_`` is ``None``.</span>
+
+<span class="sd">    :type func\_: func</span>
+<span class="sd">    :param func\_:</span>
+<span class="sd">    :type invalid_value: anything, optional</span>
+<span class="sd">    :param invalid_value: If the type conversion is not possible, given invalid</span>
+<span class="sd">        value is returned, defaults to ``None``.</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: ``wrapper``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">invalid_value</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="literal_eval"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.literal_eval">[docs]</a><span class="k">def</span> <span class="nf">literal_eval</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="n">type_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: a string representation of the value to be passed to</span>
+<span class="sd">        :func:`ast.literal_eval`.</span>
+<span class="sd">    :type type\_: class or type</span>
+<span class="sd">    :param type\_: desired type of the resulting value</span>
+<span class="sd">    :rtype: anything</span>
+<span class="sd">    :return: The retrun type is ``type_``.</span>
+<span class="sd">        Returns ``None`` if something went wrong while trying to</span>
+<span class="sd">        convert ``inputstr`` into it&#39;s desired type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">return_value</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">SyntaxError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_value</span><span class="p">,</span> <span class="n">type_</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">return_value</span></div>
+
+
+<span class="c1">##</span>
+<span class="c1"># Lists</span>
+<span class="c1">###</span>
+
+
+<div class="viewcode-block" id="list_"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.list_">[docs]</a><span class="k">def</span> <span class="nf">list_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="n">type_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A list may be defined with square brackets or the brackets may be omitted.</span>
+<span class="sd">    Note that, the whitespaces are treated literally and empty list entries</span>
+<span class="sd">    are removed.</span>
+
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: a string representation of a list containing either</span>
+<span class="sd">        string, int, or float values.</span>
+<span class="sd">    :type type\_: str</span>
+<span class="sd">    :param type\_: Either &#39;str&#39;, &#39;float&#39; or &#39;int&#39;, describing the resulting</span>
+<span class="sd">        type of the list entries.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: A list of either string, int, or float values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">inputstr</span> <span class="o">=</span> <span class="n">inputstr</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="n">inputstr</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">inputstr</span> <span class="k">if</span> <span class="n">s</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s2">&quot;str&quot;</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">inputstr</span>
+    <span class="n">_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_</span><span class="p">),</span>
+        <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">),</span> <span class="n">float_</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">type_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="c1"># None to NaN in floatlist</span>
+    <span class="c1"># None to None in intlist</span>
+    <span class="n">replacer</span><span class="p">,</span> <span class="n">func_</span> <span class="o">=</span> <span class="n">_dict</span><span class="p">[</span><span class="n">type_</span><span class="p">]</span>
+    <span class="n">inputstr</span> <span class="o">=</span> <span class="p">(</span><span class="n">func_</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">inputstr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">replacer</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">inputstr</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="intlist"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.intlist">[docs]</a><span class="k">def</span> <span class="nf">intlist</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: a string representation of a list containing integer</span>
+<span class="sd">        values</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: A list of integer values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">list_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="floatlist"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.floatlist">[docs]</a><span class="k">def</span> <span class="nf">floatlist</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: a string representation of a list containing floating</span>
+<span class="sd">        point values</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: A list of float values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">list_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="strlist"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.strlist">[docs]</a><span class="k">def</span> <span class="nf">strlist</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: a string representation of a list containing string</span>
+<span class="sd">        values, for example: ``[1,asd,3, 4]``. The resulting list will</span>
+<span class="sd">        be ``[&quot;1&quot;, &quot;asd&quot;, &quot;3&quot;, &quot; 4&quot;]``.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: A list of string values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">list_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">)</span></div>
+
+
+<span class="c1">###</span>
+<span class="c1"># Specials</span>
+<span class="c1">###</span>
+
+
+<div class="viewcode-block" id="var"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.var">[docs]</a><span class="k">def</span> <span class="nf">var</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr:</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: Adds the variable symbol to the start of the ``inputstr``, if the</span>
+<span class="sd">        ``inputstr`` lacks it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">inputstr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">resources</span><span class="o">.</span><span class="n">SYMBOLS</span><span class="p">[</span><span class="s2">&quot;VAR&quot;</span><span class="p">]:</span>
+        <span class="n">inputstr</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="n">SYMBOLS</span><span class="p">[</span><span class="s2">&quot;VAR&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">inputstr</span>
+    <span class="k">return</span> <span class="n">inputstr</span></div>
+
+
+<div class="viewcode-block" id="function"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.function">[docs]</a><span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    See the function syntax and more info in</span>
+<span class="sd">    :func:`~polyfemos.parser.functionparser.function_from_str`</span>
+
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: A string representing a function</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">functionparser</span><span class="o">.</span><span class="n">function_from_str</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="filepath"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.filepath">[docs]</a><span class="k">def</span> <span class="nf">filepath</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    see :func:`~polyfemos.parser.filepathparser.path_from_str` for more info.</span>
+
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: A string representing a filepath, reserved variables</span>
+<span class="sd">        may be used to create mutable filepaths.</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">filepathparser</span><span class="o">.</span><span class="n">path_from_str</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="staticfilepath"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.staticfilepath">[docs]</a><span class="k">def</span> <span class="nf">staticfilepath</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    see :func:`~polyfemos.parser.filepathparser.path_from_str` for more info.</span>
+
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: A string representing a filepath, the ``inputstr``</span>
+<span class="sd">        may not contain reserved variables</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: A string representing a filepath</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">filepath</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)()</span></div>
+
+
+<div class="viewcode-block" id="_get_offset"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator._get_offset">[docs]</a><span class="k">def</span> <span class="nf">_get_offset</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr:</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    :return: An integer number after &#39;+&#39; symbol in ``inputstr``,</span>
+<span class="sd">        negative or positive. For negative offsets, the ``inputstr`` has to</span>
+<span class="sd">        be for example: ``SOMETHING+-5``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">inputstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">check_type</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">invalid_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)(</span><span class="n">offset</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="utcdatetime"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.utcdatetime">[docs]</a><span class="k">def</span> <span class="nf">utcdatetime</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="n">today</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: A string compatible with</span>
+<span class="sd">        :class:`~obspy.core.utcdatetime.UTCDateTime` constructor.</span>
+<span class="sd">        If symbol &#39;+&#39; is contained in ``inputstr``, an offset is</span>
+<span class="sd">        applied to the returned value. The offset is an integer value</span>
+<span class="sd">        representing days. If the ``inputstr`` is not string type, the value</span>
+<span class="sd">        is passed to :class:`~obspy.core.utcdatetime.UTCDateTime` constructor</span>
+<span class="sd">        as is.</span>
+<span class="sd">    :type today: :class:`~obspy.core.utcdatetime.UTCDateTime`, optional</span>
+<span class="sd">    :param today: defaults to ``None``, if proper ``today`` is given,</span>
+<span class="sd">        &#39;TODAY&#39; reserved variable is replaced with the given value.</span>
+<span class="sd">    :rtype: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="n">inputstr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">resources</span><span class="o">.</span><span class="n">VARS</span><span class="p">[</span><span class="s2">&quot;TODAY&quot;</span><span class="p">]):</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">_get_offset</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">today</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">today</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">today</span> <span class="o">+</span> <span class="n">offset</span> <span class="o">*</span> <span class="mi">86400</span>
+    <span class="k">return</span> <span class="n">check_type</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">)(</span><span class="n">inputstr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ordinal"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.ordinal">[docs]</a><span class="k">def</span> <span class="nf">ordinal</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="n">today</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: A string compatible with</span>
+<span class="sd">        :class:`~polyfemos.almanac.ordinal.Ordinal` constructor.</span>
+<span class="sd">        If symbol &#39;+&#39; is contained in ``inputstr``, an offset is</span>
+<span class="sd">        applied to the returned value. The offset is an integer value</span>
+<span class="sd">        representing days.</span>
+<span class="sd">    :type today: :class:`~obspy.core.utcdatetime.UTCDateTime`, optional</span>
+<span class="sd">    :param today: defaults to ``None``, if proper ``today`` is given,</span>
+<span class="sd">        &#39;TODAY&#39; reserved variable is replaced with the given value.</span>
+<span class="sd">    :rtype: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">inputstr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">resources</span><span class="o">.</span><span class="n">VARS</span><span class="p">[</span><span class="s2">&quot;TODAY&quot;</span><span class="p">]):</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">_get_offset</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Ordinal</span><span class="p">(</span><span class="n">today</span><span class="p">)</span><span class="o">.</span><span class="n">shiftdays</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inputstr</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># for example inputstr 2019-3 is changed into 2019-003</span>
+            <span class="n">inputstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{:0&gt;3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">inputstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="n">Ordinal</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">inputstr</span>
+    <span class="k">return</span> <span class="n">Ordinal</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dict_"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.dict_">[docs]</a><span class="k">def</span> <span class="nf">dict_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calls :func:`~polyfemos.parser.typeoperator.literal_eval`</span>
+<span class="sd">    to for a dictionary from ``inputstr`` and returns the dictionary.</span>
+
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: A string representation of a python dictionary</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    :return: Dictionary or ``None``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span></div>
+
+
+<span class="c1">###</span>
+<span class="c1"># Basics</span>
+<span class="c1">###</span>
+
+
+<div class="viewcode-block" id="str_"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.str_">[docs]</a><span class="k">def</span> <span class="nf">str_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="n">check_empty</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr:</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: ``inputstr`` converted into string, but nothing happened!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">check_empty</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inputstr</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">inputstr</span></div>
+
+
+<div class="viewcode-block" id="float_"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.float_">[docs]</a><span class="k">def</span> <span class="nf">float_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr:</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :return: ``inputstr`` converted into float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isStrNaN</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">getNaN</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">check_type</span><span class="p">(</span><span class="nb">float</span><span class="p">)(</span><span class="n">inputstr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="int_"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.int_">[docs]</a><span class="nd">@check_type</span>
+<span class="k">def</span> <span class="nf">int_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="n">to_float_first</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr:</span>
+<span class="sd">    :type to_float_first: bool, optional</span>
+<span class="sd">    :param to_float_first: defaults to ``True``, If ``True`` the input string</span>
+<span class="sd">        is first converted to float and then to integer.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    :return: ``inputstr`` converted into integer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">to_float_first</span><span class="p">:</span>
+        <span class="n">inputstr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bool_"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.bool_">[docs]</a><span class="k">def</span> <span class="nf">bool_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr:</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    :return: ``inputstr`` converted into boolean, values ``True`` and</span>
+<span class="sd">        ``False`` follow the boolean rules of python, e.g. ``&quot;&quot; = 0 = False``</span>
+<span class="sd">        and ``&quot;asd&quot; = 1 = 9. = True``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">inputstr</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="anything"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.anything">[docs]</a><span class="k">def</span> <span class="nf">anything</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Has no effect whatsoever.</span>
+
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr:</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">inputstr</span></div>
+
+
+<div class="viewcode-block" id="getNaN"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.getNaN">[docs]</a><span class="k">def</span> <span class="nf">getNaN</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :return: ``float(&#39;nan&#39;)``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="isNaN"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.isNaN">[docs]</a><span class="k">def</span> <span class="nf">isNaN</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    check if ``num`` is NaN</span>
+
+<span class="sd">    :type num: numlike</span>
+<span class="sd">    :param num:</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="strNaN"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.strNaN">[docs]</a><span class="k">def</span> <span class="nf">strNaN</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: string representation of NaN</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span></div>
+
+
+<div class="viewcode-block" id="isStrNaN"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.isStrNaN">[docs]</a><span class="k">def</span> <span class="nf">isStrNaN</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr:</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    :return: ``True``, if ``inputstr`` is is equal any string representation of</span>
+<span class="sd">        nan.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">inputstr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nan&quot;</span></div>
+
+
+<div class="viewcode-block" id="replaceNaN"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.replaceNaN">[docs]</a><span class="k">def</span> <span class="nf">replaceNaN</span><span class="p">(</span><span class="n">func_</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator to replace NaN (see</span>
+<span class="sd">    :func:`~polyfemos.parser.typeoperator.isStrNaN`)</span>
+<span class="sd">    values of ``args`` and ``kwargs``  of ``func_`` with an empty string.</span>
+
+<span class="sd">    :type func\_: func</span>
+<span class="sd">    :param func\_:</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: ``wrapper``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">isStrNaN</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">isStrNaN</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="NaN2None"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.NaN2None">[docs]</a><span class="k">def</span> <span class="nf">NaN2None</span><span class="p">(</span><span class="n">func_</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator to be composed with a one-argument function,</span>
+<span class="sd">    If the argument of the decorated function (``func_``) is NaN</span>
+<span class="sd">    return ``None``, else call function ``func_``</span>
+
+<span class="sd">    :type func\_: func</span>
+<span class="sd">    :param func\_: A one-argument function</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: ``wrapper``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isNaN</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

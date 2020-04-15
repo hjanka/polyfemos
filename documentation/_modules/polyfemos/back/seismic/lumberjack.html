@@ -1,0 +1,1120 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.seismic.lumberjack &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.back.seismic.lumberjack</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for reading and parsing data from state of health and data files.</span>
+
+<span class="sd">The main public functions that return list of lists of timestamps and values:</span>
+
+<span class="sd">- :func:`~polyfemos.back.seismic.lumberjack.data_mseed` (not yet)</span>
+<span class="sd">- :func:`~polyfemos.back.seismic.lumberjack.centaur_mseed`</span>
+<span class="sd">- :func:`~polyfemos.back.seismic.lumberjack.earthdata_mseed`</span>
+<span class="sd">- :func:`~polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily`</span>
+<span class="sd">- :func:`~polyfemos.back.seismic.lumberjack.data_timing_quality`</span>
+<span class="sd">- :func:`~polyfemos.back.seismic.lumberjack.data_coverage`</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># I&#39;m a lumberjack and I&#39;m OK</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="kn">from</span> <span class="nn">obspy</span> <span class="k">import</span> <span class="n">Stream</span><span class="p">,</span> <span class="n">UTCDateTime</span>
+<span class="kn">from</span> <span class="nn">obspy.io.mseed.util</span> <span class="k">import</span> <span class="n">get_record_information</span><span class="p">,</span> <span class="n">get_flags</span>
+<span class="kn">from</span> <span class="nn">obspy.imaging.scripts.scan</span> <span class="k">import</span> <span class="n">Scanner</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util.messenger</span> <span class="k">import</span> <span class="n">messenger</span><span class="p">,</span> <span class="n">debugger</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">fileutils</span>
+<span class="kn">from</span> <span class="nn">polyfemos.almanac.ordinal</span> <span class="k">import</span> <span class="n">Ordinal</span>
+<span class="kn">from</span> <span class="nn">polyfemos.back</span> <span class="k">import</span> <span class="n">filewriter</span>
+<span class="kn">from</span> <span class="nn">polyfemos.back.seismic</span> <span class="k">import</span> <span class="n">edlogreader</span>
+
+
+<div class="viewcode-block" id="data_mseed"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.data_mseed">[docs]</a><span class="nd">@fileutils</span><span class="o">.</span><span class="n">check_filepath</span>
+<span class="k">def</span> <span class="nf">data_mseed</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TODO</span>
+
+<span class="sd">    :type path:</span>
+<span class="sd">    :param path:</span>
+<span class="sd">    :type scale:</span>
+<span class="sd">    :param scale:</span>
+<span class="sd">    :rtype:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO paz correction</span>
+    <span class="c1"># st = fileutils.get_stream(path)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_earthdata_stream"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.get_earthdata_stream">[docs]</a><span class="nd">@fileutils</span><span class="o">.</span><span class="n">check_filepath</span>
+<span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">get_earthdata_stream</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function used with Earth Data state of health miniseed files.</span>
+<span class="sd">    Parameter specific scaling function is applied to the raw data.</span>
+
+<span class="sd">    :type path: str</span>
+<span class="sd">    :param path: path to miniseed file</span>
+<span class="sd">    :rtype: :class:`~obspy.core.stream.Stream` or None</span>
+<span class="sd">    :return: seismic data stream</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">get_stream</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">scale_funcs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;AEP&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+        <span class="s2">&quot;AE1&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="mf">10.9</span> <span class="o">/</span> <span class="mf">2700.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">5.0</span><span class="p">,</span>  <span class="c1"># to Volts</span>
+        <span class="s2">&quot;AE2&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mf">22.0</span> <span class="o">/</span> <span class="mf">170.0</span><span class="p">,</span>  <span class="c1"># to Amperes</span>
+        <span class="s2">&quot;AE3&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">-</span> <span class="mf">50.0</span><span class="p">,</span>  <span class="c1"># to Degrees of Celcius</span>
+        <span class="s2">&quot;AE4&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="mf">10.9</span> <span class="o">/</span> <span class="mf">2700.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">5.0</span><span class="p">,</span>  <span class="c1"># to Volts</span>
+        <span class="s2">&quot;AE5&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">/</span> <span class="mf">1000.0</span><span class="p">,</span>  <span class="c1"># to Volts</span>
+        <span class="s2">&quot;AE6&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">/</span> <span class="mf">1000.0</span><span class="p">,</span>  <span class="c1"># to Volts</span>
+        <span class="s2">&quot;AE7&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">/</span> <span class="mf">1000.0</span><span class="p">,</span>  <span class="c1"># to Volts</span>
+        <span class="s2">&quot;AE8&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">/</span> <span class="mf">1000.0</span><span class="p">,</span>  <span class="c1"># to Volts, Not in use</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">st</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">channel</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">scale_funcs</span><span class="p">:</span>
+            <span class="n">scale_func</span> <span class="o">=</span> <span class="n">scale_funcs</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+            <span class="n">tr</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">scale_func</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">st</span></div>
+
+
+<div class="viewcode-block" id="stream_to_xy_data"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.stream_to_xy_data">[docs]</a><span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">stream_to_xy_data</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type st: :class:`~obspy.core.stream.Stream`</span>
+<span class="sd">    :param st: seismic data stream</span>
+<span class="sd">    :type scale: func, optional</span>
+<span class="sd">    :param scale: defaults to identity function,</span>
+<span class="sd">        scaling function applied to data values</span>
+<span class="sd">    :rtype: list or None</span>
+<span class="sd">    :return: list of lists containing timestamp (as</span>
+<span class="sd">        :class:`~obspy.core.utcdatetime.UTCDateTime` instance) and data value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">tr_id</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">tr_id</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">])</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">st</span><span class="p">:</span>
+        <span class="n">starttime</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">starttime</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">delta</span>
+        <span class="n">data</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">starttime</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">delta</span><span class="p">,</span> <span class="n">scale</span><span class="p">(</span><span class="n">dp</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="centaur_mseed"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.centaur_mseed">[docs]</a><span class="nd">@fileutils</span><span class="o">.</span><span class="n">check_filepath</span>
+<span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">centaur_mseed</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    :param path: path to miniseed file</span>
+<span class="sd">    :type scale: func, optional</span>
+<span class="sd">    :param scale: defaults to identity function,</span>
+<span class="sd">        scaling function applied to data values</span>
+<span class="sd">    :rtype: list or None</span>
+<span class="sd">    :return: list of lists containing timestamp (as</span>
+<span class="sd">        :class:`~obspy.core.utcdatetime.UTCDateTime` instance) and data value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">get_stream</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">stream_to_xy_data</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="earthdata_mseed"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.earthdata_mseed">[docs]</a><span class="nd">@fileutils</span><span class="o">.</span><span class="n">check_filepath</span>
+<span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">earthdata_mseed</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    :param path: path to miniseed file</span>
+<span class="sd">    :type scale: func, optional</span>
+<span class="sd">    :param scale: defaults to identity function,</span>
+<span class="sd">        scaling function applied to data values</span>
+<span class="sd">    :rtype: list or None</span>
+<span class="sd">    :return: list of lists containing timestamp (as</span>
+<span class="sd">        :class:`~obspy.core.utcdatetime.UTCDateTime` instance) and data value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">get_earthdata_stream</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">stream_to_xy_data</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="data_timing_quality_obspy_daily"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily">[docs]</a><span class="nd">@fileutils</span><span class="o">.</span><span class="n">check_filepath</span>
+<span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">data_timing_quality_obspy_daily</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+                                    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract timing quality flags from given miniseed file. One value per</span>
+<span class="sd">    file, which means one value per day.</span>
+
+<span class="sd">    :type path: str</span>
+<span class="sd">    :param path: path to miniseed file</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key: key available with :func:`~obspy.io.mseed.util.get_flags` and</span>
+<span class="sd">        ``timinig_quality`` key.</span>
+<span class="sd">    :type scale: func, optional</span>
+<span class="sd">    :param scale: defaults to identity function,</span>
+<span class="sd">        scaling function applied to data values</span>
+<span class="sd">    :rtype: list or None</span>
+<span class="sd">    :return: list of lists containing timestamp (as</span>
+<span class="sd">        :class:`~obspy.core.utcdatetime.UTCDateTime` instance) and data value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dtq</span> <span class="o">=</span> <span class="n">get_flags</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="s2">&quot;timing_quality&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dtq</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">data_value</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">dtq</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">get_stream</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">])</span>
+    <span class="n">time_</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">endtime</span>
+    <span class="k">return</span> <span class="p">[[</span><span class="n">time_</span><span class="p">,</span> <span class="n">data_value</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="data_timing_quality"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.data_timing_quality">[docs]</a><span class="nd">@fileutils</span><span class="o">.</span><span class="n">check_filepath</span>
+<span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">data_timing_quality</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">average_calc_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads timing quality values from miniseed file using</span>
+<span class="sd">    :func:`~obspy.io.mseed.util.get_record_information` function.</span>
+
+<span class="sd">    :type path: str</span>
+<span class="sd">    :param path: path to miniseed file</span>
+<span class="sd">    :type average_calc_length: int, optional</span>
+<span class="sd">    :param average_calc_length: defaults to one, setting this value greater</span>
+<span class="sd">        than one will result in a little bit smoothed timing quality curve,</span>
+<span class="sd">        since the returned datapoints will be averages over</span>
+<span class="sd">        ``average_calc_length`` values.</span>
+<span class="sd">    :type scale: func, optional</span>
+<span class="sd">    :param scale: defaults to identity function,</span>
+<span class="sd">        scaling function applied to data values</span>
+<span class="sd">    :rtype: list or None</span>
+<span class="sd">    :return: list of lists containing timestamp (as</span>
+<span class="sd">        :class:`~obspy.core.utcdatetime.UTCDateTime` instance) and data value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">imm</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">invalid_mseed</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">imm</span><span class="p">:</span>
+        <span class="n">messenger</span><span class="p">(</span><span class="n">imm</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">timing_quality</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tqtimes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">last_qualities</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Codes from obspy</span>
+    <span class="c1"># Loop over each record.</span>
+    <span class="c1"># A valid record needs to have a record length of at</span>
+    <span class="c1"># least 256 bytes.</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">get_record_information</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">offset</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;filesize&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">256</span><span class="p">):</span>
+        <span class="n">this_info</span> <span class="o">=</span> <span class="n">get_record_information</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;timing_quality&#39;</span> <span class="ow">in</span> <span class="n">this_info</span><span class="p">:</span>
+
+            <span class="n">last_qualities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">this_info</span><span class="p">[</span><span class="s1">&#39;timing_quality&#39;</span><span class="p">]))</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">last_qualities</span><span class="p">)</span>
+            <span class="n">ave</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">last_qualities</span><span class="p">)</span> <span class="o">/</span> <span class="n">length</span>
+            <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="n">average_calc_length</span><span class="p">:</span>
+                <span class="n">last_qualities</span> <span class="o">=</span> <span class="n">last_qualities</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+            <span class="n">timing_quality</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ave</span><span class="p">)</span>
+            <span class="n">tqtimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_info</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">])</span>
+
+        <span class="n">offset</span> <span class="o">+=</span> <span class="n">this_info</span><span class="p">[</span><span class="s1">&#39;record_length&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">[[</span><span class="n">x</span><span class="p">,</span> <span class="n">scale</span><span class="p">(</span><span class="n">y</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tqtimes</span><span class="p">,</span> <span class="n">timing_quality</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="data_coverage"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.data_coverage">[docs]</a><span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">data_coverage</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="p">[],</span> <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+                  <span class="n">invalid_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the datacoverage percentage between ``starttime`` and</span>
+<span class="sd">    ``endtime``.</span>
+
+<span class="sd">    See :class:`~obspy.imaging.scripts.scan.Scanner` and</span>
+<span class="sd">    :meth:`~obspy.imaging.scripts.scan.Scanner.analyze_parsed_data`</span>
+<span class="sd">    for more information.</span>
+
+<span class="sd">    :type paths: list</span>
+<span class="sd">    :param paths: list of filepaths (as string values)</span>
+<span class="sd">        to the datefiles to be scanned</span>
+<span class="sd">    :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">    :param starttime:</span>
+<span class="sd">    :type endtime: :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">    :param endtime:</span>
+<span class="sd">    :type scale: func, optional</span>
+<span class="sd">    :param scale: defaults to identity function,</span>
+<span class="sd">        scaling function applied to data values</span>
+<span class="sd">    :type invalid_value: float, optional</span>
+<span class="sd">    :param invalid_value: default to ``0.0``</span>
+<span class="sd">    :rtype: list or None</span>
+<span class="sd">    :return: list of lists containing timestamp (as</span>
+<span class="sd">        :class:`~obspy.core.utcdatetime.UTCDateTime` instance), data value,</span>
+<span class="sd">        and additional z value as string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">starttime</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">endtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">starttime</span> <span class="o">&gt;</span> <span class="n">endtime</span><span class="p">:</span>
+        <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span> <span class="o">=</span> <span class="n">endtime</span><span class="p">,</span> <span class="n">starttime</span>
+
+    <span class="n">st0</span> <span class="o">=</span> <span class="n">Stream</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">get_stream</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">st</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">st0</span> <span class="o">+=</span> <span class="n">st</span>
+
+    <span class="n">percentage</span> <span class="o">=</span> <span class="n">invalid_value</span>
+    <span class="c1"># Arbitrary z_value as string following python dictionary syntax</span>
+    <span class="n">z_value</span> <span class="o">=</span> <span class="s2">&quot;{{&#39;starttime&#39;:&#39;</span><span class="si">{}</span><span class="s2">&#39;}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">starttime</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">st0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">scanner</span> <span class="o">=</span> <span class="n">Scanner</span><span class="p">()</span>
+        <span class="n">scanner</span><span class="o">.</span><span class="n">add_stream</span><span class="p">(</span><span class="n">st0</span><span class="p">)</span>
+        <span class="n">scanner</span><span class="o">.</span><span class="n">analyze_parsed_data</span><span class="p">(</span><span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">)</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="n">scanner</span><span class="o">.</span><span class="n">_info</span><span class="p">[</span><span class="n">st0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="s1">&#39;percentage&#39;</span><span class="p">]</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="n">invalid_value</span> <span class="k">if</span> <span class="n">percentage</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">percentage</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">percentage</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[[</span><span class="n">endtime</span><span class="p">,</span> <span class="n">percentage</span><span class="p">,</span> <span class="n">z_value</span><span class="p">]]</span></div>
+
+
+<span class="c1">###</span>
+<span class="c1"># Privates start here</span>
+<span class="c1">###</span>
+
+
+<div class="viewcode-block" id="_none2invalid"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._none2invalid">[docs]</a><span class="k">def</span> <span class="nf">_none2invalid</span><span class="p">(</span><span class="n">generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorates private lumberjack functions.</span>
+<span class="sd">    Replaces ``None`` values with function specific invalid values.</span>
+<span class="sd">    The default invalid value is defined in function</span>
+<span class="sd">    :func:`~polyfemos.parser.typeoperator.getNaN`.</span>
+
+<span class="sd">    :type generator: :obj:`~types.GeneratorType`</span>
+<span class="sd">    :param generator:</span>
+<span class="sd">    :rtype: :obj:`~types.GeneratorType`</span>
+<span class="sd">    :return: decorated generator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;invalid_value&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;invalid_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">getNaN</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">time_</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">generator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="n">time_</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;invalid_value&#39;</span><span class="p">]]</span>
+                <span class="p">]</span>
+            <span class="k">yield</span> <span class="n">time_</span><span class="p">,</span> <span class="n">data</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="_data_mseed"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._data_mseed">[docs]</a><span class="nd">@_none2invalid</span>
+<span class="k">def</span> <span class="nf">_data_mseed</span><span class="p">(</span><span class="n">pathfunc</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">funckwargs</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TODO</span>
+
+<span class="sd">    See the documentation of</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack._data_coverage`.</span>
+
+<span class="sd">    :type pathfunc:</span>
+<span class="sd">    :param pathfunc:</span>
+<span class="sd">    :type times:</span>
+<span class="sd">    :param times:</span>
+<span class="sd">    :type flags:</span>
+<span class="sd">    :param flags:</span>
+<span class="sd">    :type funckwargs:</span>
+<span class="sd">    :param funckwargs:</span>
+<span class="sd">    :rtype:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data_mseed</span>
+    <span class="k">yield</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="_centaur_mseed"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._centaur_mseed">[docs]</a><span class="nd">@_none2invalid</span>
+<span class="k">def</span> <span class="nf">_centaur_mseed</span><span class="p">(</span><span class="n">pathfunc</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">funckwargs</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generator calling function</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack.centaur_mseed`</span>
+<span class="sd">    [\*] see the documentation of</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack._data_coverage`.</span>
+
+<span class="sd">    :type pathfunc: func</span>
+<span class="sd">    :param pathfunc: [\*]</span>
+<span class="sd">    :type times: list</span>
+<span class="sd">    :param times: [\*]</span>
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: [\*]</span>
+<span class="sd">    :type funckwargs: dict, optional</span>
+<span class="sd">    :param funckwargs: defaults to empty dict, keyword arguments for</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.lumberjack.centaur_mseed`</span>
+<span class="sd">    :return: generator yielding :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        and list of lists of timestamps and data values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">time_</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">pathfunc</span><span class="p">(</span><span class="n">julday</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">julday</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">time_</span><span class="p">,</span> <span class="n">centaur_mseed</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">funckwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_earthdata_mseed"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._earthdata_mseed">[docs]</a><span class="nd">@_none2invalid</span>
+<span class="k">def</span> <span class="nf">_earthdata_mseed</span><span class="p">(</span><span class="n">pathfunc</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">funckwargs</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generator calling function</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack.earthdata_mseed`</span>
+<span class="sd">    [\*] see the documentation of</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack._data_coverage`.</span>
+
+<span class="sd">    :type pathfunc: func</span>
+<span class="sd">    :param pathfunc: [\*]</span>
+<span class="sd">    :type times: list</span>
+<span class="sd">    :param times: [\*]</span>
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: [\*]</span>
+<span class="sd">    :type funckwargs: dict, optional</span>
+<span class="sd">    :param funckwargs: defaults to empty dict, keyword arguments for</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.lumberjack.earthdata_mseed`</span>
+<span class="sd">    :return: generator yielding :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        and list of lists of timestamps and data values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">time_</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">pathfunc</span><span class="p">(</span><span class="n">julday</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">julday</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">time_</span><span class="p">,</span> <span class="n">earthdata_mseed</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">funckwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_data_timing_quality"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._data_timing_quality">[docs]</a><span class="nd">@_none2invalid</span>
+<span class="k">def</span> <span class="nf">_data_timing_quality</span><span class="p">(</span><span class="n">pathfunc</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">funckwargs</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generator calling function</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack.data_timing_quality`</span>
+<span class="sd">    [\*] see the documentation of</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack._data_coverage`.</span>
+
+<span class="sd">    :type pathfunc: func</span>
+<span class="sd">    :param pathfunc: [\*]</span>
+<span class="sd">    :type times: list</span>
+<span class="sd">    :param times: [\*]</span>
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: [\*], adds ``average_calc_lengthy`` flag to ``funckwargs``</span>
+<span class="sd">    :type funckwargs: dict, optional</span>
+<span class="sd">    :param funckwargs: defaults to empty dict, keyword arguments for</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.lumberjack.data_timing_quality`</span>
+<span class="sd">    :return: generator yielding :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        and list of lists of timestamps and data values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">funckwargs</span><span class="p">[</span><span class="s2">&quot;average_calc_length&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;average_calc_length&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">time_</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">pathfunc</span><span class="p">(</span><span class="n">julday</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">julday</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">time_</span><span class="p">,</span> <span class="n">data_timing_quality</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">funckwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_data_timing_quality_obspy_daily"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._data_timing_quality_obspy_daily">[docs]</a><span class="nd">@_none2invalid</span>
+<span class="k">def</span> <span class="nf">_data_timing_quality_obspy_daily</span><span class="p">(</span><span class="n">pathfunc</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">funckwargs</span><span class="o">=</span><span class="p">{},</span>
+                                     <span class="n">key</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generator calling function</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily`</span>
+<span class="sd">    [\*] see the documentation of</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack._data_coverage`.</span>
+
+<span class="sd">    :type pathfunc: func</span>
+<span class="sd">    :param pathfunc: [\*]</span>
+<span class="sd">    :type times: list</span>
+<span class="sd">    :param times: [\*]</span>
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: [\*]</span>
+<span class="sd">    :type funckwargs: dict, optional</span>
+<span class="sd">    :param funckwargs: defaults to empty dict, keyword arguments for</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily`</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key: Adds the ``key`` to ``funckwargs``,</span>
+<span class="sd">        see :func:`~obspy.io.mseed.util.get_flags` ``timing_quality``</span>
+<span class="sd">        for available keys</span>
+<span class="sd">    :return: generator yielding :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        and list of lists of timestamps and data values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">funckwargs</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+    <span class="k">for</span> <span class="n">time_</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">pathfunc</span><span class="p">(</span><span class="n">julday</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">julday</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">time_</span><span class="p">,</span> <span class="n">data_timing_quality_obspy_daily</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">funckwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_earthdata_log"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._earthdata_log">[docs]</a><span class="nd">@_none2invalid</span>
+<span class="k">def</span> <span class="nf">_earthdata_log</span><span class="p">(</span><span class="n">pathfunc</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">funckwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generator calling function</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.edlogreader.get_data`</span>
+<span class="sd">    [\*] see the documentation of</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack._data_coverage`.</span>
+
+<span class="sd">    :type pathfunc: func</span>
+<span class="sd">    :param pathfunc: [\*]</span>
+<span class="sd">    :type times: list</span>
+<span class="sd">    :param times: [\*]</span>
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: [\*]</span>
+<span class="sd">    :type funckwargs: dict, optional</span>
+<span class="sd">    :param funckwargs: defaults to empty dict, keyword arguments for</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.edlogreader.get_data`</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key: Adds the ``key`` to ``funckwargs``,</span>
+<span class="sd">        see :mod:`~polyfemos.back.seismic.edlogreader` for available keys</span>
+<span class="sd">    :return: generator yielding :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        and list of lists of timestamps and data values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">funckwargs</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+    <span class="k">for</span> <span class="n">time_</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">pathfunc</span><span class="p">(</span><span class="n">julday</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">julday</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="n">datapoint</span> <span class="o">=</span> <span class="n">edlogreader</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">funckwargs</span><span class="p">)</span>
+        <span class="c1"># If datapoint is None, yield single None as data so the _none2invalid</span>
+        <span class="c1"># decorator works</span>
+        <span class="k">if</span> <span class="n">datapoint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">datapoint</span> <span class="o">=</span> <span class="p">[[</span><span class="n">time_</span><span class="p">,</span> <span class="n">datapoint</span><span class="p">]]</span>
+        <span class="k">yield</span> <span class="n">time_</span><span class="p">,</span> <span class="n">datapoint</span></div>
+
+
+<div class="viewcode-block" id="_data_coverage"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._data_coverage">[docs]</a><span class="nd">@_none2invalid</span>
+<span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">_data_coverage</span><span class="p">(</span><span class="n">pathfunc</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">funckwargs</span><span class="o">=</span><span class="p">{},</span>
+                   <span class="n">key</span><span class="o">=</span><span class="s2">&quot;DCL&quot;</span><span class="p">,</span> <span class="n">invalid_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The documentation of this function will cover all of the</span>
+<span class="sd">    next private generator functions of lumberjack:</span>
+
+<span class="sd">    - :func:`~polyfemos.back.seismic.lumberjack._data_mseed`</span>
+<span class="sd">    - :func:`~polyfemos.back.seismic.lumberjack._centaur_mseed`</span>
+<span class="sd">    - :func:`~polyfemos.back.seismic.lumberjack._earthdata_mseed`</span>
+<span class="sd">    - :func:`~polyfemos.back.seismic.lumberjack._earthdata_log`</span>
+<span class="sd">    - :func:`~polyfemos.back.seismic.lumberjack._data_timing_quality`</span>
+<span class="sd">    - :func:`~polyfemos.back.seismic.lumberjack._data_timing_quality_obspy_daily`</span>
+<span class="sd">    - :func:`~polyfemos.back.seismic.lumberjack._data_coverage`</span>
+<span class="sd">    - :func:`~polyfemos.back.seismic.lumberjack._data_timestamp_error`</span>
+
+<span class="sd">    All of these generator functions are decorated with</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack._none2invalid`</span>
+<span class="sd">    which means that all ``None``</span>
+<span class="sd">    data values are replaced with ``invalid_value``</span>
+
+<span class="sd">    :type pathfunc: func</span>
+<span class="sd">    :param pathfunc: A function taking julian date and year as keyword</span>
+<span class="sd">        arguments and returning path as a string</span>
+<span class="sd">    :type times: list</span>
+<span class="sd">    :param times: a list of :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        instances</span>
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: Flag variables from</span>
+<span class="sd">        :class:`~polyfemos.back.interpreter.Interpreter`</span>
+<span class="sd">    :type funckwargs: dict, optional</span>
+<span class="sd">    :param funckwargs: defaults to empty dict, keyword arguments for</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.lumberjack.data_coverage`</span>
+<span class="sd">    :type key: str, optional</span>
+<span class="sd">    :param key: &quot;DCD&quot; (for data coverage from the startof the day) or &quot;DCL&quot;</span>
+<span class="sd">        (for the data coverage from the start program start, i.e.</span>
+<span class="sd">        realtimeness)</span>
+<span class="sd">    :type invalid_value: float, optional</span>
+<span class="sd">    :param invalid_value: defaults to ``0.0``, i.e. no data available</span>
+<span class="sd">    :return: generator yielding :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        and list of lists of timestamps and data values, in this case, the</span>
+<span class="sd">        data contains only one value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">realtimeness_limit</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;realtimeness_limit&quot;</span><span class="p">]</span>
+    <span class="n">pklfile</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;execution_time_file&quot;</span><span class="p">]</span>
+    <span class="n">timedict</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">load_obj</span><span class="p">(</span><span class="n">pklfile</span><span class="p">)</span>
+    <span class="n">dc_starttime</span> <span class="o">=</span> <span class="n">timedict</span><span class="p">[</span><span class="s2">&quot;laststarttime&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">realtimeness_limit</span>
+    <span class="n">dc_endtime</span> <span class="o">=</span> <span class="n">timedict</span><span class="p">[</span><span class="s2">&quot;thisstarttime&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">realtimeness_limit</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;DCD&quot;</span><span class="p">:</span>
+        <span class="n">dc_starttime</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">dc_endtime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%j&quot;</span><span class="p">))</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lasttimes</span> <span class="o">=</span> <span class="n">times</span><span class="p">[:][</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">for</span> <span class="n">time_</span> <span class="ow">in</span> <span class="p">[</span><span class="n">lasttimes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">86400</span><span class="p">,</span> <span class="n">lasttimes</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+        <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pathfunc</span><span class="p">(</span><span class="n">julday</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">julday</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">year</span><span class="p">))</span>
+
+    <span class="n">funckwargs</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">paths</span>
+    <span class="n">funckwargs</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_starttime</span>
+    <span class="n">funckwargs</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_endtime</span>
+    <span class="n">funckwargs</span><span class="p">[</span><span class="s2">&quot;invalid_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">invalid_value</span>
+
+    <span class="k">yield</span> <span class="n">lasttimes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data_coverage</span><span class="p">(</span><span class="o">**</span><span class="n">funckwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_data_timestamp_error"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._data_timestamp_error">[docs]</a><span class="nd">@_none2invalid</span>
+<span class="k">def</span> <span class="nf">_data_timestamp_error</span><span class="p">(</span><span class="n">pathfunc</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">funckwargs</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the time difference (in seconds) between current program</span>
+<span class="sd">    starttime and timestamp of the last datapoint in the data file. The</span>
+<span class="sd">    difference is positive if datapoint&#39;s timestamp is lesser of the two.</span>
+
+<span class="sd">    [\*] see the documentation of</span>
+<span class="sd">    :func:`~polyfemos.back.seismic.lumberjack._data_coverage`.</span>
+
+<span class="sd">    :type pathfunc: func</span>
+<span class="sd">    :param pathfunc: [\*]</span>
+<span class="sd">    :type times: list</span>
+<span class="sd">    :param times: [\*]</span>
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: [\*]</span>
+<span class="sd">    :type funckwargs: dict, optional</span>
+<span class="sd">    :param funckwargs: defaults to empty dict,</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">time_</span> <span class="o">=</span> <span class="n">times</span><span class="p">[:][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">pathfunc</span><span class="p">(</span><span class="n">julday</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">julday</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">time_</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">get_stream</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">st</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">time_</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pklfile</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;execution_time_file&quot;</span><span class="p">]</span>
+        <span class="n">timedict</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">load_obj</span><span class="p">(</span><span class="n">pklfile</span><span class="p">)</span>
+        <span class="n">programstarttime</span> <span class="o">=</span> <span class="n">timedict</span><span class="p">[</span><span class="s2">&quot;thisstarttime&quot;</span><span class="p">]</span>
+        <span class="n">endtime</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">st</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">datapoint</span> <span class="o">=</span> <span class="n">programstarttime</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">-</span> <span class="n">endtime</span>
+        <span class="k">if</span> <span class="s1">&#39;scale&#39;</span> <span class="ow">in</span> <span class="n">funckwargs</span><span class="p">:</span>
+            <span class="n">datapoint</span> <span class="o">=</span> <span class="n">funckwargs</span><span class="p">[</span><span class="s1">&#39;scale&#39;</span><span class="p">](</span><span class="n">datapoint</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">programstarttime</span><span class="p">,</span> <span class="p">[[</span><span class="n">programstarttime</span><span class="p">,</span> <span class="n">datapoint</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="_get_data"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._get_data">[docs]</a><span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">_get_data</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">par</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Format of the values yielded by the returned generator</span>
+
+<span class="sd">    .. code-block:: text</span>
+
+<span class="sd">        (day1,</span>
+<span class="sd">            [</span>
+<span class="sd">                [timestamp11, value11],</span>
+<span class="sd">                [timestamp12, value12],</span>
+<span class="sd">                ...</span>
+<span class="sd">            ],</span>
+<span class="sd">        ),</span>
+<span class="sd">        (day2,</span>
+<span class="sd">            [</span>
+<span class="sd">                [timestamp21, value21],</span>
+<span class="sd">                [timestamp22, value22],</span>
+<span class="sd">                ...</span>
+<span class="sd">            ],</span>
+<span class="sd">        ),</span>
+<span class="sd">        ...</span>
+
+<span class="sd">    :type station: :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">    :param station: station object containing</span>
+<span class="sd">    :type par: :class:`~polyfemos.back.parameter.Parameter`</span>
+<span class="sd">    :param par:</span>
+<span class="sd">    :type times: list</span>
+<span class="sd">    :param times: a list of :class:`~obspy.core.utcdatetime.UTCDateTime`</span>
+<span class="sd">        instances</span>
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: Flag variables from</span>
+<span class="sd">        :class:`~polyfemos.back.interpreter.Interpreter`</span>
+<span class="sd">    :rtype: generator</span>
+<span class="sd">    :return: A generator yielding timestamp for each day and the data of that</span>
+<span class="sd">        day, (timestamps and datapoints) for that day.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">pathkwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;network_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">network_code</span>
+    <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;station_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">station_code</span>
+    <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;location_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">location_code</span>
+    <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;channel_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">channel_code</span>
+    <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;parname&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">pathfunc</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">par</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">pathkwargs</span><span class="p">)</span>
+
+    <span class="n">funckwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">funckwargs</span><span class="p">[</span><span class="s2">&quot;scale&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">scale</span>
+    <span class="n">data_generator</span> <span class="o">=</span> <span class="n">_functions</span><span class="p">[</span><span class="n">par</span><span class="o">.</span><span class="n">code</span><span class="p">](</span>
+        <span class="n">pathfunc</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span>
+        <span class="n">funckwargs</span><span class="o">=</span><span class="n">funckwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_generator</span></div>
+
+
+<span class="n">_functions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Nanometrics Centaur state of health parameters available from MSEED</span>
+    <span class="s2">&quot;EX1&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># External SOH channels, 1-3</span>
+    <span class="s2">&quot;EX2&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>
+    <span class="s2">&quot;EX3&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>
+    <span class="s2">&quot;LCE&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># Absolute clock phase error</span>
+    <span class="s2">&quot;LCQ&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># Clock quality</span>
+    <span class="s2">&quot;VCO&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># Timing oscillator control voltage</span>
+    <span class="s2">&quot;VEC&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># Digitizer system current</span>
+    <span class="s2">&quot;VM1&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># Sensor SOH channels, Offset voltages, 1-6</span>
+    <span class="s2">&quot;VM2&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>
+    <span class="s2">&quot;VM3&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>
+    <span class="s2">&quot;VM4&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>
+    <span class="s2">&quot;VM5&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>
+    <span class="s2">&quot;VM6&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>
+    <span class="s2">&quot;VPB&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># Digitizer buffer percent used</span>
+    <span class="s2">&quot;GNS&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># Number of GPS satellites used</span>
+    <span class="s2">&quot;GLA&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># GPS latitude</span>
+    <span class="s2">&quot;GLO&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># GPS longitude</span>
+    <span class="s2">&quot;GEL&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># GPS elevation</span>
+    <span class="s2">&quot;GST&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># GPS status</span>
+    <span class="s2">&quot;GPL&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># GPS PPL status</span>
+    <span class="s2">&quot;VDT&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># Digitizer system temperature</span>
+    <span class="s2">&quot;VEI&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># Input system voltage</span>
+    <span class="s2">&quot;GAN&quot;</span><span class="p">:</span> <span class="n">_centaur_mseed</span><span class="p">,</span>  <span class="c1"># GPS antenna status</span>
+    <span class="c1"># Earth Data LOG parameters</span>
+    <span class="c1"># 16 bit phase error in 1 second pll</span>
+    <span class="s2">&quot;LOG.plle&quot;</span><span class="p">:</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_earthdata_log</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;plle&quot;</span><span class="p">),</span>
+    <span class="c1"># Date as six integer sequence</span>
+    <span class="s2">&quot;LOG.date&quot;</span><span class="p">:</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_earthdata_log</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;date&quot;</span><span class="p">),</span>
+    <span class="c1"># Time as six integer sequence</span>
+    <span class="s2">&quot;LOG.time&quot;</span><span class="p">:</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_earthdata_log</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">),</span>
+    <span class="c1"># Latitude in WGS84 system</span>
+    <span class="s2">&quot;LOG.lat&quot;</span><span class="p">:</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_earthdata_log</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span>
+                                 <span class="n">invalid_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="c1"># Longitude in WGS84 system</span>
+    <span class="s2">&quot;LOG.long&quot;</span><span class="p">:</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_earthdata_log</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;long&quot;</span><span class="p">,</span>
+                                  <span class="n">invalid_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="c1"># Heading</span>
+    <span class="s2">&quot;LOG.hdng&quot;</span><span class="p">:</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_earthdata_log</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hdng&quot;</span><span class="p">),</span>
+    <span class="c1"># Velocity</span>
+    <span class="s2">&quot;LOG.vel&quot;</span><span class="p">:</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_earthdata_log</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;vel&quot;</span><span class="p">),</span>
+    <span class="c1"># Magnetic variation</span>
+    <span class="s2">&quot;LOG.mva&quot;</span><span class="p">:</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_earthdata_log</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;mva&quot;</span><span class="p">),</span>
+    <span class="c1"># Earth Data state of health parameters available from MSEED</span>
+    <span class="s2">&quot;AEP&quot;</span><span class="p">:</span> <span class="n">_earthdata_mseed</span><span class="p">,</span>  <span class="c1"># 16 bit phase error in 1 second pll</span>
+    <span class="s2">&quot;AE1&quot;</span><span class="p">:</span> <span class="n">_earthdata_mseed</span><span class="p">,</span>  <span class="c1"># Supply voltage at supply connector/input</span>
+    <span class="s2">&quot;AE2&quot;</span><span class="p">:</span> <span class="n">_earthdata_mseed</span><span class="p">,</span>  <span class="c1"># Supply current</span>
+    <span class="s2">&quot;AE3&quot;</span><span class="p">:</span> <span class="n">_earthdata_mseed</span><span class="p">,</span>  <span class="c1"># Temp. sensor voltage, internal temperature</span>
+    <span class="s2">&quot;AE4&quot;</span><span class="p">:</span> <span class="n">_earthdata_mseed</span><span class="p">,</span>  <span class="c1"># Supply voltage at remote connector/input</span>
+    <span class="s2">&quot;AE5&quot;</span><span class="p">:</span> <span class="n">_earthdata_mseed</span><span class="p">,</span>  <span class="c1"># User input  Offset</span>
+    <span class="s2">&quot;AE6&quot;</span><span class="p">:</span> <span class="n">_earthdata_mseed</span><span class="p">,</span>  <span class="c1"># -//-        Offset</span>
+    <span class="s2">&quot;AE7&quot;</span><span class="p">:</span> <span class="n">_earthdata_mseed</span><span class="p">,</span>  <span class="c1"># -//-        Offset</span>
+    <span class="s2">&quot;AE8&quot;</span><span class="p">:</span> <span class="n">_earthdata_mseed</span><span class="p">,</span>  <span class="c1"># Not in use</span>
+<span class="p">}</span>
+<span class="n">_data_functions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># Other parameters available from raw data MSEEDs</span>
+    <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_data_mseed</span><span class="p">],</span>  <span class="c1"># Data files</span>
+    <span class="p">[</span><span class="s2">&quot;.TQ&quot;</span><span class="p">,</span> <span class="n">_data_timing_quality</span><span class="p">],</span>  <span class="c1"># Timing quality</span>
+    <span class="c1"># Data Coverage Day, Percentage of coverage from start of the day</span>
+    <span class="p">[</span><span class="s2">&quot;.DCD&quot;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_data_coverage</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;DCD&quot;</span><span class="p">,</span> <span class="n">invalid_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)],</span>
+    <span class="c1"># Data Coverage Last, Percentage of coverage since last check</span>
+    <span class="p">[</span><span class="s2">&quot;.DCL&quot;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_data_coverage</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;DCL&quot;</span><span class="p">,</span> <span class="n">invalid_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)],</span>
+    <span class="c1"># Timing quality minimum, Reads timing_quality parameters</span>
+    <span class="c1"># from mseed header blockette 1001</span>
+    <span class="p">[</span><span class="s2">&quot;.TQMIN&quot;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_data_timing_quality_obspy_daily</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">)],</span>
+    <span class="c1"># Timing quality maximum</span>
+    <span class="p">[</span><span class="s2">&quot;.TQMAX&quot;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_data_timing_quality_obspy_daily</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">)],</span>
+    <span class="c1"># Timing quality average</span>
+    <span class="p">[</span><span class="s2">&quot;.TQAVE&quot;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_data_timing_quality_obspy_daily</span><span class="p">,</span>
+                                 <span class="n">key</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)],</span>
+    <span class="p">[</span><span class="s2">&quot;.TQMED&quot;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_data_timing_quality_obspy_daily</span><span class="p">,</span>
+                                 <span class="n">key</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">)],</span>  <span class="c1"># Timing quality median</span>
+    <span class="c1"># Timing quality lower quartile</span>
+    <span class="p">[</span><span class="s2">&quot;.TQLOQ&quot;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_data_timing_quality_obspy_daily</span><span class="p">,</span>
+                                 <span class="n">key</span><span class="o">=</span><span class="s2">&quot;lower_quartile&quot;</span><span class="p">)],</span>
+    <span class="c1"># timimg quality upper quartile</span>
+    <span class="p">[</span><span class="s2">&quot;.TQUPQ&quot;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_data_timing_quality_obspy_daily</span><span class="p">,</span>
+                                 <span class="n">key</span><span class="o">=</span><span class="s2">&quot;upper_quartile&quot;</span><span class="p">)],</span>
+    <span class="p">[</span><span class="s2">&quot;.TSE&quot;</span><span class="p">,</span> <span class="n">_data_timestamp_error</span><span class="p">],</span>  <span class="c1"># data timestamp error</span>
+<span class="p">]</span>
+<span class="c1"># Create all possible data channels &quot;HHZ&quot;, &quot;HHE&quot;, etc...</span>
+<span class="n">_data_channels</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="s2">&quot;HBLV&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;ZNE&quot;</span><span class="p">))</span>
+<span class="c1"># Combine all possible data channels with possible functions used with</span>
+<span class="c1"># the channels</span>
+<span class="k">for</span> <span class="n">dc</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">_data_channels</span><span class="p">,</span> <span class="n">_data_functions</span><span class="p">):</span>
+    <span class="n">_functions</span><span class="p">[</span><span class="n">dc</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1"># Functions consists of all the functions that can be called using the</span>
+<span class="c1"># code of the parameter</span>
+<span class="c1"># The first characters of the code (before dot if present)</span>
+<span class="c1"># are the CHANNEL of the parameter in mseed     or in other files.</span>
+<span class="c1"># What comes after the dot is internally called &#39;code_key&#39;.</span>
+
+
+<div class="viewcode-block" id="get_tibs"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.get_tibs">[docs]</a><span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">get_tibs</span><span class="p">(</span><span class="n">alertfunc</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ``alertfunc`` is applied to the ``data``, starting from the first</span>
+<span class="sd">    value of the ``data`` iterable.</span>
+
+<span class="sd">    :type alertfunc: func</span>
+<span class="sd">    :param alertfunc: A function taking (usually) a numerical value as</span>
+<span class="sd">        an argument and returning a boolean value. Returned value is ``True``</span>
+<span class="sd">        if the &#39;threshold is broken&#39;.</span>
+<span class="sd">    :type data: iterable</span>
+<span class="sd">    :param data: An iterable containing the data values</span>
+<span class="sd">    :rtype: bool, bool</span>
+<span class="sd">    :return: The ``tib`` is ``True`` if the first value of the ``data``</span>
+<span class="sd">        breaks the threshold, ``thbb`` is ``True`` if any value of the</span>
+<span class="sd">        ``data`` breaks the threshold. NaN value may be returned if</span>
+<span class="sd">        all data points are NaNs or the alerts are not valid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tib</span><span class="p">,</span> <span class="n">thbb</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">getNaN</span><span class="p">(),</span> <span class="kc">False</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">to</span><span class="o">.</span><span class="n">isNaN</span><span class="p">(</span><span class="n">dp</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">alert</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">alertfunc</span><span class="p">(</span><span class="n">dp</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">alert</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="c1"># tib = True, only if the first value breaks the threshold</span>
+        <span class="n">tib</span> <span class="o">=</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">alert</span>
+        <span class="c1"># thbb = True, if any data point breaks the threshold</span>
+        <span class="c1"># The iteration is immediately terminated</span>
+        <span class="n">thbb</span> <span class="o">|=</span> <span class="n">alert</span>
+        <span class="k">if</span> <span class="n">thbb</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">thbb</span> <span class="o">=</span> <span class="n">tib</span> <span class="k">if</span> <span class="n">to</span><span class="o">.</span><span class="n">isNaN</span><span class="p">(</span><span class="n">tib</span><span class="p">)</span> <span class="k">else</span> <span class="n">thbb</span>
+    <span class="k">return</span> <span class="n">tib</span><span class="p">,</span> <span class="n">thbb</span></div>
+
+
+<div class="viewcode-block" id="_get_tibs_dc"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._get_tibs_dc">[docs]</a><span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">_get_tibs_dc</span><span class="p">(</span><span class="n">alertfunc</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">alertfile</span><span class="p">,</span> <span class="n">parname</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Since :func:`~_data_coverage` function return only one data point</span>
+<span class="sd">    each time it is called. The &#39;threshold has been broken&#39; (``thbb``)</span>
+<span class="sd">    value is not meaningfull. This function is used to read earlier ``tib``</span>
+<span class="sd">    and ``thbb`` values adn to set the ``thbb`` value accordingly.</span>
+
+<span class="sd">    :type alertfunc: func</span>
+<span class="sd">    :param alertfunc: see</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.lumberjack.get_tibs` for more info</span>
+<span class="sd">    :type data: iterable</span>
+<span class="sd">    :param data: An iterable containing the data values</span>
+<span class="sd">    :type alertfile: str</span>
+<span class="sd">    :param alertfile: A path to &#39;\*.alert&#39; file, the</span>
+<span class="sd">        &#39;threshold has been broken&#39; value is read from the file if it exists.</span>
+<span class="sd">    :type parname: str</span>
+<span class="sd">    :param parname: the name of the parameter with a code &#39;DCD&#39; or &#39;DCL&#39;.</span>
+<span class="sd">        The ``thbb`` value is searched from the ``alertfile`` using the</span>
+<span class="sd">        ``parname``.</span>
+<span class="sd">    :rtype: bool, bool</span>
+<span class="sd">    :return: see</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.lumberjack.get_tibs` for more info</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tib</span><span class="p">,</span> <span class="n">thbb</span> <span class="o">=</span> <span class="n">get_tibs</span><span class="p">(</span><span class="n">alertfunc</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">alertfile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">to</span><span class="o">.</span><span class="n">isNaN</span><span class="p">(</span><span class="n">tib</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tib</span> <span class="ow">or</span> <span class="n">rows</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tib</span><span class="p">,</span> <span class="n">thbb</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">parname</span><span class="p">:</span>
+            <span class="n">thbb</span> <span class="o">|=</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="s2">&quot;12&quot;</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">tib</span><span class="p">,</span> <span class="n">thbb</span></div>
+
+
+<div class="viewcode-block" id="_get_tibs"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._get_tibs">[docs]</a><span class="nd">@debugger</span>
+<span class="k">def</span> <span class="nf">_get_tibs</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">alertfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type par: :class:`~polyfemos.back.parameter.Parameter`</span>
+<span class="sd">    :param par:</span>
+<span class="sd">    :type data: list</span>
+<span class="sd">    :param data: A list of lists of timestamps and data values</span>
+<span class="sd">    :type alertfile: str</span>
+<span class="sd">    :param alertfile: see</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.lumberjack._get_tibs_dc` for more info</span>
+<span class="sd">    :rtype: bool, bool</span>
+<span class="sd">    :return: see :func:`~polyfemos.back.seismic.lumberjack.get_tibs`</span>
+<span class="sd">        for more info</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># create generator yielding only the y values of the data</span>
+    <span class="c1"># starting from the last entry</span>
+    <span class="n">data_gen</span> <span class="o">=</span> <span class="p">(</span><span class="n">dp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">par</span><span class="o">.</span><span class="n">code_key</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;DCD&quot;</span><span class="p">,</span> <span class="s2">&quot;DCL&quot;</span><span class="p">}:</span>
+        <span class="k">return</span> <span class="n">_get_tibs_dc</span><span class="p">(</span><span class="n">par</span><span class="o">.</span><span class="n">alertfunc</span><span class="p">,</span> <span class="n">data_gen</span><span class="p">,</span> <span class="n">alertfile</span><span class="p">,</span>
+                            <span class="n">parname</span><span class="o">=</span><span class="n">par</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_tibs</span><span class="p">(</span><span class="n">par</span><span class="o">.</span><span class="n">alertfunc</span><span class="p">,</span> <span class="n">data_gen</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_station_and_times"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._station_and_times">[docs]</a><span class="k">def</span> <span class="nf">_station_and_times</span><span class="p">(</span><span class="n">stations</span><span class="p">,</span> <span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">,</span>
+                       <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function used to select right</span>
+<span class="sd">    :class:`~polyfemos.back.station.Station` instances</span>
+<span class="sd">    for time within timeinterval from ``starttime`` to ``endtime``.</span>
+
+<span class="sd">    The names of the network_code and station will be same for all</span>
+<span class="sd">    :class:`~polyfemos.back.station.Station`</span>
+<span class="sd">    instances returned, but other values</span>
+<span class="sd">    and parameters of the station may change during the timespan.</span>
+<span class="sd">    At the moment, only day accuracy is supported when selecting right</span>
+<span class="sd">    stations.</span>
+
+<span class="sd">    :type stations: :class:`~polyfemos.back.station.Stations`</span>
+<span class="sd">    :param stations:</span>
+<span class="sd">    :type network_code: str</span>
+<span class="sd">    :param network_code: Network code as a string, e.g. &quot;FN&quot;</span>
+<span class="sd">    :type station_code: str</span>
+<span class="sd">    :param station_code: Code of the station as a string, e.g. &quot;MSF&quot;</span>
+<span class="sd">    :type starttime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">    :param starttime:</span>
+<span class="sd">    :type endtime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">    :param endtime:</span>
+<span class="sd">    :return: generator yielding</span>
+<span class="sd">        :class:`~polyfemos.back.station.Station` instances and</span>
+<span class="sd">        list of times when the station is valid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stations_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">times_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">time_</span> <span class="ow">in</span> <span class="n">Ordinal</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">):</span>
+        <span class="n">station</span> <span class="o">=</span> <span class="n">stations</span><span class="o">.</span><span class="n">get_station</span><span class="p">(</span><span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">,</span> <span class="n">time_</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">station</span><span class="p">),</span> <span class="n">time_</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stations_dict</span><span class="p">:</span>
+            <span class="n">stations_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">station</span>
+            <span class="n">times_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">time_</span><span class="o">.</span><span class="n">utcdatetime</span><span class="p">()]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">times_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time_</span><span class="o">.</span><span class="n">utcdatetime</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">stations_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">station</span><span class="p">,</span> <span class="n">times_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="process_logs"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.process_logs">[docs]</a><span class="k">def</span> <span class="nf">process_logs</span><span class="p">(</span><span class="n">flags</span><span class="p">,</span> <span class="n">stations</span><span class="p">,</span> <span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">,</span>
+                 <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">,</span> <span class="n">classes</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gathers data from various sources, parses the data and</span>
+<span class="sd">    writes &#39;\*.stf&#39;, &#39;\*.alert&#39; and &#39;\*.csv&#39; files.</span>
+
+<span class="sd">    Processes data for stations with given</span>
+<span class="sd">    ``network_code`` and ``station_code``.</span>
+
+<span class="sd">    :type flags: dict</span>
+<span class="sd">    :param flags: Flag variables from</span>
+<span class="sd">        :class:`~polyfemos.back.interpreter.Interpreter`</span>
+<span class="sd">    :type stations: :class:`~polyfemos.back.station.Stations`</span>
+<span class="sd">    :param stations: The station information collected from &#39;\*.conf&#39; files.</span>
+<span class="sd">    :type network_code: str</span>
+<span class="sd">    :param network_code: Network name as a string, e.g. &quot;FN&quot;</span>
+<span class="sd">    :type station_code: str</span>
+<span class="sd">    :param station_code: Name of the station as a string, e.g. &quot;MSF&quot;</span>
+<span class="sd">    :type startime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">    :param startime:</span>
+<span class="sd">    :type endtime: :class:`~polyfemos.almanac.ordinal.Ordinal`</span>
+<span class="sd">    :param endtime:</span>
+<span class="sd">    :type classes: list</span>
+<span class="sd">    :param classes: list of strings containing all parameter classes</span>
+<span class="sd">        which are included in the station&#39;s state of health processing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">retroactive</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;retroactive&quot;</span><span class="p">]</span>
+
+    <span class="n">alert_writer</span> <span class="o">=</span> <span class="n">filewriter</span><span class="o">.</span><span class="n">AlertWriter</span><span class="p">(</span>
+        <span class="n">bool_</span><span class="o">=</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;write_sohalertfile&quot;</span><span class="p">],</span>
+        <span class="n">fp_func</span><span class="o">=</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;sohalertpath&#39;</span><span class="p">],</span>
+        <span class="n">retroactive</span><span class="o">=</span><span class="n">retroactive</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">csv_writer</span> <span class="o">=</span> <span class="n">filewriter</span><span class="o">.</span><span class="n">CSVWriter</span><span class="p">(</span>
+        <span class="n">bool_</span><span class="o">=</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;write_sohcsvfile&quot;</span><span class="p">],</span>
+        <span class="n">fp_func</span><span class="o">=</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;sohcsvpath&#39;</span><span class="p">],</span>
+        <span class="n">retroactive</span><span class="o">=</span><span class="n">retroactive</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">stf_writer</span> <span class="o">=</span> <span class="n">filewriter</span><span class="o">.</span><span class="n">STFWriter</span><span class="p">(</span>
+        <span class="n">bool_</span><span class="o">=</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;write_sohtextfile&quot;</span><span class="p">],</span>
+        <span class="n">fp_func</span><span class="o">=</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;sohtextfilepath&#39;</span><span class="p">],</span>
+        <span class="n">retroactive</span><span class="o">=</span><span class="n">retroactive</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">last_year</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">sxt</span> <span class="o">=</span> <span class="n">_station_and_times</span><span class="p">(</span>
+        <span class="n">stations</span><span class="p">,</span> <span class="n">network_code</span><span class="p">,</span> <span class="n">station_code</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">station</span><span class="p">,</span> <span class="n">times</span> <span class="ow">in</span> <span class="n">sxt</span><span class="p">:</span>
+
+        <span class="n">this_year</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">year</span>
+        <span class="k">if</span> <span class="n">last_year</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">last_year</span> <span class="o">=</span> <span class="n">this_year</span>
+        <span class="k">if</span> <span class="n">retroactive</span> <span class="ow">and</span> <span class="n">this_year</span> <span class="o">!=</span> <span class="n">last_year</span><span class="p">:</span>
+            <span class="n">csv_writer</span><span class="o">.</span><span class="n">write_files</span><span class="p">()</span>
+            <span class="n">last_year</span> <span class="o">=</span> <span class="n">this_year</span>
+
+        <span class="n">pathkwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;network_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">network_code</span>
+        <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;station_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">station_code</span>
+
+        <span class="n">station</span><span class="o">.</span><span class="n">filter_parameters</span><span class="p">(</span><span class="n">class_</span><span class="o">=</span><span class="n">classes</span><span class="p">)</span>
+        <span class="n">stf_writer</span><span class="o">.</span><span class="n">update_header</span><span class="p">(</span><span class="n">station</span><span class="o">.</span><span class="n">get_header</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="n">station</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+
+            <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;parname&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">name</span>
+
+            <span class="n">csv_writer</span><span class="o">.</span><span class="n">update_header</span><span class="p">(</span><span class="n">filewriter</span><span class="o">.</span><span class="n">get_csv_header</span><span class="p">(</span><span class="n">par</span><span class="o">.</span><span class="n">unit</span><span class="p">))</span>
+
+            <span class="c1"># DCD, DCL and TSE parameters cannot be used retroactively</span>
+            <span class="k">if</span> <span class="n">retroactive</span> <span class="ow">and</span> <span class="n">par</span><span class="o">.</span><span class="n">code_key</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;DCD&quot;</span><span class="p">,</span> <span class="s2">&quot;DCL&quot;</span><span class="p">,</span> <span class="s2">&quot;TSE&quot;</span><span class="p">}:</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">time_</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">_get_data</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">par</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;julday&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_</span><span class="o">.</span><span class="n">julday</span>
+                <span class="n">pathkwargs</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_</span><span class="o">.</span><span class="n">year</span>
+
+                <span class="c1"># alert</span>
+                <span class="n">alertfilename</span> <span class="o">=</span> <span class="n">alert_writer</span><span class="o">.</span><span class="n">get_filename</span><span class="p">(</span><span class="n">pathkwargs</span><span class="p">)</span>
+                <span class="n">tib</span><span class="p">,</span> <span class="n">thbb</span> <span class="o">=</span> <span class="n">_get_tibs</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">alertfilename</span><span class="p">)</span>
+                <span class="n">alertline</span> <span class="o">=</span> <span class="p">[</span><span class="n">station</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                             <span class="n">par</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                             <span class="n">tib</span> <span class="o">+</span> <span class="n">thbb</span><span class="p">,</span>
+                             <span class="n">par</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+                             <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span><span class="p">]</span>
+                <span class="n">alert_writer</span><span class="o">.</span><span class="n">append_line</span><span class="p">(</span><span class="n">alertfilename</span><span class="p">,</span> <span class="n">alertline</span><span class="p">)</span>
+
+                <span class="n">csvfilename</span> <span class="o">=</span> <span class="n">csv_writer</span><span class="o">.</span><span class="n">get_filename</span><span class="p">(</span><span class="n">pathkwargs</span><span class="p">)</span>
+                <span class="n">stffilename</span> <span class="o">=</span> <span class="n">stf_writer</span><span class="o">.</span><span class="n">get_filename</span><span class="p">(</span><span class="n">pathkwargs</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">retroactive</span><span class="p">:</span>
+                    <span class="n">lastvalues</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">csv_writer</span><span class="o">.</span><span class="n">append_and_write_data</span><span class="p">(</span><span class="n">csvfilename</span><span class="p">,</span> <span class="n">lastvalues</span><span class="p">)</span>
+                    <span class="n">stf_writer</span><span class="o">.</span><span class="n">append_and_write_data</span><span class="p">(</span><span class="n">stffilename</span><span class="p">,</span> <span class="n">lastvalues</span><span class="p">,</span>
+                                                     <span class="n">par</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">retroactive</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">datavalues</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[::</span><span class="n">par</span><span class="o">.</span><span class="n">decimation_factor</span><span class="p">]:</span>
+                        <span class="n">csv_writer</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">csvfilename</span><span class="p">,</span> <span class="n">datavalues</span><span class="p">)</span>
+                        <span class="n">stf_writer</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">stffilename</span><span class="p">,</span> <span class="n">datavalues</span><span class="p">,</span>
+                                               <span class="n">par</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">alert_writer</span><span class="o">.</span><span class="n">write_files</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">retroactive</span><span class="p">:</span>
+            <span class="n">stf_writer</span><span class="o">.</span><span class="n">write_files</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">retroactive</span><span class="p">:</span>
+        <span class="n">csv_writer</span><span class="o">.</span><span class="n">write_files</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,560 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.userdef &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.front.userdef</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provides config values from YAML files</span>
+
+<span class="sd">See more info in :ref:`FrontendConfiguration`</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util.messenger</span> <span class="k">import</span> <span class="n">messenger</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util.randomizer</span> <span class="k">import</span> <span class="n">generate_secret_key</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">fileutils</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">request</span>
+
+
+<span class="c1"># TODO command line and cwd</span>
+<span class="c1"># TODO clean up, if yaml files are not found</span>
+
+<span class="c1"># get current working directory</span>
+<span class="n">working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Working directory: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">working_dir</span><span class="p">)</span>
+<span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">)</span>
+
+<span class="n">_global_config_folder</span> <span class="o">=</span> <span class="p">[</span><span class="n">working_dir</span><span class="p">,</span> <span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="s2">&quot;front&quot;</span><span class="p">]</span>
+<span class="n">_network_config_folder</span> <span class="o">=</span> <span class="p">[</span><span class="n">working_dir</span><span class="p">,</span> <span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="s2">&quot;front&quot;</span><span class="p">,</span> <span class="s2">&quot;networks&quot;</span><span class="p">]</span>
+
+<span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">_global_config_folder</span><span class="p">,</span> <span class="s2">&quot;global_config.yml&quot;</span><span class="p">)</span>
+<span class="n">GLOBAL_CONFIG</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">load_yaml</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="users"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.users">[docs]</a><span class="k">def</span> <span class="nf">users</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    :return: ``users`` dictionary from global config yaml file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">GLOBAL_CONFIG</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">GLOBAL_CONFIG</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="network_codes"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.network_codes">[docs]</a><span class="k">def</span> <span class="nf">network_codes</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: ``network_codes`` list from global config yaml file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">GLOBAL_CONFIG</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">GLOBAL_CONFIG</span><span class="p">[</span><span class="s2">&quot;network_codes&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="secret_key"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.secret_key">[docs]</a><span class="k">def</span> <span class="nf">secret_key</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A ``secret_key`` entry is read from the global configuration yaml file.</span>
+<span class="sd">    If no secret key is given in the configuration file or the default</span>
+<span class="sd">    entry is unchanged, a different random secret key is used</span>
+<span class="sd">    when polyfemos web is reloaded.</span>
+
+<span class="sd">    See :func:`~polyfemos.util.randomizer.generate_secret_key`</span>
+<span class="sd">    for more info.</span>
+
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: secret key</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">GLOBAL_CONFIG</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">generate_secret_key</span><span class="p">()</span>
+    <span class="n">sk</span> <span class="o">=</span> <span class="n">GLOBAL_CONFIG</span><span class="p">[</span><span class="s2">&quot;secret_key&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sk</span> <span class="ow">or</span> <span class="n">sk</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sk</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="s2">&quot;changethisimmediately!&quot;</span><span class="p">:</span>
+        <span class="n">sk</span> <span class="o">=</span> <span class="n">generate_secret_key</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">sk</span></div>
+
+
+<span class="k">if</span> <span class="n">GLOBAL_CONFIG</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">NETWORK_CONFIG</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">network_code</span> <span class="ow">in</span> <span class="n">network_codes</span><span class="p">():</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">_network_config_folder</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_config.yml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_code</span><span class="p">))</span>
+        <span class="n">_network_config</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">load_yaml</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_network_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">NETWORK_CONFIG</span><span class="p">[</span><span class="n">network_code</span><span class="p">]</span> <span class="o">=</span> <span class="n">_network_config</span>
+            <span class="n">NETWORK_CONFIG</span><span class="p">[</span><span class="n">network_code</span><span class="p">][</span><span class="s2">&quot;paths&quot;</span><span class="p">]</span> \
+                <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">GLOBAL_CONFIG</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="get_network_code"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.get_network_code">[docs]</a><span class="k">def</span> <span class="nf">get_network_code</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetches the code of the currently selected network from cookies.</span>
+<span class="sd">    If none is selected returns the default network code, which is the</span>
+<span class="sd">    first entry in the ``network_codes`` list in ``global_config.yml`` file.</span>
+
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: network code</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">network_code</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">cookie</span><span class="p">(</span><span class="s2">&quot;network_code&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+        <span class="n">network_code</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">network_code</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">nones</span><span class="p">():</span>
+        <span class="n">network_code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ncs</span> <span class="o">=</span> <span class="n">network_codes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ncs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">network_code</span> <span class="o">=</span> <span class="n">ncs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">network_code</span></div>
+
+
+<div class="viewcode-block" id="check_network_code"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.check_network_code">[docs]</a><span class="k">def</span> <span class="nf">check_network_code</span><span class="p">(</span><span class="n">func_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorated functions check for currently selected network code.</span>
+<span class="sd">    The name of the decorated function is used to extract the configuration</span>
+<span class="sd">    value from the networks configuration yaml file. If the value</span>
+<span class="sd">    is present in the configuration file it is passed to the ``func_``</span>
+<span class="sd">    as ``config_value`` keyword argument.</span>
+
+<span class="sd">    :type func\_: func</span>
+<span class="sd">    :param func\_:</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: a decorated function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">network_code</span> <span class="o">=</span> <span class="n">get_network_code</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">config_value</span> <span class="o">=</span> <span class="n">NETWORK_CONFIG</span><span class="p">[</span><span class="n">network_code</span><span class="p">][</span><span class="n">func_</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">NameError</span><span class="p">):</span>
+            <span class="c1"># Catch NameError if NETWORK_CONFIG is not defined</span>
+            <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;config_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config_value</span>
+        <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="paths"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.paths">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">paths</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">config_value</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key: The desired filepath from the ``paths`` dictionary</span>
+<span class="sd">    :type config_value: dict</span>
+<span class="sd">    :param config_value: ``paths`` dictionary from yaml files</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">config_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">to</span><span class="o">.</span><span class="n">staticfilepath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="filepathformats"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.filepathformats">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">filepathformats</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">config_value</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key: The desired filepathformat from the</span>
+<span class="sd">        ``filepathformats`` dictionary</span>
+<span class="sd">    :type config_value: dict</span>
+<span class="sd">    :param config_value: ``filepathformats`` dictionary from yaml files</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">config_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">to</span><span class="o">.</span><span class="n">filepath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sohpars"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.sohpars">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">sohpars</span><span class="p">(</span><span class="n">visibilities</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="n">config_value</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type visibilities: set</span>
+<span class="sd">    :param visibilities: returned sohpars are selected based on given</span>
+<span class="sd">        visibilities</span>
+<span class="sd">    :type config_value: list</span>
+<span class="sd">    :param config_value: list of state of health parameter</span>
+<span class="sd">        dictionaries from yaml files</span>
+<span class="sd">    :rtype: list[str]</span>
+<span class="sd">    :return: list of state of health parameter names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">config_value</span> <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;visibility&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">visibilities</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="station_ids"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.station_ids">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">station_ids</span><span class="p">(</span><span class="n">config_value</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type config_value: list</span>
+<span class="sd">    :param config_value: ``station_ids`` from yaml files</span>
+<span class="sd">    :rtype: list[str]</span>
+<span class="sd">    :return: list of station ids (e.g. ``&quot;FN.MSF&quot;``) visible in polyfemos web</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">config_value</span></div>
+
+
+<div class="viewcode-block" id="channel_codes"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.channel_codes">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">channel_codes</span><span class="p">(</span><span class="n">config_value</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type config_value: list</span>
+<span class="sd">    :param config_value: ``channel_codes`` from yaml files</span>
+<span class="sd">    :rtype: list[str]</span>
+<span class="sd">    :return: list of all data channels available in polyfemos web across</span>
+<span class="sd">        all the stations in the selected network</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">config_value</span></div>
+
+
+<span class="n">_js_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">dict = {{</span>
+<span class="si">{}</span><span class="s2"></span>
+<span class="s2">}}</span>
+<span class="s2">if (tick in dict) {{</span>
+<span class="s2">    return dict[tick]</span>
+<span class="s2">}}</span>
+<span class="s2">else {{</span>
+<span class="s2">    return &quot;&quot;</span>
+<span class="s2">}}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="ticklabels"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.ticklabels">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">ticklabels</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">config_value</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If some state of health parameters require specific</span>
+<span class="sd">    Y axis labeling, the custom tick labels are defined here.</span>
+
+<span class="sd">    keys of the &#39;tl&#39; dictionary are names of the soh parameters.</span>
+<span class="sd">    Values are JavaScript code blocks which define the tick labels.</span>
+<span class="sd">    Word &#39;tick&#39; in JS code will be interpreted as tick variable.</span>
+
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key: Name of the soh parameter</span>
+<span class="sd">    :type config_value: dict</span>
+<span class="sd">    :param config_value: ``ticklabels`` dictionary from yaml files</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: JavaScript code mapping the integer data values into</span>
+<span class="sd">        string values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config_value</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">dict_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config_value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">dict_str</span> <span class="o">+=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2">: </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_js_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dict_str</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="definitions"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.definitions">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">definitions</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">config_value</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key: internal name for definition, e.g. &#39;datarealtimeness&#39;</span>
+<span class="sd">    :type config_value: dict</span>
+<span class="sd">    :param config_value: a dictionary from yaml files mapping</span>
+<span class="sd">        the internal names in to their user defined values</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: user defined value corresponding the internal name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">config_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="summary_outlierremfunc_info"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.summary_outlierremfunc_info">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">summary_outlierremfunc_info</span><span class="p">(</span><span class="n">config_value</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type config_value: list</span>
+<span class="sd">    :param config_value:</span>
+<span class="sd">    :rtype: list[str]</span>
+<span class="sd">    :return: For summary table page, information about used</span>
+<span class="sd">        advanced outlier removal options</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">config_value</span></div>
+
+
+<div class="viewcode-block" id="get_outlierremfunc"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.get_outlierremfunc">[docs]</a><span class="k">def</span> <span class="nf">get_outlierremfunc</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Available functions:</span>
+
+<span class="sd">    - lipschitz, :func:`~polyfemos.data.outlierremover.lipschitz`</span>
+<span class="sd">    - stalta, :func:`~polyfemos.data.outlierremover.stalta`</span>
+<span class="sd">    - dtr, :func:`~polyfemos.data.outlierremover.dtr`</span>
+
+<span class="sd">    :type function: str</span>
+<span class="sd">    :param function:</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: outlier removal function with additional ``kwargs``</span>
+<span class="sd">        applied to it.</span>
+<span class="sd">        If an invalid ``function`` is given, returns ``False``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">polyfemos.data</span> <span class="k">import</span> <span class="n">outlierremover</span>
+    <span class="c1"># Available outlier removal functions</span>
+    <span class="n">funcs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;lipschitz&quot;</span><span class="p">:</span> <span class="n">outlierremover</span><span class="o">.</span><span class="n">lipschitz</span><span class="p">,</span>
+        <span class="s2">&quot;stalta&quot;</span><span class="p">:</span> <span class="n">outlierremover</span><span class="o">.</span><span class="n">stalta</span><span class="p">,</span>
+        <span class="s2">&quot;dtr&quot;</span><span class="p">:</span> <span class="n">outlierremover</span><span class="o">.</span><span class="n">dtr</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">function</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">funcs</span><span class="p">[</span><span class="n">function</span><span class="p">](</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="summary_outlierremfuncs"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.summary_outlierremfuncs">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">summary_outlierremfuncs</span><span class="p">(</span><span class="n">station_id</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sohpar_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">config_value</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type station_id: str</span>
+<span class="sd">    :param station_id: id of the station, e.g. &quot;FN.MSF&quot;</span>
+<span class="sd">    :type sohpar_name: str</span>
+<span class="sd">    :param sohpar_name: name of the state of health parameter</span>
+<span class="sd">    :type config_value: dict</span>
+<span class="sd">    :param config_value: the ``summary_outlierremfuncs`` dictionary</span>
+<span class="sd">        from yaml files</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: outlier removal function corresponding ``station_id`` and</span>
+<span class="sd">        ``sohpar_name`` pair. User may define different outlier removal</span>
+<span class="sd">        functions with different ``station_id`` and ``sohpar_name``</span>
+<span class="sd">        combinations. The key in the dict should be</span>
+<span class="sd">        ``station_id:sohpar_name``, e.g. ``FN.RANF:Vault_temperature``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">station_id</span><span class="p">,</span> <span class="n">sohpar_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config_value</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">get_outlierremfunc</span><span class="p">(</span><span class="o">**</span><span class="n">config_value</span><span class="p">[</span><span class="n">key</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="get_datacoveragebrowser_func"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.get_datacoveragebrowser_func">[docs]</a><span class="k">def</span> <span class="nf">get_datacoveragebrowser_func</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Available functions:</span>
+
+<span class="sd">    - seismic_scanner,</span>
+<span class="sd">        :func:`~polyfemos.back.seismic.scanner.get_data_coverage_figure`</span>
+
+<span class="sd">    :type function: str</span>
+<span class="sd">    :param function:</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: data coverage scanner function.</span>
+<span class="sd">        If an invalid ``function`` is given, returns ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">polyfemos.back.seismic.scanner</span> <span class="k">import</span> <span class="p">(</span><span class="n">get_data_coverage_figure</span><span class="p">,</span>
+                                                <span class="n">null_figure</span><span class="p">)</span>
+    <span class="c1"># Available scanner functions</span>
+    <span class="n">funcs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;seismic_scanner&quot;</span><span class="p">:</span> <span class="n">get_data_coverage_figure</span><span class="p">,</span>
+        <span class="s2">&quot;null_scanner&quot;</span><span class="p">:</span> <span class="n">null_figure</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">function</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">funcs</span><span class="p">[</span><span class="n">function</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="datacoveragebrowser_func"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.datacoveragebrowser_func">[docs]</a><span class="nd">@check_network_code</span>
+<span class="k">def</span> <span class="nf">datacoveragebrowser_func</span><span class="p">(</span><span class="n">config_value</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type config_value: str</span>
+<span class="sd">    :param config_value: ``datacoveragebrowser_func`` value from</span>
+<span class="sd">        yaml files</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: see :func:`~polyfemos.front.userdef.get_datacoveragebrowser_func`</span>
+<span class="sd">        for more info.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_datacoveragebrowser_func</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="n">config_value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="transform_func"><a class="viewcode-back" href="../../../autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.transform_func">[docs]</a><span class="k">def</span> <span class="nf">transform_func</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key: internal sensor code</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: UWV to NEZ transform function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">sqrt</span>
+
+    <span class="k">def</span> <span class="nf">func1</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="c1"># for streckeisen</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">u</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">2.</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">v</span> <span class="o">+</span> <span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">6.</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">2.</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span> <span class="o">+</span> <span class="n">v</span> <span class="o">+</span> <span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">3.</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">func2</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="c1"># for nanometrics</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">u</span> <span class="o">-</span> <span class="n">v</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">6.</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">2.</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span> <span class="o">+</span> <span class="n">v</span> <span class="o">+</span> <span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">3.</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="n">funcs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;STS-2&quot;</span><span class="p">:</span> <span class="n">func1</span><span class="p">,</span>
+        <span class="s2">&quot;Trillium_120PH&quot;</span><span class="p">:</span> <span class="n">func2</span><span class="p">,</span>
+        <span class="s2">&quot;Trillium_120PA&quot;</span><span class="p">:</span> <span class="n">func2</span><span class="p">,</span>
+        <span class="s2">&quot;Trillium_Co120&quot;</span><span class="p">:</span> <span class="n">func2</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Invalid key in transform_func&quot;</span>
+        <span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">funcs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ticklabels&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ticklabels</span><span class="p">(</span><span class="s2">&quot;GPS_status&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ticklabels</span><span class="p">(</span><span class="s2">&quot;GPS_status_asd&quot;</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Paths&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">paths</span><span class="p">(</span><span class="s2">&quot;server_ip&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">paths</span><span class="p">(</span><span class="s2">&quot;server_ip_asd&quot;</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Station IDs&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">station_ids</span><span class="p">())</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Channel Codes&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">channel_codes</span><span class="p">())</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Sohpars&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sohpars</span><span class="p">(</span><span class="n">visibilities</span><span class="o">=</span><span class="p">{</span><span class="mi">2</span><span class="p">}))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Definitions&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">definitions</span><span class="p">(</span><span class="s2">&quot;datarealtimeness&quot;</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">FPFs&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">filepathformats</span><span class="p">(</span><span class="s2">&quot;stf&quot;</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Outlier removal&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">summary_outlierremfunc_info</span><span class="p">())</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">summary_outlierremfuncs</span><span class="p">(</span>
+        <span class="n">station_id</span><span class="o">=</span><span class="s2">&quot;FN.RANF&quot;</span><span class="p">,</span> <span class="n">sohpar_name</span><span class="o">=</span><span class="s2">&quot;Vault_temperature&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">summary_outlierremfuncs</span><span class="p">(</span><span class="s2">&quot;asd&quot;</span><span class="p">,</span> <span class="s2">&quot;asd&quot;</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">datacoveragebrowser_func</span><span class="p">())</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

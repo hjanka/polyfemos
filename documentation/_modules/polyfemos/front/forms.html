@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.forms &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.front.forms</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Web forms</span>
+
+<span class="sd">Forms use :class:`~flask_wtf.FlaskForm` as a base form</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">obspy</span> <span class="k">import</span> <span class="n">UTCDateTime</span>
+
+<span class="kn">import</span> <span class="nn">flask_wtf</span>
+<span class="kn">from</span> <span class="nn">wtforms.fields</span> <span class="k">import</span> <span class="p">(</span><span class="n">DateField</span><span class="p">,</span> <span class="n">BooleanField</span><span class="p">,</span>
+                            <span class="n">FloatField</span><span class="p">,</span> <span class="n">RadioField</span><span class="p">,</span> <span class="n">SelectField</span><span class="p">,</span>
+                            <span class="n">IntegerField</span><span class="p">,</span> <span class="n">SubmitField</span><span class="p">,</span> <span class="n">SelectMultipleField</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">userdef</span>
+
+
+<div class="viewcode-block" id="SubmitForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.SubmitForm.html#polyfemos.front.forms.SubmitForm">[docs]</a><span class="k">class</span> <span class="nc">SubmitForm</span><span class="p">(</span><span class="n">flask_wtf</span><span class="o">.</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for submit button.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Submit&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SingleDateForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.SingleDateForm.html#polyfemos.front.forms.SingleDateForm">[docs]</a><span class="k">class</span> <span class="nc">SingleDateForm</span><span class="p">(</span><span class="n">flask_wtf</span><span class="o">.</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for submitting a single date.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">DateField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span><span class="p">,</span>
+                     <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DateForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.DateForm.html#polyfemos.front.forms.DateForm">[docs]</a><span class="k">class</span> <span class="nc">DateForm</span><span class="p">(</span><span class="n">flask_wtf</span><span class="o">.</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for submitting start and end dates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">startdate</span> <span class="o">=</span> <span class="n">DateField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Startdate&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span><span class="p">,</span>
+                          <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">enddate</span> <span class="o">=</span> <span class="n">DateField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Enddate&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span><span class="p">,</span>
+                        <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationsForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.StationsForm.html#polyfemos.front.forms.StationsForm">[docs]</a><span class="k">class</span> <span class="nc">StationsForm</span><span class="p">(</span><span class="n">flask_wtf</span><span class="o">.</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for submitting a station selection as a string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">userdef</span><span class="o">.</span><span class="n">station_ids</span><span class="p">()]</span>
+    <span class="n">station_ids</span> <span class="o">=</span> <span class="n">SelectMultipleField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Stations&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">_choices</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SelectNetworkForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.SelectNetworkForm.html#polyfemos.front.forms.SelectNetworkForm">[docs]</a><span class="k">class</span> <span class="nc">SelectNetworkForm</span><span class="p">(</span><span class="n">flask_wtf</span><span class="o">.</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form to select network</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">userdef</span><span class="o">.</span><span class="n">network_codes</span><span class="p">()]</span>
+    <span class="n">network_code</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Select Network&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">_choices</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatacoverageForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.DatacoverageForm.html#polyfemos.front.forms.DatacoverageForm">[docs]</a><span class="k">class</span> <span class="nc">DatacoverageForm</span><span class="p">(</span><span class="n">SubmitForm</span><span class="p">,</span> <span class="n">DateForm</span><span class="p">,</span> <span class="n">StationsForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for :func:`~polyfemos.front.main.datacoveragebrowser`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">userdef</span><span class="o">.</span><span class="n">channel_codes</span><span class="p">()]</span>
+    <span class="n">channel_codes</span> <span class="o">=</span> <span class="n">SelectMultipleField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Channels&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">_choices</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HeaderdateForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.HeaderdateForm.html#polyfemos.front.forms.HeaderdateForm">[docs]</a><span class="k">class</span> <span class="nc">HeaderdateForm</span><span class="p">(</span><span class="n">flask_wtf</span><span class="o">.</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for submitting a single date</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">headerdate</span> <span class="o">=</span> <span class="n">DateField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Headerdate&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span><span class="p">,</span>
+                           <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RIRVForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.RIRVForm.html#polyfemos.front.forms.RIRVForm">[docs]</a><span class="k">class</span> <span class="nc">RIRVForm</span><span class="p">(</span><span class="n">flask_wtf</span><span class="o">.</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for &#39;Remove irrational values&#39; check box</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rirv</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Remove irrational values&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FileFormatForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.FileFormatForm.html#polyfemos.front.forms.FileFormatForm">[docs]</a><span class="k">class</span> <span class="nc">FileFormatForm</span><span class="p">(</span><span class="n">flask_wtf</span><span class="o">.</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Web form for selecting input fileformat</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;stf&quot;</span><span class="p">]]</span>
+    <span class="n">fromfileformat</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Read from&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">_choices</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SummaryForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.SummaryForm.html#polyfemos.front.forms.SummaryForm">[docs]</a><span class="k">class</span> <span class="nc">SummaryForm</span><span class="p">(</span><span class="n">SubmitForm</span><span class="p">,</span> <span class="n">DateForm</span><span class="p">,</span> <span class="n">HeaderdateForm</span><span class="p">,</span> <span class="n">RIRVForm</span><span class="p">,</span>
+                  <span class="n">FileFormatForm</span><span class="p">,</span> <span class="n">StationsForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for :func:`~polyfemos.front.main.summary`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">aor</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Advanced outlier removal&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">csv_requested</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Download csv&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">userdef</span><span class="o">.</span><span class="n">sohpars</span><span class="p">(</span><span class="n">visibilities</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">})]</span>
+    <span class="n">sohpar_names</span> <span class="o">=</span> <span class="n">SelectMultipleField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Sohpars&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">_choices</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PlotbrowserForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.PlotbrowserForm.html#polyfemos.front.forms.PlotbrowserForm">[docs]</a><span class="k">class</span> <span class="nc">PlotbrowserForm</span><span class="p">(</span><span class="n">SubmitForm</span><span class="p">,</span> <span class="n">StationsForm</span><span class="p">,</span> <span class="n">DateForm</span><span class="p">,</span> <span class="n">FileFormatForm</span><span class="p">,</span>
+                      <span class="n">HeaderdateForm</span><span class="p">,</span> <span class="n">RIRVForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for :func:`~polyfemos.front.main.plotbrowser`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">userdef</span><span class="o">.</span><span class="n">sohpars</span><span class="p">(</span><span class="n">visibilities</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">})]</span>
+    <span class="n">sohpar_names</span> <span class="o">=</span> <span class="n">SelectMultipleField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Sohpars&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">_choices</span><span class="p">)</span>
+
+    <span class="n">decimate</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Decimate&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;checked&quot;</span><span class="p">)</span>
+    <span class="n">ridv</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Remove identical values&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;checked&quot;</span><span class="p">)</span>
+    <span class="n">track_len</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Track data length&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;checked&quot;</span><span class="p">)</span>
+
+    <span class="n">aor</span> <span class="o">=</span> <span class="n">RadioField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Advanced outlier removal&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;null&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;dtr&#39;</span><span class="p">,</span> <span class="s1">&#39;DTR&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;sta&#39;</span><span class="p">,</span> <span class="s1">&#39;STALTA&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lip&#39;</span><span class="p">,</span> <span class="s1">&#39;Lipschitz&#39;</span><span class="p">),</span>
+    <span class="p">])</span>
+
+    <span class="n">dtr_maxdepth</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;maxdepth&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">dtr_scale</span> <span class="o">=</span> <span class="n">FloatField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">24000</span><span class="p">)</span>
+    <span class="n">dtr_medlim</span> <span class="o">=</span> <span class="n">FloatField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;medlim&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">sta_nsta</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;nsta&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">sta_nlta</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;nlta&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">sta_threson</span> <span class="o">=</span> <span class="n">FloatField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;threson&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.08</span><span class="p">)</span>
+    <span class="n">sta_thresoff</span> <span class="o">=</span> <span class="n">FloatField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;thresoff&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.05</span><span class="p">)</span>
+    <span class="n">sta_offset</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+
+    <span class="n">lip_itern</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;itern&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">lip_klim</span> <span class="o">=</span> <span class="n">FloatField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;klim&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">7e-5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SohTableForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.SohTableForm.html#polyfemos.front.forms.SohTableForm">[docs]</a><span class="k">class</span> <span class="nc">SohTableForm</span><span class="p">(</span><span class="n">SubmitForm</span><span class="p">,</span> <span class="n">SingleDateForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for :func:`~polyfemos.front.main.sohtable`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">show_all</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Show all&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;checked&quot;</span><span class="p">)</span>
+    <span class="n">submit_pd</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;+date&#39;</span><span class="p">)</span>
+    <span class="n">submit_sd</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;-date&#39;</span><span class="p">)</span>
+    <span class="n">realtimeness_limit</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Realtimeness limit&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+    <span class="n">realtimeness_bool</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Realtimeness filter&#39;</span><span class="p">,</span>
+                                     <span class="n">default</span><span class="o">=</span><span class="s2">&quot;checked&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AlertHeatForm"><a class="viewcode-back" href="../../../autogen/polyfemos.front.forms.AlertHeatForm.html#polyfemos.front.forms.AlertHeatForm">[docs]</a><span class="k">class</span> <span class="nc">AlertHeatForm</span><span class="p">(</span><span class="n">SubmitForm</span><span class="p">,</span> <span class="n">DateForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web form for :func:`~polyfemos.front.main.alertheat`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log_color</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Logarithmic color&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="s2">&quot;012&quot;</span><span class="p">]</span>
+    <span class="n">points_per_thbb</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Points per thbb&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">_choices</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">coerce</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">points_per_tib</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;Points per tib&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">_choices</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">coerce</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

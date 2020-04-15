@@ -1,0 +1,428 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.sohplot.datacontainer.DataPoint &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.front.sohplot.offsets" href="polyfemos.front.sohplot.offsets.html" />
+    <link rel="prev" title="polyfemos.front.sohplot.datacontainer.DataContainer" href="polyfemos.front.sohplot.datacontainer.DataContainer.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="polyfemos-front-sohplot-datacontainer-datapoint">
+<h1>polyfemos.front.sohplot.datacontainer.DataPoint<a class="headerlink" href="#polyfemos-front-sohplot-datacontainer-datapoint" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint">
+<em class="property">class </em><code class="sig-prename descclassname">polyfemos.front.sohplot.datacontainer.</code><code class="sig-name descname">DataPoint</code><span class="sig-paren">(</span><em class="sig-param">dtstr=None</em>, <em class="sig-param">timestamp=None</em>, <em class="sig-param">utcdatetime=None</em>, <em class="sig-param">y=None</em>, <em class="sig-param">z=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A structlike class to store one datapoint in timeseries data</p>
+<p class="rubric">Public Methods</p>
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">dtstr=None</em>, <em class="sig-param">timestamp=None</em>, <em class="sig-param">utcdatetime=None</em>, <em class="sig-param">y=None</em>, <em class="sig-param">z=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>The data must have timevalue, given either <code class="docutils literal notranslate"><span class="pre">dtstr</span></code>, <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>
+or <code class="docutils literal notranslate"><span class="pre">utcdatetime</span></code>.
+<code class="docutils literal notranslate"><span class="pre">z</span></code> is an optional axis containing arbitrary string values following
+python dictionary syntax</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – utcdatetime compatible string representing time value</p></li>
+<li><p><strong>timestamp</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – </p></li>
+<li><p><strong>utcdatetime</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>) – </p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>numlike</em>) – string representing float number, if invalid string is
+provided, <code class="docutils literal notranslate"><span class="pre">y</span></code> will be <code class="docutils literal notranslate"><span class="pre">nan</span></code></p></li>
+<li><p><strong>z</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Additional arbitrary values contained in string following
+python dict syntax</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.copy" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returs a copy of the current
+<a class="reference internal" href="#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a> instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.get_datetime">
+<code class="sig-name descname">get_datetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.get_datetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.get_datetime" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.get_dtstr">
+<code class="sig-name descname">get_dtstr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.get_dtstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.get_dtstr" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>string representation of the timevalue</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.get_ordinal">
+<code class="sig-name descname">get_ordinal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.get_ordinal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.get_ordinal" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>year and the day of the yeat as a string in format
+<code class="docutils literal notranslate"><span class="pre">YEAR.JULDAY</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">2019.023</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.get_timestamp">
+<code class="sig-name descname">get_timestamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.get_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.get_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.get_timezone_naive_datetime">
+<code class="sig-name descname">get_timezone_naive_datetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.get_timezone_naive_datetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.get_timezone_naive_datetime" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.get_utcdatetime">
+<code class="sig-name descname">get_utcdatetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.get_utcdatetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.get_utcdatetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">self.__utcdatetime</span></code> is not previously defined,
+the value is read using <code class="docutils literal notranslate"><span class="pre">self.__dtstr</span></code> or
+<code class="docutils literal notranslate"><span class="pre">self.__timestamp</span></code>. If either of those is not provided,
+error is thrown.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.get_z">
+<code class="sig-name descname">get_z</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.get_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.get_z" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns the value of <code class="docutils literal notranslate"><span class="pre">z</span></code> attribute. If the type was not
+previously converted from string to dictionary, the conversion
+is done in addition.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.ifz">
+<code class="sig-name descname">ifz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.ifz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.ifz" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">z</span></code> has a value set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.isnan">
+<code class="sig-name descname">isnan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.isnan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.isnan" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Checks if <code class="docutils literal notranslate"><span class="pre">y</span></code> is nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.isnotnan">
+<code class="sig-name descname">isnotnan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.isnotnan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.isnotnan" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">y</span></code> is not nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.set_z">
+<code class="sig-name descname">set_z</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.set_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.set_z" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Value to be set to <code class="docutils literal notranslate"><span class="pre">z</span></code> attribute</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.tonan">
+<code class="sig-name descname">tonan</code><span class="sig-paren">(</span><em class="sig-param">inplace=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.tonan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.tonan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the <code class="docutils literal notranslate"><span class="pre">y</span></code> attribute to nan. If <code class="docutils literal notranslate"><span class="pre">inplace</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, a
+copy of <a class="reference internal" href="#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a>
+is returned. Note the mutability of the
+<a class="reference internal" href="#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a>
+instance if <code class="docutils literal notranslate"><span class="pre">inplace</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Special Methods</p>
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.__bool__">
+<code class="sig-name descname">__bool__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.__bool__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.__bool__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">y</span></code> is not nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.__eq__">
+<code class="sig-name descname">__eq__</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.__eq__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.__eq__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares the timestamp and y values between <code class="docutils literal notranslate"><span class="pre">self</span></code> and <code class="docutils literal notranslate"><span class="pre">other</span></code>.
+If both values are iedntical, returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.__hash__">
+<code class="sig-name descname">__hash__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.__hash__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.__hash__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>hashed tuple containing <code class="docutils literal notranslate"><span class="pre">self.__timestamp</span></code> and
+<code class="docutils literal notranslate"><span class="pre">self.y</span></code> values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.__ne__">
+<code class="sig-name descname">__ne__</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.__ne__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.__ne__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>opposite of the
+<a class="reference internal" href="#polyfemos.front.sohplot.datacontainer.DataPoint.__eq__" title="polyfemos.front.sohplot.datacontainer.DataPoint.__eq__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__eq__()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataPoint.__str__">
+<code class="sig-name descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataPoint.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataPoint.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A some kind of string representation of the values</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../front.html">Frontend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.alertreader.html">polyfemos.front.alertreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.colors.html">polyfemos.front.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.flask_config.html">polyfemos.front.flask_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.forms.html">polyfemos.front.forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.main.html">polyfemos.front.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.request.html">polyfemos.front.request</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="polyfemos.front.sohplot.datacontainer.html">polyfemos.front.sohplot.datacontainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.offsets.html">polyfemos.front.sohplot.offsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.outfilefields.html">polyfemos.front.sohplot.outfilefields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.sohplot.html">polyfemos.front.sohplot.sohplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.trafficmonitor.html">polyfemos.front.trafficmonitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.userdef.html">polyfemos.front.userdef</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../front.html">Frontend modules</a><ul>
+  <li><a href="polyfemos.front.sohplot.datacontainer.html">polyfemos.front.sohplot.datacontainer</a><ul>
+      <li>Previous: <a href="polyfemos.front.sohplot.datacontainer.DataContainer.html" title="previous chapter">polyfemos.front.sohplot.datacontainer.DataContainer</a></li>
+      <li>Next: <a href="polyfemos.front.sohplot.offsets.html" title="next chapter">polyfemos.front.sohplot.offsets</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.front.sohplot.datacontainer.DataPoint.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

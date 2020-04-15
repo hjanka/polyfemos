@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.util.fileutils &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.util.messenger" href="polyfemos.util.messenger.html" />
+    <link rel="prev" title="polyfemos.util.coordinator" href="polyfemos.util.coordinator.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-polyfemos.util.fileutils">
+<span id="polyfemos-util-fileutils"></span><h1>polyfemos.util.fileutils<a class="headerlink" href="#module-polyfemos.util.fileutils" title="Permalink to this headline">¶</a></h1>
+<p>Functions for reading and writing files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2019, University of Oulu, Sodankyla Geophysical Observatory</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GNU Lesser General Public License v3.0 or later
+(<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">https://spdx.org/licenses/LGPL-3.0-or-later.html</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Public Functions</p>
+<dl class="function">
+<dt id="polyfemos.util.fileutils.append_to_file">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">append_to_file</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">text</em>, <em class="sig-param">header</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#append_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.append_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>If path defined in <code class="docutils literal notranslate"><span class="pre">filename</span></code> does not exist, new file is created and
+<code class="docutils literal notranslate"><span class="pre">header</span></code> is written in the file. If <code class="docutils literal notranslate"><span class="pre">text</span></code> is list, writes csv.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p></li>
+<li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p></li>
+<li><p><strong>header</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.check_dirpath">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">check_dirpath</code><span class="sig-paren">(</span><em class="sig-param">func_</em><span class="sig-paren">)</span><a class="headerlink" href="#polyfemos.util.fileutils.check_dirpath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.check_filepath">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">check_filepath</code><span class="sig-paren">(</span><em class="sig-param">func_</em><span class="sig-paren">)</span><a class="headerlink" href="#polyfemos.util.fileutils.check_filepath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.check_path">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">check_path</code><span class="sig-paren">(</span><em class="sig-param">dir_or_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#check_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.check_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a decorator that can be composed with functions that take
+file or directory path as their first argument.</p>
+<p>Decorated functions will return <code class="docutils literal notranslate"><span class="pre">None</span></code> if file or directory path is
+nonexistent. Otherwise the function will be called normally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dir_or_file</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – “dir” or “file”, select if returned decorator
+check the existance of files or directories</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.create_missing_folders">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">create_missing_folders</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#create_missing_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.create_missing_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates full path to given <code class="docutils literal notranslate"><span class="pre">filename</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – file or folder</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.get_stream">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">get_stream</code><span class="sig-paren">(</span><em class="sig-param">path=''</em>, <em class="sig-param">format_='MSEED'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#get_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.get_stream" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to seismic data file</p></li>
+<li><p><strong>format_</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">MSEED</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> or None</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>If invalid miniseed file(path) is provided,
+empty stream is returned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.invalid_mseed">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">invalid_mseed</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#invalid_mseed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.invalid_mseed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if miniseed file is valid and readable before reading it.
+At the moment only check is if filesize is between
+128 and 2^31 in bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to file</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>returns message describing the problem with the file.
+If empty string is returned, no problems are present.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.load_obj">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">load_obj</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#load_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.load_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to unpickle objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A file containing the pickled object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Any object contained in the given file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.load_yaml">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">load_yaml</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#load_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.load_yaml" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to YAML file</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>read YAML file as dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.read_csv">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">read_csv</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">delimiter=';'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#read_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.read_csv" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename of the csv to be read</p></li>
+<li><p><strong>delimiter</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – defaults to ‘;’, csv delimiter</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of lists containing the data from the given csv file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.read_file">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">read_file</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">mode='r'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#read_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.read_file" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename of the file to be read</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – defaults to ‘r’ (read)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>rows of the given file as list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.render_template">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">render_template</code><span class="sig-paren">(</span><em class="sig-param">template_file</em>, <em class="sig-param">dict_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#render_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.render_template" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template_file</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – template file</p></li>
+<li><p><strong>dict_</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – dictionary to be rendered to the template</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.rowsof">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">rowsof</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">delims=' '</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#rowsof"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.rowsof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yields the rows of the file as lists delimited by <code class="docutils literal notranslate"><span class="pre">delims</span></code>.
+Empty entries in lists are removed. Empty rows are removed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p></li>
+<li><p><strong>delims</strong> (<em>iterable</em><em>, </em><em>optional</em>) – defaults to ‘” “’ (a whitespace),
+For example, list or string containing all accepted delimiters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A generator yielding rows of the file (<code class="docutils literal notranslate"><span class="pre">filename</span></code>) as lists.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.save_obj">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">save_obj</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#save_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.save_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to pickle objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A file where the object will be saved</p></li>
+<li><p><strong>obj</strong> – Any object that can be pickled</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.write_csv">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">write_csv</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">rows</em>, <em class="sig-param">mode='w'</em>, <em class="sig-param">delimiter=';'</em>, <em class="sig-param">singlerow=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#write_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.write_csv" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename of the csv created</p></li>
+<li><p><strong>rows</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of list be written into csv</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – defaults to ‘w’ (write)</p></li>
+<li><p><strong>delimiter</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – defaults to ‘;’, csv delimiter</p></li>
+<li><p><strong>singlerow</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Write single or multiple rows to csv.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">rows</span></code> should be list of lists.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.fileutils.write_file">
+<code class="sig-prename descclassname">polyfemos.util.fileutils.</code><code class="sig-name descname">write_file</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">str_</em>, <em class="sig-param">mode='w'</em>, <em class="sig-param">cmf=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/fileutils.html#write_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.fileutils.write_file" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename of the file created</p></li>
+<li><p><strong>str_</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – a text to written</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – defaults to ‘w’ (write)</p></li>
+<li><p><strong>cmf</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>, If <code class="docutils literal notranslate"><span class="pre">True</span></code> missing folder
+in <code class="docutils literal notranslate"><span class="pre">filename</span></code> aer created before writing</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../front.html">Frontend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.ordinal.html">polyfemos.almanac.ordinal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.timer.html">polyfemos.almanac.timer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.utils.html">polyfemos.almanac.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.outlierremover.html">polyfemos.data.outlierremover</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.statistics.html">polyfemos.data.statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.utils.html">polyfemos.data.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.filepathparser.html">polyfemos.parser.filepathparser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.functionparser.html">polyfemos.parser.functionparser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.resources.html">polyfemos.parser.resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.typeoperator.html">polyfemos.parser.typeoperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.check_output_files.html">polyfemos.scripts.check_output_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.devserver.html">polyfemos.scripts.devserver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.render_web_templates.html">polyfemos.scripts.render_web_templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.test_front_paths.html">polyfemos.scripts.test_front_paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.sohemailer.html">polyfemos.scripts.sohemailer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.tests.test_python_packages.html">polyfemos.tests.test_python_packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.coordinator.html">polyfemos.util.coordinator</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">polyfemos.util.fileutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.messenger.html">polyfemos.util.messenger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.randomizer.html">polyfemos.util.randomizer</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../other.html">Scripts, tests and other modules</a><ul>
+      <li>Previous: <a href="polyfemos.util.coordinator.html" title="previous chapter">polyfemos.util.coordinator</a></li>
+      <li>Next: <a href="polyfemos.util.messenger.html" title="next chapter">polyfemos.util.messenger</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.util.fileutils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

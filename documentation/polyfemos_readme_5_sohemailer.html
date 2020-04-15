@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>State of health emailer &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Backend modules" href="back.html" />
+    <link rel="prev" title="How to add a station" href="polyfemos_readme_4_add_station.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="state-of-health-emailer">
+<span id="sohemailer"></span><h1>State of health emailer<a class="headerlink" href="#state-of-health-emailer" title="Permalink to this headline">¶</a></h1>
+<p>The state of health emailer (<a class="reference internal" href="autogen/polyfemos.scripts.sohemailer.html#polyfemos.scripts.sohemailer.main" title="polyfemos.scripts.sohemailer.main"><code class="xref py py-func docutils literal notranslate"><span class="pre">main()</span></code></a>) can
+be used to notify about the problems with stations and parameters via email.</p>
+<p>Only currently active alert (value=2) are reported. The date of the alertfile
+is selectable using an optional command line option, though.</p>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>The emailer is configured using a YAML file. The file is passed as a command
+line argument to the emailer.</p>
+<p>Keys in the configuration file are:</p>
+<p class="rubric">from</p>
+<p>The value is a string defining the email sender</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">from</span><span class="p">:</span> <span class="s">&quot;soh.sender@example.com&quot;</span>
+</pre></div>
+</div>
+<p class="rubric">passwd</p>
+<p>The value is a string defining the password of the sender’s email account.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">passwd</span><span class="p">:</span> <span class="s">&quot;***************&quot;</span>
+</pre></div>
+</div>
+<p class="rubric">to</p>
+<p>The value is a list of string defining the email addresses of the recipients.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">to</span><span class="p">:</span> <span class="p p-Indicator">[</span>
+  <span class="s">&quot;some.recipient@example.com&quot;</span><span class="p p-Indicator">,</span>
+  <span class="nv">...</span>
+<span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p class="rubric">subject</p>
+<p>The value is a string describing the email subject.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">subject</span><span class="p">:</span> <span class="s">&quot;State</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">Health</span><span class="nv"> </span><span class="s">alert&quot;</span>
+</pre></div>
+</div>
+<p class="rubric">alert_filepathformat</p>
+<p>The value is a string defining the dynamic alertfile path. When defining the
+filepath format, it’s possible to use <a class="reference internal" href="polyfemos_readme_2_backend.html#reservedvariables"><span class="std std-ref">Reserved variables</span></a>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">alert_filepathformat</span><span class="p">:</span> <span class="s">&quot;~/polyfemos/data_out/FN/sohalerts/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;NETWORK.&amp;STATION.&amp;YEAR.&amp;JULDAY&quot;</span>
+</pre></div>
+</div>
+<p class="rubric">station_ids</p>
+<p>The value is a list strings defining the selected station ids. Only
+alerts corresponding these stations will be reported.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">station_ids</span><span class="p">:</span> <span class="p p-Indicator">[</span>
+  <span class="s">&quot;FN.MSF&quot;</span><span class="p p-Indicator">,</span>
+  <span class="s">&quot;FN.SGF&quot;</span><span class="p p-Indicator">,</span>
+  <span class="nv">...</span>
+<span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p class="rubric">sohpars</p>
+<p>The value is a list strings defining the selected state of health parameters.
+Only alerts corresponding these parameters will be reported.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">sohpars</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;Digitizer_input_voltage&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;Data_realtimeness_HHZ&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">State of health emailer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="documentation_index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="polyfemos_readme_4_add_station.html" title="previous chapter">How to add a station</a></li>
+      <li>Next: <a href="back.html" title="next chapter">Backend modules</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/polyfemos_readme_5_sohemailer.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

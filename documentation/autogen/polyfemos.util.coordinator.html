@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.util.coordinator &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.util.fileutils" href="polyfemos.util.fileutils.html" />
+    <link rel="prev" title="polyfemos.tests.test_python_packages" href="polyfemos.tests.test_python_packages.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-polyfemos.util.coordinator">
+<span id="polyfemos-util-coordinator"></span><h1>polyfemos.util.coordinator<a class="headerlink" href="#module-polyfemos.util.coordinator" title="Permalink to this headline">¶</a></h1>
+<p>Coordinate transformation functions</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2019, University of Oulu, Sodankyla Geophysical Observatory</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GNU Lesser General Public License v3.0 or later
+(<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">https://spdx.org/licenses/LGPL-3.0-or-later.html</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Public Functions</p>
+<dl class="function">
+<dt id="polyfemos.util.coordinator.ddm2dd">
+<code class="sig-prename descclassname">polyfemos.util.coordinator.</code><code class="sig-name descname">ddm2dd</code><span class="sig-paren">(</span><em class="sig-param">degs</em>, <em class="sig-param">mins</em>, <em class="sig-param">letter</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/coordinator.html#ddm2dd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.coordinator.ddm2dd" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>degs</strong> (<em>numlike</em>) – coordinate degrees</p></li>
+<li><p><strong>mins</strong> (<em>numlike</em>) – coordinate decimal minutes</p></li>
+<li><p><strong>letter</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <code class="docutils literal notranslate"><span class="pre">N</span></code>, <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">E</span></code>, or <code class="docutils literal notranslate"><span class="pre">W</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>coordinate as decimal degrees</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.coordinator.get_transform">
+<code class="sig-prename descclassname">polyfemos.util.coordinator.</code><code class="sig-name descname">get_transform</code><span class="sig-paren">(</span><em class="sig-param">from_epsg</em>, <em class="sig-param">to_epsg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/coordinator.html#get_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.coordinator.get_transform" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_epsg</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – EPSG code of the original coordinate system</p></li>
+<li><p><strong>to_epsg</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – EPSG code of the resulting coordinate system</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A coordinate transformation function taking xy-coordinates
+in <code class="docutils literal notranslate"><span class="pre">from_epsg</span></code> coordinate system and returning xy-coordinates in
+<code class="docutils literal notranslate"><span class="pre">to_epsg</span></code> coordinate system</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.util.coordinator.transform_from_ozi_map">
+<code class="sig-prename descclassname">polyfemos.util.coordinator.</code><code class="sig-name descname">transform_from_ozi_map</code><span class="sig-paren">(</span><em class="sig-param">mapfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/util/coordinator.html#transform_from_ozi_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.util.coordinator.transform_from_ozi_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads <a class="reference external" href="https://www.oziexplorer4.com/w/">OziExplorer</a>
+map files and returns a function to convert
+WGS84 coordinates to pixels.</p>
+<p>The map file can be created manually and it
+should contain at least the following mandatory lines:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Point01,xy, 110, 159,in, deg, 68, 47.222,N, 22, 46.498,E, grid, , , , N
+Point02,xy, 219, 159,in, deg, 68, 50.001,N, 25, 32.324,E, grid, , , , N
+Point03,xy, 329, 159,in, deg, 68, 50.063,N, 28, 20.055,E, grid, , , , N
+Point04,xy, 110, 318,in, deg, 67, 19.826,N, 23, 2.020,E, grid, , , , N
+Point05,xy, 219, 318,in, deg, 67, 22.408,N, 25, 37.707,E, grid, , , , N
+Point06,xy, 329, 318,in, deg, 67, 22.466,N, 28, 15.139,E, grid, , , , N
+Point07,xy, 110, 476,in, deg, 65, 52.937,N, 23, 15.536,E, grid, , , , N
+Point08,xy, 219, 476,in, deg, 65, 55.346,N, 25, 42.393,E, grid, , , , N
+Point09,xy, 329, 476,in, deg, 65, 55.401,N, 28, 10.860,E, grid, , , , N
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MMPLL,1, 19.499680, 70.147437
+MMPLL,2, 31.374991, 70.251143
+MMPLL,3, 30.424810, 64.431702
+MMPLL,4, 21.120046, 64.353722
+</pre></div>
+</div>
+<p>Each line is treated as a list of elements separated with commas,
+whitespaces are removed.
+The ‘Point’ entries are used to create the conversion and
+the ‘MMPLL’ entries define the extrapolation area.
+In ‘Point’ entries indices 2 and 3 are pixel coordinates and
+indices from 6 to 11 are the corresponding WGS84 coordinates
+(indices 2 and 3 in the ‘MMPLL’ entry).</p>
+<p>Lines that do not start with either ‘MMPLL’ or ‘Point’ are skipped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mapfile</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to OziExplorer map file</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A function taking WGS84 longitude and latitude as arguments
+and returning pixel xy-coordinates as a tuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../front.html">Frontend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.ordinal.html">polyfemos.almanac.ordinal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.timer.html">polyfemos.almanac.timer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.utils.html">polyfemos.almanac.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.outlierremover.html">polyfemos.data.outlierremover</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.statistics.html">polyfemos.data.statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.utils.html">polyfemos.data.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.filepathparser.html">polyfemos.parser.filepathparser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.functionparser.html">polyfemos.parser.functionparser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.resources.html">polyfemos.parser.resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.typeoperator.html">polyfemos.parser.typeoperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.check_output_files.html">polyfemos.scripts.check_output_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.devserver.html">polyfemos.scripts.devserver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.render_web_templates.html">polyfemos.scripts.render_web_templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.test_front_paths.html">polyfemos.scripts.test_front_paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.sohemailer.html">polyfemos.scripts.sohemailer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.tests.test_python_packages.html">polyfemos.tests.test_python_packages</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">polyfemos.util.coordinator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.fileutils.html">polyfemos.util.fileutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.messenger.html">polyfemos.util.messenger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.randomizer.html">polyfemos.util.randomizer</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../other.html">Scripts, tests and other modules</a><ul>
+      <li>Previous: <a href="polyfemos.tests.test_python_packages.html" title="previous chapter">polyfemos.tests.test_python_packages</a></li>
+      <li>Next: <a href="polyfemos.util.fileutils.html" title="next chapter">polyfemos.util.fileutils</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.util.coordinator.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

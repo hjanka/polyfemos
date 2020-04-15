@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.sohplot.outfilefields &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.front.sohplot.outfilefields</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Type structure for &#39;\*.stf&#39; file header fields and data rows, and for</span>
+<span class="sd">&#39;\*.alert&#39; and &#39;\*.csv&#39; file data rows.</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+
+
+<div class="viewcode-block" id="floatlist"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.outfilefields.html#polyfemos.front.sohplot.outfilefields.floatlist">[docs]</a><span class="k">def</span> <span class="nf">floatlist</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: a string passed to</span>
+<span class="sd">        :func:`~polyfemos.parser.typeoperator.floatlist`</span>
+<span class="sd">    :type length: int, optional</span>
+<span class="sd">    :param length: if the formed list does not match the given ``length``,</span>
+<span class="sd">        ``None`` is returned.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: list of floats or ``None``, if formation of list was not possible</span>
+<span class="sd">         with given ``inputstr``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">list_</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">floatlist</span><span class="p">(</span><span class="n">inputstr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">list_</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_</span><span class="p">)</span> <span class="o">!=</span> <span class="n">length</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">list_</span></div>
+
+
+<div class="viewcode-block" id="alert"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.outfilefields.html#polyfemos.front.sohplot.outfilefields.alert">[docs]</a><span class="k">def</span> <span class="nf">alert</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr:</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: Returns ``None`` if given ``inputstr`` didn&#39;t contain valid</span>
+<span class="sd">        alert information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">inputstr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;nan&quot;</span><span class="p">}:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">inputstr</span></div>
+
+
+<div class="viewcode-block" id="string"><a class="viewcode-back" href="../../../../autogen/polyfemos.front.sohplot.outfilefields.html#polyfemos.front.sohplot.outfilefields.string">[docs]</a><span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="n">inputstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type inputstr: str</span>
+<span class="sd">    :param inputstr: string passed to</span>
+<span class="sd">        :func:`~polyfemos.parser.typeoperator.str_`</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: If ``inputstr`` is empty, ``None`` is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">to</span><span class="o">.</span><span class="n">str_</span><span class="p">(</span><span class="n">inputstr</span><span class="p">,</span> <span class="n">check_empty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<span class="n">_error_msg</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;utcdatetime&quot;</span><span class="p">:</span> <span class="s2">&quot;No UTC datetime compatible string. &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;str&quot;</span><span class="p">:</span> <span class="s2">&quot;Empty string found. &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid type, should be float. &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid type, should be int. &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dict&quot;</span><span class="p">:</span> <span class="s2">&quot;Malformed dictionary. &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;floatlist&quot;</span><span class="p">:</span> <span class="s2">&quot;The value should be a list of two floats. &quot;</span>
+                 <span class="s2">&quot;The list may contain &#39;NaN&#39; string values. &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;alert&quot;</span><span class="p">:</span> <span class="s2">&quot;The value should be &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, or &#39;nan&#39;. &quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="c1"># State of health text file&#39;s available header fields.</span>
+<span class="c1"># The first column in the list is the type of the actual value as a function.</span>
+<span class="c1"># The second column in the list is a message in case of erroneous type</span>
+<span class="c1"># conversion.</span>
+<span class="c1"># The third column is the default value</span>
+<span class="n">STF_HEADER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;ID&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;NETWORK&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;STATION&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;LOCATION&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;SENSOR&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;DIGITIZER&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;STARTTIME&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">to</span><span class="o">.</span><span class="n">utcdatetime</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;utcdatetime&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="s2">&quot;ENDTIME&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">to</span><span class="o">.</span><span class="n">utcdatetime</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;utcdatetime&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="s2">&quot;LOCY&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">to</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="s2">&quot;LOCX&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">to</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="s2">&quot;EPSG&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;UNIT&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;PRIORITY&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">to</span><span class="o">.</span><span class="n">int_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="s2">&quot;PLOTLIMS&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">floatlist</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;floatlist&quot;</span><span class="p">],</span> <span class="p">[]],</span>
+    <span class="s2">&quot;IRLIMS&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">floatlist</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;floatlist&quot;</span><span class="p">],</span> <span class="p">[]],</span>
+    <span class="s2">&quot;YELLOW&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">floatlist</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;floatlist&quot;</span><span class="p">],</span> <span class="p">[]],</span>
+    <span class="s2">&quot;ORANGE&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">floatlist</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;floatlist&quot;</span><span class="p">],</span> <span class="p">[]],</span>
+    <span class="s2">&quot;RED&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">floatlist</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;floatlist&quot;</span><span class="p">],</span> <span class="p">[]],</span>
+<span class="p">}</span>
+
+<span class="c1"># The first column is either 1 or 0, for mandatory (1) or optional (0) value.</span>
+<span class="c1"># The second column is the type of the actual value as a function.</span>
+<span class="c1"># The third row is a message in case of erroneous type conversion.</span>
+<span class="n">STF_DATA</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">to</span><span class="o">.</span><span class="n">utcdatetime</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;utcdatetime&quot;</span><span class="p">]],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">to</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">]],</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">.</span><span class="n">dict_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;dict&quot;</span><span class="p">]],</span>
+<span class="p">]</span>
+<span class="n">CSV_DATA</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">to</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">]],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">to</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">]],</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">.</span><span class="n">dict_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;dict&quot;</span><span class="p">]],</span>
+<span class="p">]</span>
+<span class="n">ALERT_DATA</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">alert</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;alert&quot;</span><span class="p">]],</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">.</span><span class="n">int_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">]],</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">_error_msg</span><span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">]],</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

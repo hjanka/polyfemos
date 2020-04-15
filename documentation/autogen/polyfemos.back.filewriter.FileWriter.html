@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.filewriter.FileWriter &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.back.filewriter.STFWriter" href="polyfemos.back.filewriter.STFWriter.html" />
+    <link rel="prev" title="polyfemos.back.filewriter.CSVWriter" href="polyfemos.back.filewriter.CSVWriter.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="polyfemos-back-filewriter-filewriter">
+<h1>polyfemos.back.filewriter.FileWriter<a class="headerlink" href="#polyfemos-back-filewriter-filewriter" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="polyfemos.back.filewriter.FileWriter">
+<em class="property">class </em><code class="sig-prename descclassname">polyfemos.back.filewriter.</code><code class="sig-name descname">FileWriter</code><span class="sig-paren">(</span><em class="sig-param">bool_=False</em>, <em class="sig-param">fp_func=None</em>, <em class="sig-param">retroactive=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/filewriter.html#FileWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.filewriter.FileWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Parent class for state of health file writer classes</p>
+<p class="rubric">Public Methods</p>
+<dl class="method">
+<dt id="polyfemos.back.filewriter.FileWriter.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">bool_=False</em>, <em class="sig-param">fp_func=None</em>, <em class="sig-param">retroactive=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/filewriter.html#FileWriter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.filewriter.FileWriter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>The attribute values are suitable for writing state of health
+csv files by default.</p>
+<p><code class="docutils literal notranslate"><span class="pre">self._file_writing_func</span></code> is set to
+<a class="reference internal" href="polyfemos.util.fileutils.html#polyfemos.util.fileutils.write_csv" title="polyfemos.util.fileutils.write_csv"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_csv()</span></code></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">self._create_line_func</span></code> is set to
+<a class="reference internal" href="polyfemos.back.filewriter.html#polyfemos.back.filewriter.create_csvline" title="polyfemos.back.filewriter.create_csvline"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_csvline()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bool_</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, methods of this class do nothing,
+If <code class="docutils literal notranslate"><span class="pre">fp_func</span></code> is not callable, <code class="docutils literal notranslate"><span class="pre">bool_</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><strong>fp_func</strong> (<em>func</em>) – filepath function, e.g. FLAGs ‘sohtextfilepath’
+‘sohalertpath’ or ‘sohcsvpath’. See
+<a class="reference internal" href="polyfemos.back.interpreter.Interpreter.html#polyfemos.back.interpreter.Interpreter._init_flags" title="polyfemos.back.interpreter.Interpreter._init_flags"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_init_flags()</span></code></a>
+for more information.</p></li>
+<li><p><strong>retroactive</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – defines if the retroactive mode is used.
+See <a class="reference internal" href="polyfemos.back.interpreter.Interpreter.html#polyfemos.back.interpreter.Interpreter._init_flags" title="polyfemos.back.interpreter.Interpreter._init_flags"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_init_flags()</span></code></a>
+for more info.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.filewriter.FileWriter.append_and_write_data">
+<code class="sig-name descname">append_and_write_data</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/filewriter.html#FileWriter.append_and_write_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.filewriter.FileWriter.append_and_write_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Additional arguments <code class="docutils literal notranslate"><span class="pre">args</span></code> are applied to the
+function <code class="docutils literal notranslate"><span class="pre">self._create_line_func</span></code>.</p>
+<p>Creates and immediately writes a new line to file <code class="docutils literal notranslate"><span class="pre">filename</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.filewriter.FileWriter.append_data">
+<code class="sig-name descname">append_data</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/filewriter.html#FileWriter.append_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.filewriter.FileWriter.append_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Additional arguments <code class="docutils literal notranslate"><span class="pre">args</span></code> are applied to the
+function <code class="docutils literal notranslate"><span class="pre">self._create_line_func</span></code>.</p>
+<p>Creates and appends a new line to file entry (<code class="docutils literal notranslate"><span class="pre">filename</span></code>)
+in <code class="docutils literal notranslate"><span class="pre">self._dict</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.filewriter.FileWriter.append_line">
+<code class="sig-name descname">append_line</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">line</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/filewriter.html#FileWriter.append_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.filewriter.FileWriter.append_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>If there is no file with a name <code class="docutils literal notranslate"><span class="pre">filename</span></code> in <code class="docutils literal notranslate"><span class="pre">self._dict</span></code>,
+header is added to the corersponding file entry in <code class="docutils literal notranslate"><span class="pre">self._dict</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p></li>
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A line to be appended into the file (<code class="docutils literal notranslate"><span class="pre">filename</span></code>)
+entry in <code class="docutils literal notranslate"><span class="pre">self._dict</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.filewriter.FileWriter.get_filename">
+<code class="sig-name descname">get_filename</code><span class="sig-paren">(</span><em class="sig-param">pathkwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/filewriter.html#FileWriter.get_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.filewriter.FileWriter.get_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies <code class="docutils literal notranslate"><span class="pre">pathkwargs</span></code> to <code class="docutils literal notranslate"><span class="pre">self._filepath_func</span></code> and returns
+the resulting filepath. If retroactive mode is used, ‘retro’
+identifier is added to the filepath.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pathkwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – keyword arguments for <code class="docutils literal notranslate"><span class="pre">self._filepath_func</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.filewriter.FileWriter.update_header">
+<code class="sig-name descname">update_header</code><span class="sig-paren">(</span><em class="sig-param">header</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/filewriter.html#FileWriter.update_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.filewriter.FileWriter.update_header" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>header</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – a new header applied to <code class="docutils literal notranslate"><span class="pre">self._header</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.filewriter.FileWriter.write_files">
+<code class="sig-name descname">write_files</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/filewriter.html#FileWriter.write_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.filewriter.FileWriter.write_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes out every file in <code class="docutils literal notranslate"><span class="pre">self._dict</span></code> and deletes the data
+contained in it.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../back.html">Backend modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="polyfemos.back.filewriter.html">polyfemos.back.filewriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.interpreter.html">polyfemos.back.interpreter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.main.html">polyfemos.back.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.parameter.html">polyfemos.back.parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.edlogreader.html">polyfemos.back.seismic.edlogreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.lumberjack.html">polyfemos.back.seismic.lumberjack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.scanner.html">polyfemos.back.seismic.scanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.station.html">polyfemos.back.station</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../back.html">Backend modules</a><ul>
+  <li><a href="polyfemos.back.filewriter.html">polyfemos.back.filewriter</a><ul>
+      <li>Previous: <a href="polyfemos.back.filewriter.CSVWriter.html" title="previous chapter">polyfemos.back.filewriter.CSVWriter</a></li>
+      <li>Next: <a href="polyfemos.back.filewriter.STFWriter.html" title="next chapter">polyfemos.back.filewriter.STFWriter</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.back.filewriter.FileWriter.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

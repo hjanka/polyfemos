@@ -1,0 +1,56 @@
+OziExplorer Map Data File Version 2.2
+northern_finland
+northern_finland.png
+1 ,Map Code,
+WGS 84,WGS 84,   0.0000,   0.0000,WGS 84
+Reserved 1
+Reserved 2
+Magnetic Variation,,,E
+Map Projection,Transverse Mercator,PolyCal,No,AutoCalOnly,No,BSBUseWPX,No
+Point01,xy, 110, 159,in, deg, 68, 47.222,N, 22, 46.498,E, grid, , , , N
+Point02,xy, 219, 159,in, deg, 68, 50.001,N, 25, 32.324,E, grid, , , , N
+Point03,xy, 329, 159,in, deg, 68, 50.063,N, 28, 20.055,E, grid, , , , N
+Point04,xy, 110, 318,in, deg, 67, 19.826,N, 23, 2.020,E, grid, , , , N
+Point05,xy, 219, 318,in, deg, 67, 22.408,N, 25, 37.707,E, grid, , , , N
+Point06,xy, 329, 318,in, deg, 67, 22.466,N, 28, 15.139,E, grid, , , , N
+Point07,xy, 110, 476,in, deg, 65, 52.937,N, 23, 15.536,E, grid, , , , N
+Point08,xy, 219, 476,in, deg, 65, 55.346,N, 25, 42.393,E, grid, , , , N
+Point09,xy, 329, 476,in, deg, 65, 55.401,N, 28, 10.860,E, grid, , , , N
+Point10,xy,,,in,deg,,,,,,, grid,,,,
+Point11,xy,,,in,deg,,,,,,, grid,,,,
+Point12,xy,,,in,deg,,,,,,, grid,,,,
+Point13,xy,,,in,deg,,,,,,, grid,,,,
+Point14,xy,,,in,deg,,,,,,, grid,,,,
+Point15,xy,,,in,deg,,,,,,, grid,,,,
+Point16,xy,,,in,deg,,,,,,, grid,,,,
+Point17,xy,,,in,deg,,,,,,, grid,,,,
+Point18,xy,,,in,deg,,,,,,, grid,,,,
+Point19,xy,,,in,deg,,,,,,, grid,,,,
+Point20,xy,,,in,deg,,,,,,, grid,,,,
+Point21,xy,,,in,deg,,,,,,, grid,,,,
+Point22,xy,,,in,deg,,,,,,, grid,,,,
+Point23,xy,,,in,deg,,,,,,, grid,,,,
+Point24,xy,,,in,deg,,,,,,, grid,,,,
+Point25,xy,,,in,deg,,,,,,, grid,,,,
+Point26,xy,,,in,deg,,,,,,, grid,,,,
+Point27,xy,,,in,deg,,,,,,, grid,,,,
+Point28,xy,,,in,deg,,,,,,, grid,,,,
+Point29,xy,,,in,deg,,,,,,, grid,,,,
+Point30,xy,,,in,deg,,,,,,, grid,,,,
+Projection Setup, 0.000000000, 27.0, 0.9996, 500000.0, 0.00,,,,,
+Map Feature = MF ; Map Comment = MC     These follow if they exist
+Track File = TF      These follow if they exist
+Moving Map Parameters = MM?    These follow if they exist
+MM0,Yes
+MMPNUM,4
+MMPXY,1,0,0
+MMPXY,2,438,0
+MMPXY,3,438,635
+MMPXY,4,0,635
+MMPLL,1, 19.499680, 70.147437
+MMPLL,2, 31.374991, 70.251143
+MMPLL,3, 30.424810, 64.431702
+MMPLL,4, 21.120046, 64.353722
+MM1B, 1024.00
+MOP,Map Open Position,0,0
+IWH,Map Image Width/Height,438,635

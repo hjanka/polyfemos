@@ -1,0 +1,757 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Frontend &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to add a station" href="polyfemos_readme_4_add_station.html" />
+    <link rel="prev" title="Backend" href="polyfemos_readme_2_backend.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="frontend">
+<span id="id1"></span><h1>Frontend<a class="headerlink" href="#frontend" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="web-pages-of-polyfemos-web">
+<h2>Web pages of polyfemos web<a class="headerlink" href="#web-pages-of-polyfemos-web" title="Permalink to this headline">¶</a></h2>
+<p>List of sites:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#index"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="#home"><span class="std std-ref">Home</span></a></p></li>
+<li><p><a class="reference internal" href="#sohtable"><span class="std std-ref">SOH Table</span></a></p></li>
+<li><p><a class="reference internal" href="#sohmap"><span class="std std-ref">SOH Map</span></a></p></li>
+<li><p><a class="reference internal" href="#datacoveragebrowser"><span class="std std-ref">Data Coverage Browser</span></a></p></li>
+<li><p><a class="reference internal" href="#datacoverageimage"><span class="std std-ref">Data Coverage Image</span></a></p></li>
+<li><p><a class="reference internal" href="#statisticssummary"><span class="std std-ref">Statistics Summary</span></a></p></li>
+<li><p><a class="reference internal" href="#plotbrowser"><span class="std std-ref">Plot Browser</span></a></p></li>
+<li><p><a class="reference internal" href="#alertheattable"><span class="std std-ref">Alert Heat Table</span></a></p></li>
+<li><p><a class="reference internal" href="#documentation"><span class="std std-ref">Documentation</span></a></p></li>
+</ul>
+<p>Most sites of the polyfemos provide system time information
+on low left corner. The time information is provided in UTC and in local
+timezones. In addition, the day of the year (ordinal) is shown.</p>
+<div class="section" id="index">
+<span id="id2"></span><h3>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h3>
+<p>Short description of polyfemos web for random visitors</p>
+</div>
+<div class="section" id="home">
+<span id="id3"></span><h3>Home<a class="headerlink" href="#home" title="Permalink to this headline">¶</a></h3>
+<p>Navigation page of polyfemos web</p>
+</div>
+<div class="section" id="soh-table">
+<span id="sohtable"></span><h3>SOH Table<a class="headerlink" href="#soh-table" title="Permalink to this headline">¶</a></h3>
+<p>The state of health alert files (‘*.alert’) are read to produce the table.</p>
+<p>Each cell in the table provides a link to the corresponding plot.</p>
+<p>The alert status of each station and state of health parameter combination is
+shown in state of health table. The date is selectable. In addition to date
+dropdown menu, it is also possible to navigate between different dates using
+‘+date’ and ‘-date’ buttons which both add or subtract 1 day.</p>
+<p>If ‘Show all’ check box is checked, state of health parameters with visibities
+1 and 2 are shown. If not, only parameters with visibility 1 are shown.
+Visibilities are set in YAML files, see <a class="reference internal" href="#frontendconfiguration"><span class="std std-ref">Configuration</span></a>.</p>
+<p>If ‘Realtimeness filter’ check box is checked, outdated alerts are not shown
+(Grey). The time limit for exclusion is selectable using ‘Realtimeness limit’
+text field. The field takes a limit as seconds. If the timestamp value
+‘last_dp_ts’ in the alert file is smaller than the current polyfemos web server
+time minus the ‘Realtimeness limit’, the alert data is considered to be
+outdated.</p>
+<p>Cell colors with explanations:</p>
+<ul class="simple">
+<li><p>Red, alert currently on, (threshold is broken)</p></li>
+<li><p>Yellow, alert has been on during the day, (threshold has been broken)</p></li>
+<li><p>Green, no alerts</p></li>
+<li><p>Grey, the data is outdated</p></li>
+<li><p>Very Light Grey, no data available</p></li>
+</ul>
+</div>
+<div class="section" id="soh-map">
+<span id="sohmap"></span><h3>SOH Map<a class="headerlink" href="#soh-map" title="Permalink to this headline">¶</a></h3>
+<p>Coordinates and the EPSG information are read from the ‘*.stf’ files
+(ESPG, LOCX, and LOCY header fields).
+<a class="reference external" href="https://www.oziexplorer4.com/w/">OziExplorer</a>
+‘*.map’ file and the corresponding ‘*.png’ image must be provided
+in the folder: ‘web_static’, which located in folder ‘~/polyfemos’ if the
+default convention was followed during setup.</p>
+<p>The example file ‘northern_finland.map’, was created using
+<a class="reference external" href="https://olammi.iki.fi/sw/fetch_map/">fetch_map</a>.
+More information about the ‘*.map’ file in
+<a class="reference internal" href="autogen/polyfemos.util.coordinator.html#polyfemos.util.coordinator.transform_from_ozi_map" title="polyfemos.util.coordinator.transform_from_ozi_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform_from_ozi_map()</span></code></a>.</p>
+<p>In the State of health map,
+the inner most circle consists of priority 1 parameters, the
+center circle priority 2 and the outer most circle consists of parameters with
+priorities 3 and 4.</p>
+</div>
+<div class="section" id="data-coverage-browser">
+<span id="datacoveragebrowser"></span><h3>Data Coverage Browser<a class="headerlink" href="#data-coverage-browser" title="Permalink to this headline">¶</a></h3>
+<p>Creates a datacoverage image incorporating selected stations and data channels
+and with selected time interval. Uses userdefined scanning function, see
+<a class="reference internal" href="#frontendconfiguration"><span class="std std-ref">Configuration</span></a>. The available functions can be reviewed in
+<a class="reference internal" href="autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.get_datacoveragebrowser_func" title="polyfemos.front.userdef.get_datacoveragebrowser_func"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_datacoveragebrowser_func()</span></code></a>.</p>
+</div>
+<div class="section" id="data-coverage-image">
+<span id="datacoverageimage"></span><h3>Data Coverage Image<a class="headerlink" href="#data-coverage-image" title="Permalink to this headline">¶</a></h3>
+<p>If backend is set to create a data coverage image in realtime, this site
+will show the image.</p>
+</div>
+<div class="section" id="statistics-summary">
+<span id="statisticssummary"></span><h3>Statistics Summary<a class="headerlink" href="#statistics-summary" title="Permalink to this headline">¶</a></h3>
+<p>Available values and their units in statistics summary</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 6%" />
+<col style="width: 81%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Abbreviation</p></th>
+<th class="head"><p>Unit</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Median</p></td>
+<td><p>*</p></td>
+<td><p>median</p></td>
+</tr>
+<tr class="row-odd"><td><p>Min</p></td>
+<td><p>*</p></td>
+<td><p>minimum</p></td>
+</tr>
+<tr class="row-even"><td><p>Max</p></td>
+<td><p>*</p></td>
+<td><p>maximum</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mean</p></td>
+<td><p>*</p></td>
+<td><p>mean</p></td>
+</tr>
+<tr class="row-even"><td><p>SD</p></td>
+<td><p>*</p></td>
+<td><p>standard deviation</p></td>
+</tr>
+<tr class="row-odd"><td><p>CV%</p></td>
+<td><p>%</p></td>
+<td><p><a class="reference external" href="https://en.wikipedia.org/wiki/Coefficient_of_variation">coefficient of variation</a></p></td>
+</tr>
+<tr class="row-even"><td><p>TIB%</p></td>
+<td><p>%</p></td>
+<td><p>percentage of datapoints which break the threshold, non existed (for example nan
+values are not counted</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lower</p></td>
+<td><p>*</p></td>
+<td><p>lower alert threshold</p></td>
+</tr>
+<tr class="row-even"><td><p>Higher</p></td>
+<td><p>*</p></td>
+<td><p>higher alert threshold</p></td>
+</tr>
+<tr class="row-odd"><td><p>UNIT</p></td>
+<td><p>-</p></td>
+<td><p>* In units defined in this field, retrieved from ‘*.stf’ file header</p></td>
+</tr>
+</tbody>
+</table>
+<p>If ‘Remove irrational values’ check box is checked, irrational values
+are remove before value calculations. The lower and higher limit for
+irrational limits should be defined in ‘*.stf’ file header. In addition,
+data outliers can possibly be removed using ‘Advanced outlier removal’
+option.</p>
+<p>The used functions for removing outliers with different station and sohpar
+combinations can be defined in function  YAML files. Information about used
+outlier removal function can be documented by user in YAML summary
+outlierremfunc info. The available outlier removal functions are listed in
+<a class="reference internal" href="autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.get_outlierremfunc" title="polyfemos.front.userdef.get_outlierremfunc"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_outlierremfunc()</span></code></a>. See
+<a class="reference internal" href="#frontendconfiguration"><span class="std std-ref">Configuration</span></a> for more info.</p>
+<p>The different header information for the summary may be selected using
+‘Headerdate’ dropdown menu.</p>
+<p>The data for the summary can read from ‘*.csv’ or ‘*.stf’ files.
+The used input file format is selected using ‘Read from’ dropdown menu.</p>
+<p>The resulting summary table is either outputted into the site or downloaded
+as csv file. Check ‘Download csv’ check box to download the summary as csv.</p>
+</div>
+<div class="section" id="plot-browser">
+<span id="plotbrowser"></span><h3>Plot Browser<a class="headerlink" href="#plot-browser" title="Permalink to this headline">¶</a></h3>
+<p>In the Plot Browser view the user may plot different state of health
+parameters. The user may select from different station and the parameter
+combinations, and with different timespans. In addition, the headerdate is
+selectable in order to choose between different header information of the
+‘*.stf’ files.</p>
+<p>By default, the data for the plot is read from the ‘*.stf’ files. The input
+file format may be changed to csv using ‘Read from’ dropdown menu.
+In order to create ‘NEZ’ offset plots,
+the data for the offset transformations is  read from ‘*.stf’ files.</p>
+<p>Alert line (horizontal bright red lines) and unit
+information is read from the header of ‘*.stf’ files.</p>
+<p>If ‘Remove irrational values’ is checked, datapoints with irrational
+y values are removed. Upper and lower limit for irrational values
+is defined in ‘*.stf’ file header.</p>
+<p>If ‘Remove indetical values’ is checked, datapoints with identical
+x (time) and y values are removed.</p>
+<p>If ‘Track data length’ is checked, the amount of datapoints and ‘nan’ values
+is tracked after each dataprocessing step during the creation of the plot.
+Results are printed to the right of the plot after the plot is ready.</p>
+<p>In order to decimate the shown data, check the ‘Decimate’ check box.
+The maximum amount of data points after decimation is set to 10000. This is a
+fixed value.</p>
+<p>Advanced outlier removal options may used to remove outlying datapoints from
+the data. If ‘None’ is selected, outliers are not removed. (Irrational values
+are still removed if the corresponding check box is checked.) Three different
+functions to remove outliers are provided. Each function option has input
+fields for setting the function arguments. See
+<a class="reference internal" href="autogen/polyfemos.data.outlierremover.html#module-polyfemos.data.outlierremover" title="polyfemos.data.outlierremover"><code class="xref py py-mod docutils literal notranslate"><span class="pre">outlierremover</span></code></a> for more info about the outlier removal
+functions and their arguments.</p>
+</div>
+<div class="section" id="alert-heat-table">
+<span id="alertheattable"></span><h3>Alert Heat Table<a class="headerlink" href="#alert-heat-table" title="Permalink to this headline">¶</a></h3>
+<p>The alert heat table is very similar to the <a class="reference internal" href="#sohtable"><span class="std std-ref">SOH Table</span></a>. In alert heat
+map, a time interval is chosen and the ‘*.alert’ files during these days are
+read.</p>
+<p>For each day each station and sohpar combinations will receive ‘points’.
+If the alert file for the day is available, the station-sohpar combination
+will receive at most 2 points. By default points are set as follows:
+1 point if the threshold has been broken during the day and 2 points if the
+threshold was broken at the end of the day. The received points can be
+adjusted using ‘Points per tib’ and ‘Points per thbb’ dropdown menus.</p>
+<p>The total ‘theoretical’ maximum value of points is increased by
+2 for each day in which the
+alert file was available. Hovering over the cell in the table
+will provide total point count, the ‘theoretical’ maximum and
+the ratio (percents) between the aforementioned values.</p>
+<p>‘Locarithmic color’ ckeck box can be used to make lesser color values
+more prominent.</p>
+</div>
+<div class="section" id="documentation">
+<span id="id4"></span><h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>This very site/document you are reviewing right now.</p>
+</div>
+</div>
+<div class="section" id="keyboard-shortcuts">
+<h2>Keyboard Shortcuts<a class="headerlink" href="#keyboard-shortcuts" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 24%" />
+<col style="width: 61%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Works in</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>q</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#home"><span class="std std-ref">Home</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>w</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#sohtable"><span class="std std-ref">SOH Table</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>e</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#sohmap"><span class="std std-ref">SOH Map</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>r</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#plotbrowser"><span class="std std-ref">Plot Browser</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>t</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#datacoveragebrowser"><span class="std std-ref">Data Coverage Browser</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>y</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#datacoverageimage"><span class="std std-ref">Data Coverage Image</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>u</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#statisticssummary"><span class="std std-ref">Statistics Summary</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>i</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#alertheattable"><span class="std std-ref">Alert Heat Table</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>o</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#documentation"><span class="std std-ref">Documentation</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>p</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go to <a class="reference internal" href="#index"><span class="std std-ref">Index</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>backspace</p></td>
+<td><p>1,2,3,4,5,6,7,8</p></td>
+<td><p>Go back</p></td>
+</tr>
+<tr class="row-odd"><td><p>enter</p></td>
+<td><p>2,4,5,7,8</p></td>
+<td><p>Submit form</p></td>
+</tr>
+<tr class="row-even"><td><p>left arrow</p></td>
+<td><p>2</p></td>
+<td><p>Substract a day</p></td>
+</tr>
+<tr class="row-odd"><td><p>right arrow</p></td>
+<td><p>2</p></td>
+<td><p>Add a day</p></td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#home"><span class="std std-ref">Home</span></a></p></li>
+<li><p><a class="reference internal" href="#sohtable"><span class="std std-ref">SOH Table</span></a></p></li>
+<li><p><a class="reference internal" href="#sohmap"><span class="std std-ref">SOH Map</span></a></p></li>
+<li><p><a class="reference internal" href="#plotbrowser"><span class="std std-ref">Plot Browser</span></a></p></li>
+<li><p><a class="reference internal" href="#datacoveragebrowser"><span class="std std-ref">Data Coverage Browser</span></a></p></li>
+<li><p><a class="reference internal" href="#datacoverageimage"><span class="std std-ref">Data Coverage Image</span></a></p></li>
+<li><p><a class="reference internal" href="#statisticssummary"><span class="std std-ref">Statistics Summary</span></a></p></li>
+<li><p><a class="reference internal" href="#alertheattable"><span class="std std-ref">Alert Heat Table</span></a></p></li>
+<li><p><a class="reference internal" href="#documentation"><span class="std std-ref">Documentation</span></a></p></li>
+<li><p><a class="reference internal" href="#index"><span class="std std-ref">Index</span></a></p></li>
+</ol>
+</div>
+<div class="section" id="restrictions">
+<h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Index                   [1]</div>
+<div class="line">Home                    [2]</div>
+<div class="line">SOH Table               [2]</div>
+<div class="line">SOH Map                 [2]</div>
+<div class="line">Data Coverage Image     [2]</div>
+<div class="line">Plot Browser            [3]</div>
+<div class="line">Data Coverage Browser   [4]</div>
+<div class="line">Alert Heat Table        [4]</div>
+<div class="line">Statistics Summary      [4]</div>
+</div>
+<ol class="arabic simple">
+<li><p>full access for all</p></li>
+<li><p>full access for all registered users</p></li>
+<li><p>limited access for users with access level 2 and 3</p></li>
+<li><p>limited access for users with access level 2</p></li>
+</ol>
+<p>Access levels:</p>
+<ol class="arabic simple">
+<li><p>full access</p></li>
+<li><p>full access with some limitations</p></li>
+<li><p>limited access</p></li>
+</ol>
+<p>In Plot Browser, users with access level &gt; 1, can not uncheck ‘Decimate’ and
+‘Remove indentical values’ checkboxes. In addition, users with this access
+level may only plot at most 2 plots at once, with maximum timespan of 35 days.</p>
+<p>In all limited sites, users with limitations may only make one function call
+at the time.</p>
+</div>
+<div class="section" id="configuration">
+<span id="frontendconfiguration"></span><h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Frontend configuration is done using YAML (*.yml) files. Global configuration
+file should be found in location ‘conf/front/global_config.yml’.</p>
+<p>Each network included in polyfemos should have an own configuration file.
+Network configuration files must be included in folder ‘conf/front/networks’,
+and named ‘???_config.yml’, ??? being the name of the network.</p>
+<div class="section" id="global-configuration">
+<h3>Global Configuration<a class="headerlink" href="#global-configuration" title="Permalink to this headline">¶</a></h3>
+<p>Keys in global config are:</p>
+<p class="rubric">secret_key</p>
+<p>The value is string defining the secret key for flask server.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">secret_key</span><span class="p">:</span> <span class="s">&quot;ChangeThisImmediately!&quot;</span>
+</pre></div>
+</div>
+<p class="rubric">network_codes</p>
+<p>The value is a list defining all networks available in polyfemos web.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">network_codes</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">FN</span>
+  <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p class="rubric">users</p>
+<p>The value is a dictionary consisting of all allowed users. The value of each
+user is a dictionary defining the level of access as integer.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">users</span><span class="p">:</span>
+  <span class="nt">admin</span><span class="p">:</span>
+    <span class="nt">access_level</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">user1</span><span class="p">:</span>
+    <span class="nt">access_level</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">user2</span><span class="p">:</span>
+    <span class="nt">access_level</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p class="rubric">paths</p>
+<p>The value is dictionary defining all global paths, the value of each path
+is a string.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">paths</span><span class="p">:</span>
+  <span class="nt">server_ip</span><span class="p">:</span> <span class="s">&quot;123.123.123.45&quot;</span>
+  <span class="nt">nginx_dir</span><span class="p">:</span> <span class="s">&quot;/etc/nginx&quot;</span>
+  <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Global path key</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>server_ip</p></td>
+<td><p>IP address of the polyfemos server</p></td>
+</tr>
+<tr class="row-odd"><td><p>server_name</p></td>
+<td><p>name of the polyfemos server,
+url without ‘<a class="reference external" href="http://">http://</a>’</p></td>
+</tr>
+<tr class="row-even"><td><p>url</p></td>
+<td><p>Complete url of the polyfemos site</p></td>
+</tr>
+<tr class="row-odd"><td><p>user</p></td>
+<td><p>Username of the user hosting polyfemos</p></td>
+</tr>
+<tr class="row-even"><td><p>group</p></td>
+<td><p>Usergroup name hosting polyfemos</p></td>
+</tr>
+<tr class="row-odd"><td><p>working_dir</p></td>
+<td><p>Directory containing all codes for polyfemos web</p></td>
+</tr>
+<tr class="row-even"><td><p>nginx_dir</p></td>
+<td><p>Directory for nginx files,
+for example ‘sites-available’
+directory should be found here</p></td>
+</tr>
+<tr class="row-odd"><td><p>env_dir</p></td>
+<td><p>Directory of the used python/conda environment</p></td>
+</tr>
+<tr class="row-even"><td><p>service_dir</p></td>
+<td><p>Directory for polyfemos web service file</p></td>
+</tr>
+<tr class="row-odd"><td><p>passwd_file</p></td>
+<td><p>File where user and password information
+is stored, ‘.htpasswd’ for example</p></td>
+</tr>
+<tr class="row-even"><td><p>webusagelog_file</p></td>
+<td><p>File were the information fo visiting users is
+logged</p></td>
+</tr>
+<tr class="row-odd"><td><p>nginx_log_dir</p></td>
+<td><p>Directory where nginx logs are found</p></td>
+</tr>
+<tr class="row-even"><td><p>uwsgi_log_dir</p></td>
+<td><p>Directory where uwsgi logs,
+Python’s print command will output here</p></td>
+</tr>
+<tr class="row-odd"><td><p>ttf_file</p></td>
+<td><p>Path to the truetype font file</p></td>
+</tr>
+<tr class="row-even"><td><p>doc_dir</p></td>
+<td><p>Directory containing polyfemos documentation</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="network-configuration">
+<h3>Network Configuration<a class="headerlink" href="#network-configuration" title="Permalink to this headline">¶</a></h3>
+<p class="rubric">paths</p>
+<p>The value is dictionary defining all network paths, the value of each path
+is a string.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">paths</span><span class="p">:</span>
+  <span class="nt">dci_file</span><span class="p">:</span> <span class="s">&quot;FN_datacoverage_weekly.png&quot;</span>
+  <span class="nt">map_file</span><span class="p">:</span> <span class="s">&quot;northern_finland.png&quot;</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Network path key</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>dci_file</p></td>
+<td><p>Name of the datacoverage image file,
+should be found in static folder</p></td>
+</tr>
+<tr class="row-odd"><td><p>map_file</p></td>
+<td><p>Name of the backbroung map image file for SOH map,
+the OziExplorer ‘*.map’ file
+should have the same name
+as the png file, only different file extension.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">filepathformats</p>
+<p>The value is dictionary defining all dynamic network paths,  the value of each
+path is a string.</p>
+<p>When defining filepath formats it’s possible to use <a class="reference internal" href="polyfemos_readme_2_backend.html#reservedvariables"><span class="std std-ref">Reserved variables</span></a>
+in order to define dynamic filepaths.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">filepathformats</span><span class="p">:</span>
+  <span class="nt">rawdata</span><span class="p">:</span> <span class="s">&quot;~/polyfemos_example_data/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;CHANNEL.D/&amp;NETWORK.&amp;STATION.*.&amp;CHANNEL.D.&amp;YEAR.&amp;JULDAY&quot;</span>
+  <span class="nt">stf</span><span class="p">:</span> <span class="s">&quot;~/polyfemos/data_out/FN/sohtextfiles/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;NETWORK.&amp;STATION.&amp;YEAR.&amp;JULDAY&quot;</span>
+  <span class="nt">csv</span><span class="p">:</span> <span class="s">&quot;~/polyfemos/data_out/FN/sohcsvs/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;PARNAME/&amp;NETWORK.&amp;STATION.&amp;PARNAME.&amp;YEAR&quot;</span>
+  <span class="nt">alert</span><span class="p">:</span> <span class="s">&quot;~/polyfemos/data_out/FN/sohalerts/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;NETWORK.&amp;STATION.&amp;YEAR.&amp;JULDAY&quot;</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Filepathformat key</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>stf</p></td>
+<td><p>Path to state of health text files (*.stf)</p></td>
+</tr>
+<tr class="row-odd"><td><p>csv</p></td>
+<td><p>Path to state of health csv files (*.csv)</p></td>
+</tr>
+<tr class="row-even"><td><p>alert</p></td>
+<td><p>Path to state of health alert files (*.alert)</p></td>
+</tr>
+<tr class="row-odd"><td><p>rawdata</p></td>
+<td><p>Path to raw data files</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">station_ids</p>
+<p>The value is a list of string values defining the station ids. Station id
+consists of a network and a station code separated with a dot.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">station_ids</span><span class="p">:</span> <span class="p p-Indicator">[</span>
+  <span class="s">&quot;FN.MSF&quot;</span><span class="p p-Indicator">,</span>
+  <span class="s">&quot;FN.SGF&quot;</span><span class="p p-Indicator">,</span>
+  <span class="nv">...</span>
+<span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p class="rubric">channel_codes</p>
+<p>The value is a list of string values defining every available data channel
+across all stations.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">channel_codes</span><span class="p">:</span> <span class="p p-Indicator">[</span>
+  <span class="s">&quot;HHZ&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;HHN&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;HHE&quot;</span><span class="p p-Indicator">,</span>
+  <span class="s">&quot;BHZ&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;BHN&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;BHE&quot;</span><span class="p p-Indicator">,</span>
+  <span class="s">&quot;AE1&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;AE2&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;AE3&quot;</span><span class="p p-Indicator">,</span>
+  <span class="s">&quot;GNS&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;GLA&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;GLO&quot;</span><span class="p p-Indicator">,</span>
+  <span class="nv">...</span>
+<span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p class="rubric">sohpars</p>
+<p>The value is a list of dictionaries. Each dictionary consists of  keys
+<code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">group</span></code> and <code class="docutils literal notranslate"><span class="pre">visibility</span></code>. The value of <code class="docutils literal notranslate"><span class="pre">name</span></code> is the name of
+the state of health parameter as a string, the value <code class="docutils literal notranslate"><span class="pre">group</span></code> is a name of
+the state of health parameter group where the parameter is included and the
+value <code class="docutils literal notranslate"><span class="pre">visibility</span></code> is a integer defining where the parameter is shown in
+polyfemos web.</p>
+<p>In <a class="reference internal" href="#sohmap"><span class="std std-ref">SOH Map</span></a>, <a class="reference internal" href="#alertheattable"><span class="std std-ref">Alert Heat Table</span></a> and <a class="reference internal" href="#sohtable"><span class="std std-ref">SOH Table</span></a> parameters with
+visibilities 1 and 2 are shown. In the latter, user may choose to only
+parameters with visibility of 1. In <a class="reference internal" href="#plotbrowser"><span class="std std-ref">Plot Browser</span></a> and
+<a class="reference internal" href="#statisticssummary"><span class="std std-ref">Statistics Summary</span></a> parameters with visibilities 1, 2 or 3 are
+selectable. Parameters with other visibility values than mentioned above
+are not shown anywhere in polyfemos web.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">sohpars</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt">name</span><span class="p">:</span> <span class="nv">Digitizer_input_voltage</span><span class="p p-Indicator">,</span><span class="nt"> group</span><span class="p">:</span> <span class="nv">Environment</span><span class="p p-Indicator">,</span><span class="nt"> visibility</span><span class="p">:</span>  <span class="nv">1</span><span class="p p-Indicator">}</span>
+  <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt">name</span><span class="p">:</span> <span class="nv">Timing_quality_HHZ</span><span class="p p-Indicator">,</span><span class="nt">      group</span><span class="p">:</span> <span class="nv">Timing</span><span class="p p-Indicator">,</span><span class="nt">      visibility</span><span class="p">:</span>  <span class="nv">2</span><span class="p p-Indicator">}</span>
+  <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p class="rubric">ticklabels</p>
+<p>The value is a dictionary consisting of parameter names as keys. Each value
+of the dictionary is an another dictionary. In the innermost dictionary the
+keys are integers and values are string values.</p>
+<p>Ticklabels are used in <a class="reference internal" href="#plotbrowser"><span class="std std-ref">Plot Browser</span></a> to map discrete y-values into more
+descriptive ones for y-axis tick labels.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ticklabels</span><span class="p">:</span>
+  <span class="nt">GPS_status</span><span class="p">:</span>
+    <span class="nt">0</span><span class="p">:</span> <span class="s">&quot;off</span><span class="nv"> </span><span class="s">(0)&quot;</span>
+    <span class="nt">1</span><span class="p">:</span> <span class="s">&quot;unlocked</span><span class="nv"> </span><span class="s">(1)&quot;</span>
+    <span class="nt">2</span><span class="p">:</span> <span class="s">&quot;locked</span><span class="nv"> </span><span class="s">(2)&quot;</span>
+<span class="nn">...</span>
+</pre></div>
+</div>
+<p class="rubric">definitions</p>
+<p>The value is a dictionary consisting of the internal parameter names as keys.
+The values of the dictionary are string values defining the user defined
+parameter name corresponding to the internal name.</p>
+<p>In the example code block all the internal names are shown.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">definitions</span><span class="p">:</span>
+  <span class="nt">datarealtimeness</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Data_realtimeness_HHZ</span>
+  <span class="nt">offset_n</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Offset_N</span>
+  <span class="nt">offset_e</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Offset_E</span>
+  <span class="nt">offset_z</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Offset_Z</span>
+  <span class="nt">offset_u</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Offset_U</span>
+  <span class="nt">offset_w</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Offset_W</span>
+  <span class="nt">offset_v</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Offset_V</span>
+</pre></div>
+</div>
+<p class="rubric">datacoveragebrowser_func</p>
+<p>The value is a string representing the selected data coverage scanning
+function. Available functions can be reviewed in
+<a class="reference internal" href="autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.get_datacoveragebrowser_func" title="polyfemos.front.userdef.get_datacoveragebrowser_func"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_datacoveragebrowser_func()</span></code></a>.</p>
+<p>The selected function is used in <a class="reference internal" href="#datacoveragebrowser"><span class="std std-ref">Data Coverage Browser</span></a>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">datacoveragebrowser_func</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">seismic_scanner</span>
+</pre></div>
+</div>
+<p class="rubric">summary_outlierremfunc_info</p>
+<p>The value is a list of strings defining user defined info paragrahps in
+<a class="reference internal" href="#statisticssummary"><span class="std std-ref">Statistics Summary</span></a>. The user may write here the information concerning
+the used outlier removal functions.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">summary_outlierremfunc_info</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;Advanced</span><span class="nv"> </span><span class="s">outlier</span><span class="nv"> </span><span class="s">removing</span><span class="nv"> </span><span class="s">info&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;FN.ASDF,</span><span class="nv"> </span><span class="s">Vault_temperature,</span><span class="nv"> </span><span class="s">Lipschitz</span><span class="nv"> </span><span class="s">continuity&quot;</span>
+  <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p class="rubric">summary_outlierremfuncs</p>
+<p>The value is a dictionary containing station id and parameter pairs as keys.
+The station id and the parameter name are separated with a colon. The value of
+the key is yet another dictionary consisting of key <code class="docutils literal notranslate"><span class="pre">function</span></code> which is the
+name of the function as a string, selectable from
+<a class="reference internal" href="autogen/polyfemos.front.userdef.html#polyfemos.front.userdef.get_outlierremfunc" title="polyfemos.front.userdef.get_outlierremfunc"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_outlierremfunc()</span></code></a>. Other keys to this
+dictionary are the keyword arguments for the function.</p>
+<p>The defined outlier removal functions are used in <a class="reference internal" href="#statisticssummary"><span class="std std-ref">Statistics Summary</span></a>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">summary_outlierremfuncs</span><span class="p">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">FN.ASDF:Vault_temperature</span><span class="p p-Indicator">:</span>
+    <span class="nt">function</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lipschitz</span>
+    <span class="nt">itern</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+    <span class="nt">klim</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.00007</span>
+  <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frontend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#web-pages-of-polyfemos-web">Web pages of polyfemos web</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#index">Index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#home">Home</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#soh-table">SOH Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#soh-map">SOH Map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-coverage-browser">Data Coverage Browser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-coverage-image">Data Coverage Image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#statistics-summary">Statistics Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-browser">Plot Browser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alert-heat-table">Alert Heat Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#restrictions">Restrictions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#global-configuration">Global Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#network-configuration">Network Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="documentation_index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="polyfemos_readme_2_backend.html" title="previous chapter">Backend</a></li>
+      <li>Next: <a href="polyfemos_readme_4_add_station.html" title="next chapter">How to add a station</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/polyfemos_readme_3_frontend.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

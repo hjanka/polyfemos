@@ -1,0 +1,120 @@
+
+
+:root {
+  --white: #fff;
+  --grey-1: #fafafa; /* global bg color */
+  --grey-2: #f5f5f5; /* highlight over global bg color */
+  --grey-3: #ddd; /* local bg color */
+  --grey-4: #aaa; /* highlight over local bg color */
+  --black: #000;
+
+  --red-1: #ff4d88;
+  --red-2: #e60047;
+  --red-3: #903;
+
+  --alert-green: #82ff82;
+  --alert-yellow: #ef8;
+  --alert-red: #ff4d88;
+
+  --green: #476b6b;
+  --blue: #22408f;
+}
+
+code {
+  /*font-family: "Courier New", Courier, monospace;*/
+  font-family: "Lucida Console", Lucida, monospace;
+  font-size: 100%;
+}
+
+a:link, a.reference:link, a.internal:link, a.external:link, a:link code {
+    border-bottom: 0px dotted #004B6B;
+    color: var(--red-3); 
+    text-decoration: none;
+}
+a:visited, a.reference:visited, a.internal:visited, a.external:visited, a:visited code {
+    border-bottom: 0px dotted #004B6B;
+    color: var(--red-3); 
+    text-decoration: none;
+}
+a:hover, a.reference:hover, a.internal:hover, a.external:hover, a:hover code {
+    border-bottom: 0px dotted #004B6B;
+    color: var(--red-2); 
+    text-decoration: underline;
+    background: var(--grey-1);
+}
+a:active, a.reference:active, a.internal:active, a.external:active, a:active code {
+    border-bottom: 0px dotted #004B6B;
+    color: var(--red-1); 
+    text-decoration: none;
+}
+
+
+body {
+    background-color: var(--grey-1);
+}
+
+
+div.document {
+    width: 80%;
+}
+
+div.body {
+    min-width: 450px;
+    max-width: 100%;
+    background-color: var(--grey-1);
+    margin-top: -50px;
+    padding: 0 10px 0 10px;
+}
+div.bodywrapper {
+    margin: 0 0 0 350px;
+}
+div.body > .section {
+    text-align: left;
+}
+
+div.body h1, div.body h2 {
+    margin: 60px 0px 10px 0px;
+}
+div.body h3 {
+    margin-top: 45px;
+    font-size: 120%;
+    font-weight: bold;
+}
+
+
+table.align-default {
+    text-align: left;
+}
+
+div.footer {
+    text-align: center;
+}
+
+
+div#how-to-add-a-station > ol > li {
+    margin-top: 27px;
+}
+
+div.sphinxsidebar {
+    width: 350px;
+}
+div.sphinxsidebar a {
+    color: #444;
+    text-decoration: none;
+    border-bottom: 0px dotted #999;
+}
+div.sphinxsidebar a:hover {
+    border-bottom: 0px solid #999;
+    text-decoration: underline;
+}
+
+dl.method, dl.function {
+  margin-top: 30px;
+}
+
+
+div.sphinxsidebarwrapper > h3 {
+  text-transform: lowercase;
+}
+
+

@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.main &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.front.main</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Frontend of polyfemos</span>
+
+<span class="sd">Utilizes `Flask &lt;http://flask.pocoo.org/&gt;`_</span>
+
+<span class="sd">Functions used for different site:</span>
+
+<span class="sd">- :func:`~polyfemos.front.main.index_alias`</span>
+<span class="sd">- :func:`~polyfemos.front.main.home`</span>
+<span class="sd">- :func:`~polyfemos.front.main.sohtable`</span>
+<span class="sd">- :func:`~polyfemos.front.main.sohmap`</span>
+<span class="sd">- :func:`~polyfemos.front.main.datacoverageimage`</span>
+<span class="sd">- :func:`~polyfemos.front.main.summary`</span>
+<span class="sd">- :func:`~polyfemos.front.main.datacoveragebrowser`</span>
+<span class="sd">- :func:`~polyfemos.front.main.plotbrowser`</span>
+<span class="sd">- :func:`~polyfemos.front.main.alertheat`</span>
+
+<span class="sd">See :ref:`Frontend` for documentation.</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">BytesIO</span><span class="p">,</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">dateutil</span> <span class="k">import</span> <span class="n">tz</span>
+<span class="kn">from</span> <span class="nn">PIL.PngImagePlugin</span> <span class="k">import</span> <span class="n">PngImageFile</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">quote</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="p">(</span><span class="n">Flask</span><span class="p">,</span> <span class="n">make_response</span><span class="p">,</span> <span class="n">stream_with_context</span><span class="p">,</span>
+                   <span class="n">send_from_directory</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="k">import</span> <span class="n">Figure</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">switch_backend</span><span class="p">(</span><span class="s1">&#39;agg&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_agg</span> <span class="k">import</span> <span class="n">FigureCanvasAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="k">import</span> <span class="n">LinearSegmentedColormap</span><span class="p">,</span> <span class="n">rgb2hex</span>
+
+<span class="kn">import</span> <span class="nn">bokeh</span>
+<span class="kn">from</span> <span class="nn">obspy</span> <span class="k">import</span> <span class="n">UTCDateTime</span>
+
+<span class="kn">from</span> <span class="nn">werkzeug.datastructures</span> <span class="k">import</span> <span class="n">Headers</span>
+<span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="k">import</span> <span class="n">Response</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util.messenger</span> <span class="k">import</span> <span class="n">messenger</span>
+<span class="kn">from</span> <span class="nn">polyfemos.data</span> <span class="k">import</span> <span class="n">outlierremover</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">coordinator</span>
+<span class="kn">from</span> <span class="nn">polyfemos.almanac.utils</span> <span class="k">import</span> <span class="n">parse_date</span><span class="p">,</span> <span class="n">get_jY</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">colors</span><span class="p">,</span> <span class="n">userdef</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front.sohplot.sohplot</span> <span class="k">import</span> <span class="n">SOHPlot</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front.trafficmonitor</span> <span class="k">import</span> <span class="p">(</span><span class="n">logged</span><span class="p">,</span> <span class="n">limited</span><span class="p">,</span> <span class="n">IPStorage</span><span class="p">,</span>
+                                            <span class="n">check_permission</span><span class="p">,</span> <span class="n">limit_access</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front.alertreader</span> <span class="k">import</span> <span class="n">get_sohdict</span>
+
+
+<span class="c1"># Initialize app</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">instance_relative_config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;polyfemos.front.flask_config.ProductionConfig&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;SECRET_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">secret_key</span><span class="p">()</span>
+
+<span class="c1"># IPStorage to be used with @limited functions as a decorator argument</span>
+<span class="n">ipstorage</span> <span class="o">=</span> <span class="n">IPStorage</span><span class="p">()</span>
+<span class="c1"># Replaces the normally used flask&#39;s render_template function</span>
+<span class="n">render_template</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">colored_template</span>
+
+
+<span class="k">if</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="c1"># If addional logging is wanted</span>
+    <span class="kn">import</span> <span class="nn">logging</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;LOG_FILE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;application.log&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;LOG_FILE&#39;</span><span class="p">])</span>
+        <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="render_base"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.render_base">[docs]</a><span class="k">def</span> <span class="nf">render_base</span><span class="p">(</span><span class="n">func_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type func\_: func</span>
+<span class="sd">    :param func\_: :func:`~flask.render_template`</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: decorated function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">utcdatetime_now</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">timestr</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">timestr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;polyfemos system time </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">utcdatetime_now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%j&quot;</span><span class="p">)))</span>
+        <span class="n">timestr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">utcdatetime_now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S UTC&quot;</span><span class="p">)))</span>
+        <span class="n">timestr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S %Z&quot;</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="s2">&quot;network_code&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;network_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">cookie</span><span class="p">(</span><span class="s2">&quot;network_code&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">timestr</span><span class="o">=</span><span class="n">timestr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="get_image_data"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.get_image_data">[docs]</a><span class="k">def</span> <span class="nf">get_image_data</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts the images into ascii</span>
+
+<span class="sd">    :type image: :obj:`~PIL.PngImagePlugin.PngImageFile` or</span>
+<span class="sd">        :class:`~matplotlib.figure.Figure`, or :obj:`~PIL.Image.Image`</span>
+<span class="sd">    :param image:</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: ``image`` as ascii</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">buffer_</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">(</span><span class="n">PngImageFile</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="p">)):</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">buffer_</span><span class="p">,</span> <span class="s1">&#39;PNG&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">Figure</span><span class="p">):</span>
+        <span class="n">canvas</span> <span class="o">=</span> <span class="n">FigureCanvas</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">canvas</span><span class="o">.</span><span class="n">print_png</span><span class="p">(</span><span class="n">buffer_</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">buffer_</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="s1">&#39;data:image/png;base64,</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">quote</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="get_summary"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.get_summary">[docs]</a><span class="k">def</span> <span class="nf">get_summary</span><span class="p">(</span><span class="n">startdate</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">enddate</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">headerdate</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">combinations</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">remove_irrationals</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">advanced_outlier_removal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">fext</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The function used to get the statistical summary of station/sohpar</span>
+<span class="sd">    combinations.</span>
+<span class="sd">    The execution is little bit slow because the combinations are</span>
+<span class="sd">    dealt separately, which means that, as all of the sohpars are in the same</span>
+<span class="sd">    file, the file is opened and closed multiple times during</span>
+<span class="sd">    the creation of the summary</span>
+
+<span class="sd">    :type startdate: str or :class:`~datetime.date`</span>
+<span class="sd">    :param startdate:</span>
+<span class="sd">    :type enddate: str or :class:`~datetime.date`</span>
+<span class="sd">    :param enddate:</span>
+<span class="sd">    :type headerdate: str or :class:`~datetime.date`</span>
+<span class="sd">    :param headerdate: The header information of this date is used in</span>
+<span class="sd">        calculations</span>
+<span class="sd">    :type combinations: list[tuple[str, str]]</span>
+<span class="sd">    :param combinations: list containing all unique station and sohpar</span>
+<span class="sd">        combinations</span>
+<span class="sd">    :type remove_irrationals: bool, optional</span>
+<span class="sd">    :param remove_irrationals: defaults to ``False``, If ``True``, irrational</span>
+<span class="sd">        values (limits defined in stf header) are removed from the data.</span>
+<span class="sd">    :type advanced_outlier_removal: bool, optional</span>
+<span class="sd">    :param advanced_outlier_removal: defaults to ``False``. If ``True``,</span>
+<span class="sd">        advanced outlier removal is used for specific station/sohpar</span>
+<span class="sd">        combination. The combinations and outlier removal are provided by</span>
+<span class="sd">        :func:`~polyfemos.front.userdef.summary_outlierremfuncs`, if the</span>
+<span class="sd">        YAML configuration is provided.</span>
+<span class="sd">    :type fext: str, optional</span>
+<span class="sd">    :param fext: defaults to &quot;csv&quot;, select &quot;stf&quot; or &quot;csv&quot;,</span>
+<span class="sd">        defines the datafile format which is read</span>
+<span class="sd">    :rtype: list, list</span>
+<span class="sd">    :return: rows and header, list of lists and a list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">max_loops</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">combinations</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">station_id</span><span class="p">,</span> <span class="n">sohpar_name</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">combinations</span><span class="p">):</span>
+
+        <span class="n">sohplot</span> <span class="o">=</span> <span class="n">SOHPlot</span><span class="p">(</span>
+            <span class="n">station_id</span><span class="o">=</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="n">sohpar_name</span><span class="o">=</span><span class="n">sohpar_name</span><span class="p">,</span>
+            <span class="n">startdate</span><span class="o">=</span><span class="n">startdate</span><span class="p">,</span>
+            <span class="n">enddate</span><span class="o">=</span><span class="n">enddate</span><span class="p">,</span>
+            <span class="n">headerdate</span><span class="o">=</span><span class="n">headerdate</span><span class="p">,</span>
+            <span class="n">remove_irrationals</span><span class="o">=</span><span class="n">remove_irrationals</span><span class="p">,</span>
+            <span class="n">advanced_outlier_removal</span><span class="o">=</span><span class="n">advanced_outlier_removal</span><span class="p">,</span>
+            <span class="n">fext</span><span class="o">=</span><span class="n">fext</span><span class="p">)</span>
+
+        <span class="n">dict_</span> <span class="o">=</span> <span class="n">sohplot</span><span class="o">.</span><span class="n">get_statistics_dict</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">header</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Station&quot;</span><span class="p">,</span> <span class="s2">&quot;Sohpar&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">dict_</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="n">station_id</span><span class="p">,</span> <span class="n">sohpar_name</span><span class="p">]</span>
+
+        <span class="c1"># If every numerical value is nan, don&#39;t show the parameter</span>
+        <span class="n">func_</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">func_</span><span class="p">,</span> <span class="n">dict_</span><span class="o">.</span><span class="n">values</span><span class="p">())):</span>
+            <span class="k">continue</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">dict_</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+        <span class="n">pr</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">max_loops</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Summary table, percents ready: </span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span>
+        <span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rows</span><span class="p">,</span> <span class="n">header</span></div>
+
+
+<div class="viewcode-block" id="generate_csv"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.generate_csv">[docs]</a><span class="k">def</span> <span class="nf">generate_csv</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type rows: list</span>
+<span class="sd">    :param rows: list of lists to be written into csv</span>
+<span class="sd">    :rtype: generator</span>
+<span class="sd">    :return: generator yielding rows of csv file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">csvwriter</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">data</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="csv_response"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.csv_response">[docs]</a><span class="k">def</span> <span class="nf">csv_response</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type rows: list</span>
+<span class="sd">    :param rows: list of lists to be written into csv</span>
+<span class="sd">    :rtype: :class:`~werkzeug.wrappers.Response`</span>
+<span class="sd">    :return: csv file as a html response</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">()</span>
+    <span class="n">headers</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;Content-Disposition&#39;</span><span class="p">,</span> <span class="s1">&#39;attachment&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;summary.csv&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+        <span class="n">stream_with_context</span><span class="p">(</span><span class="n">generate_csv</span><span class="p">(</span><span class="n">rows</span><span class="p">)),</span>
+        <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;text/csv&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="index_alias"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.index_alias">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;path:filename&gt;&#39;</span><span class="p">)</span>
+<span class="nd">@logged</span>
+<span class="k">def</span> <span class="nf">index_alias</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Index site of the polyfemos web.</span>
+<span class="sd">    In addition provides the documentation files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Documentation filename: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;index.htm&#39;</span><span class="p">)</span>
+    <span class="n">folder</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">paths</span><span class="p">(</span><span class="s2">&quot;doc_dir&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="home"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.home">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@logged</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Navigation site consisting of link library for every site</span>
+<span class="sd">    available in polyfemos web.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">polyfemos.front.forms</span> <span class="k">import</span> <span class="n">SelectNetworkForm</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">SelectNetworkForm</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">network_code</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">get_network_code</span><span class="p">()</span>
+
+    <span class="n">network_code</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">network_code</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span><span class="s1">&#39;home.htm&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+                                        <span class="n">network_code</span><span class="o">=</span><span class="n">network_code</span><span class="p">)</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+    <span class="n">resp</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s2">&quot;network_code&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">network_code</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">resp</span></div>
+
+
+<div class="viewcode-block" id="sohtable"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.sohtable">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/sohtable&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@logged</span>
+<span class="nd">@limit_access</span><span class="p">(</span><span class="n">access_level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sohtable</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A state of health table with every station and parameter combination,</span>
+<span class="sd">    incorporating current alerts and alert history.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">forms</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">forms</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">SohTableForm</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">show_all</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">realtimeness_bool</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">realtimeness_limit</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="mi">120</span>
+
+    <span class="n">realtimeness_limit</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">realtimeness_limit</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">realtimeness_bool</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">realtimeness_bool</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">realtimeness</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">realtimeness_bool</span><span class="p">:</span>
+        <span class="n">realtimeness</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span> <span class="o">-</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">realtimeness_limit</span>
+
+    <span class="n">date</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">submit_pd</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+        <span class="n">date</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">form</span><span class="o">.</span><span class="n">submit_sd</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+        <span class="n">date</span> <span class="o">-=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">form</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">date</span>
+
+    <span class="n">julday</span><span class="p">,</span> <span class="n">year</span> <span class="o">=</span> <span class="n">get_jY</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+    <span class="n">visibilities</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}</span> <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">show_all</span><span class="o">.</span><span class="n">data</span> <span class="k">else</span> <span class="p">{</span><span class="mi">1</span><span class="p">}</span>
+
+    <span class="n">sohpar_names</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">sohpars</span><span class="p">(</span><span class="n">visibilities</span><span class="o">=</span><span class="n">visibilities</span><span class="p">)</span>
+    <span class="n">station_ids</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">station_ids</span><span class="p">()</span>
+
+    <span class="n">fpf</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">filepathformats</span><span class="p">(</span><span class="s2">&quot;alert&quot;</span><span class="p">)</span>
+    <span class="n">sohdict</span> <span class="o">=</span> <span class="n">get_sohdict</span><span class="p">(</span><span class="n">station_ids</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">julday</span><span class="p">,</span> <span class="n">fpf</span><span class="p">,</span>
+                          <span class="n">realtimeness</span><span class="o">=</span><span class="n">realtimeness</span><span class="p">)</span>
+
+    <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">julday</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span>
+        <span class="s1">&#39;sohtable.htm&#39;</span><span class="p">,</span> <span class="n">alertdict</span><span class="o">=</span><span class="n">sohdict</span><span class="p">[</span><span class="s1">&#39;alerts&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+        <span class="n">station_ids</span><span class="o">=</span><span class="n">station_ids</span><span class="p">,</span> <span class="n">sohpar_names</span><span class="o">=</span><span class="n">sohpar_names</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sohmap"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.sohmap">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/sohmap&#39;</span><span class="p">)</span>
+<span class="nd">@logged</span>
+<span class="nd">@limit_access</span><span class="p">(</span><span class="n">access_level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sohmap</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A map of the network area with stations. Alerts are sorted by their</span>
+<span class="sd">    priorities. The innermost circle consists of the alerts of the highest</span>
+<span class="sd">    priority.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">alertcolors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="n">colors</span><span class="o">.</span><span class="n">ALERT_GREEN</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">colors</span><span class="o">.</span><span class="n">ALERT_YELLOW</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="n">colors</span><span class="o">.</span><span class="n">ALERT_RED</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">paths</span><span class="p">(</span><span class="s2">&quot;map_file&quot;</span><span class="p">)</span>
+    <span class="n">filename</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">imgfile</span> <span class="o">=</span> <span class="s2">&quot;web_static/</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span>
+    <span class="n">mapfile</span> <span class="o">=</span> <span class="s2">&quot;web_static/</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;.map&quot;</span><span class="p">)</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Img and map files: </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">imgfile</span><span class="p">,</span> <span class="n">mapfile</span><span class="p">)</span>
+    <span class="n">messenger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">imgfile</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span><span class="s1">&#39;sohmap.htm&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">mapfile</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span><span class="s1">&#39;sohmap.htm&#39;</span><span class="p">)</span>
+
+    <span class="c1"># get transformation from WGS84 to pixels</span>
+    <span class="n">pixel_transform</span> <span class="o">=</span> <span class="n">coordinator</span><span class="o">.</span><span class="n">transform_from_ozi_map</span><span class="p">(</span><span class="n">mapfile</span><span class="p">)</span>
+
+    <span class="c1"># open background map</span>
+    <span class="n">pil_image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">imgfile</span><span class="p">)</span>
+    <span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">pil_image</span><span class="p">)</span>
+
+    <span class="n">today</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">julday</span><span class="p">,</span> <span class="n">year</span> <span class="o">=</span> <span class="n">get_jY</span><span class="p">(</span><span class="n">today</span><span class="p">)</span>
+    <span class="n">sohpar_names</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">sohpars</span><span class="p">()</span>
+    <span class="n">station_ids</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">station_ids</span><span class="p">()</span>
+
+    <span class="c1"># get alerts and priorities with each station and parameter combination</span>
+    <span class="n">fpf</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">filepathformats</span><span class="p">(</span><span class="s2">&quot;alert&quot;</span><span class="p">)</span>
+    <span class="n">sohdict</span> <span class="o">=</span> <span class="n">get_sohdict</span><span class="p">(</span><span class="n">station_ids</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">julday</span><span class="p">,</span> <span class="n">fpf</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">station_id</span> <span class="ow">in</span> <span class="n">station_ids</span><span class="p">:</span>
+
+        <span class="n">sohplot</span> <span class="o">=</span> <span class="n">SOHPlot</span><span class="p">(</span>
+            <span class="n">station_id</span><span class="o">=</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="n">headerdate</span><span class="o">=</span><span class="n">today</span><span class="p">,)</span>
+
+        <span class="n">epsg</span> <span class="o">=</span> <span class="n">sohplot</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;EPSG&quot;</span><span class="p">]</span>
+        <span class="n">locx</span> <span class="o">=</span> <span class="n">sohplot</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;LOCX&quot;</span><span class="p">]</span>
+        <span class="n">locy</span> <span class="o">=</span> <span class="n">sohplot</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;LOCY&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">epsg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Convert stations coordinates into WGS84</span>
+        <span class="n">transform</span> <span class="o">=</span> <span class="n">coordinator</span><span class="o">.</span><span class="n">get_transform</span><span class="p">(</span><span class="n">epsg</span><span class="p">,</span> <span class="s2">&quot;4326&quot;</span><span class="p">)</span>
+        <span class="n">px</span><span class="p">,</span> <span class="n">py</span> <span class="o">=</span> <span class="n">pixel_transform</span><span class="p">(</span><span class="o">*</span><span class="n">transform</span><span class="p">(</span><span class="n">locx</span><span class="p">,</span> <span class="n">locy</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">get_bbox</span><span class="p">(</span><span class="n">radius</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">px</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">py</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">px</span> <span class="o">+</span> <span class="n">radius</span><span class="p">,</span> <span class="n">py</span> <span class="o">+</span> <span class="n">radius</span><span class="p">)</span>
+
+        <span class="c1"># Alerts are stored in 3x3 matrix</span>
+        <span class="c1"># Priority in x axis</span>
+        <span class="c1"># Alert (red, yellow or green) in y axis</span>
+        <span class="c1"># Red alert with the highest priority is stored in [0,2]</span>
+        <span class="n">alertcount</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">sohpar_name</span> <span class="ow">in</span> <span class="n">sohpar_names</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">station_id</span> <span class="o">+</span> <span class="n">sohpar_name</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sohdict</span><span class="p">[</span><span class="s1">&#39;alerts&#39;</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="n">alert</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">int_</span><span class="p">(</span><span class="n">sohdict</span><span class="p">[</span><span class="s1">&#39;alerts&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">])</span>
+            <span class="n">priority</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">int_</span><span class="p">(</span><span class="n">sohdict</span><span class="p">[</span><span class="s1">&#39;priorities&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">alert</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">priority</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">priority</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">priority</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">priority</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">alertcount</span><span class="p">[</span><span class="n">alert</span><span class="p">,</span> <span class="n">priority</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># TODO clean plotting, own function?</span>
+        <span class="c1"># TODO Scalable map</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="mi">21</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+
+            <span class="n">bbox</span> <span class="o">=</span> <span class="n">get_bbox</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
+            <span class="n">draw</span><span class="o">.</span><span class="n">ellipse</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">)</span>
+            <span class="n">radius</span> <span class="o">-=</span> <span class="mi">1</span>
+
+            <span class="n">alerts</span> <span class="o">=</span> <span class="n">alertcount</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="n">alertsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">alerts</span><span class="p">)</span>
+
+            <span class="n">bbox</span> <span class="o">=</span> <span class="n">get_bbox</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">alertsum</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">draw</span><span class="o">.</span><span class="n">pieslice</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">GREY_3</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">alerts</span> <span class="o">*=</span> <span class="mf">360.</span> <span class="o">/</span> <span class="n">alertsum</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                    <span class="n">alert</span> <span class="o">=</span> <span class="n">alerts</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">alertcolors</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">alert</span>
+                    <span class="n">draw</span><span class="o">.</span><span class="n">pieslice</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+                    <span class="n">start</span> <span class="o">+=</span> <span class="n">alert</span>
+
+            <span class="n">radius</span> <span class="o">-=</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">i</span>
+
+    <span class="n">fontpath</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">paths</span><span class="p">(</span><span class="s2">&quot;ttf_file&quot;</span><span class="p">)</span>
+    <span class="n">font</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fontpath</span><span class="p">):</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="n">fontpath</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> UTC&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">today</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">))</span>
+    <span class="n">draw</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">str_</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
+
+    <span class="n">max_height</span> <span class="o">=</span> <span class="mi">1500</span>
+    <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">pil_image</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_height</span> <span class="o">/</span> <span class="n">height</span><span class="p">)</span>
+
+    <span class="n">pil_image</span> <span class="o">=</span> <span class="n">pil_image</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">scale</span> <span class="o">*</span> <span class="n">width</span><span class="p">,</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">height</span><span class="p">),</span>
+        <span class="n">resample</span><span class="o">=</span><span class="n">Image</span><span class="o">.</span><span class="n">ANTIALIAS</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">get_image_data</span><span class="p">(</span><span class="n">pil_image</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span><span class="s1">&#39;sohmap.htm&#39;</span><span class="p">,</span> <span class="n">sohmapimg</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plotbrowser"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.plotbrowser">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/plotbrowser&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@logged</span>
+<span class="nd">@limit_access</span><span class="p">(</span><span class="n">access_level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="nd">@limited</span><span class="p">(</span><span class="n">ipstorage</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">plotbrowser</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Soh plotter site, Plot Browser.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">forms</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">forms</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">PlotbrowserForm</span><span class="p">()</span>
+
+    <span class="n">today</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span>
+
+    <span class="n">full_access</span> <span class="o">=</span> <span class="n">check_permission</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">message_lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">station_ids</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">sohpar_names</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">today</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">today</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">headerdate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">today</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">rirv</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">ridv</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">decimate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">track_len</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">aor</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s1">&#39;null&#39;</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">fromfileformat</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;stf&quot;</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">arguments</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+        <span class="n">selected_date</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">arguments</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">date</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">station_ids</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">arguments</span><span class="p">(</span><span class="s2">&quot;station_id&quot;</span><span class="p">)]</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">sohpar_names</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">arguments</span><span class="p">(</span><span class="s2">&quot;sohpar_name&quot;</span><span class="p">)]</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">selected_date</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">selected_date</span>
+
+    <span class="n">station_ids</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">station_ids</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">sohpar_names</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">sohpar_names</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">startdate</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">enddate</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">headerdate</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">headerdate</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">remove_irrationals</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">rirv</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">remove_identicals</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">ridv</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">decimate</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">decimate</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">track_len</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">track_len</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">aor_selected</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">aor</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">fromfileformat</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">fromfileformat</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">aorkwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;null&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;dtr&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;lip&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="p">}</span>
+    <span class="n">funcs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;dtr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">outlierremover</span><span class="o">.</span><span class="n">dtr</span><span class="p">,</span> <span class="p">{}],</span>
+        <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">outlierremover</span><span class="o">.</span><span class="n">stalta</span><span class="p">,</span> <span class="p">{}],</span>
+        <span class="s2">&quot;lip&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">outlierremover</span><span class="o">.</span><span class="n">lipschitz</span><span class="p">,</span> <span class="p">{}],</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">form</span><span class="p">:</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">id_</span><span class="p">,</span> <span class="n">kwarg</span> <span class="o">=</span> <span class="n">split</span>
+        <span class="k">if</span> <span class="n">id_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;dtr&quot;</span><span class="p">,</span> <span class="s2">&quot;sta&quot;</span><span class="p">,</span> <span class="s2">&quot;lip&quot;</span><span class="p">}:</span>
+            <span class="k">continue</span>
+        <span class="n">aorkwargs</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+        <span class="n">funcs</span><span class="p">[</span><span class="n">id_</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="n">kwarg</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">outlierremfunc</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">advanced_outlier_removal</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">aor_selected</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+        <span class="n">aorfunc</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="n">aor_selected</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="n">aor_selected</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">outlierremfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">aorfunc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">advanced_outlier_removal</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">combinations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">station_ids</span><span class="p">,</span> <span class="n">sohpar_names</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">full_access</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">remove_identicals</span><span class="p">:</span>
+            <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t have permission to uncheck &quot;</span> \
+                <span class="o">+</span> <span class="s2">&quot;&#39;Remove identical values&#39;.&quot;</span>
+            <span class="n">message_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span>
+            <span class="n">remove_identicals</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">decimate</span><span class="p">:</span>
+            <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t have permission to uncheck &#39;Decimate&#39;.&quot;</span>
+            <span class="n">message_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span>
+            <span class="n">decimate</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">combinations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;You may only select at most 2 stations or &quot;</span> \
+                <span class="o">+</span> <span class="s2">&quot;state of health parameters.&quot;</span>
+            <span class="n">message_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span>
+            <span class="n">combinations</span> <span class="o">=</span> <span class="n">combinations</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">((</span><span class="n">startdate</span> <span class="o">-</span> <span class="n">enddate</span><span class="p">)</span><span class="o">.</span><span class="n">days</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">35</span><span class="p">:</span>
+            <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t have permission to select timespan &quot;</span> \
+                <span class="o">+</span> <span class="s2">&quot;wider than 35 days.&quot;</span>
+            <span class="n">message_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span>
+            <span class="n">startdate</span> <span class="o">=</span> <span class="n">enddate</span>
+        <span class="n">limit_date</span> <span class="o">=</span> <span class="n">today</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">730</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">startdate</span> <span class="o">&lt;</span> <span class="n">limit_date</span> <span class="ow">or</span> <span class="n">enddate</span> <span class="o">&lt;</span> <span class="n">limit_date</span><span class="p">:</span>
+            <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t have permission to view &quot;</span> \
+                <span class="o">+</span> <span class="s2">&quot;data before </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">limit_date</span><span class="p">))</span>
+            <span class="n">message_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span>
+            <span class="n">startdate</span> <span class="o">=</span> <span class="n">today</span>
+            <span class="n">enddate</span> <span class="o">=</span> <span class="n">today</span>
+
+    <span class="n">plots</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">station_id</span><span class="p">,</span> <span class="n">sohpar_name</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">:</span>
+        <span class="c1"># Contruct plot</span>
+        <span class="n">sohplot</span> <span class="o">=</span> <span class="n">SOHPlot</span><span class="p">(</span>
+            <span class="n">station_id</span><span class="o">=</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="n">sohpar_name</span><span class="o">=</span><span class="n">sohpar_name</span><span class="p">,</span>
+            <span class="n">startdate</span><span class="o">=</span><span class="n">startdate</span><span class="p">,</span>
+            <span class="n">enddate</span><span class="o">=</span><span class="n">enddate</span><span class="p">,</span>
+            <span class="n">headerdate</span><span class="o">=</span><span class="n">headerdate</span><span class="p">,</span>
+            <span class="n">remove_irrationals</span><span class="o">=</span><span class="n">remove_irrationals</span><span class="p">,</span>
+            <span class="n">advanced_outlier_removal</span><span class="o">=</span><span class="n">advanced_outlier_removal</span><span class="p">,</span>
+            <span class="n">outlierremfunc</span><span class="o">=</span><span class="n">outlierremfunc</span><span class="p">,</span>
+            <span class="n">track_datalen</span><span class="o">=</span><span class="n">track_len</span><span class="p">,</span>
+            <span class="n">remove_identicals</span><span class="o">=</span><span class="n">remove_identicals</span><span class="p">,</span>
+            <span class="n">fext</span><span class="o">=</span><span class="n">fromfileformat</span><span class="p">)</span>
+
+        <span class="n">plotdict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">stats_table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">infolines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">plotscript</span><span class="p">,</span> <span class="n">plotdiv</span> <span class="o">=</span> <span class="n">sohplot</span><span class="o">.</span><span class="n">get_plot_components</span><span class="p">(</span><span class="n">decimate</span><span class="o">=</span><span class="n">decimate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">plotscript</span><span class="p">:</span>
+            <span class="n">stats_table</span> <span class="o">=</span> <span class="n">sohplot</span><span class="o">.</span><span class="n">get_statistics_table</span><span class="p">()</span>
+            <span class="n">infolines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span>
+                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\xa0</span><span class="s2">&quot;</span><span class="p">)</span>
+                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\u2192</span><span class="s2">&quot;</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">sohplot</span><span class="o">.</span><span class="n">get_info</span><span class="p">()]</span>
+
+        <span class="n">plotdict</span><span class="p">[</span><span class="s1">&#39;stats_table&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats_table</span>
+        <span class="n">plotdict</span><span class="p">[</span><span class="s1">&#39;plotscript&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plotscript</span>
+        <span class="n">plotdict</span><span class="p">[</span><span class="s1">&#39;plotdiv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plotdiv</span>
+        <span class="n">plotdict</span><span class="p">[</span><span class="s1">&#39;infolines&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">infolines</span>
+
+        <span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plotdict</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span>
+        <span class="s2">&quot;plotbrowser.htm&quot;</span><span class="p">,</span> <span class="n">bokeh_version</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">bokeh</span><span class="o">.</span><span class="n">__version__</span><span class="p">),</span>
+        <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">plots</span><span class="o">=</span><span class="n">plots</span><span class="p">,</span> <span class="n">aorkwargs</span><span class="o">=</span><span class="n">aorkwargs</span><span class="p">,</span>
+        <span class="n">message_lines</span><span class="o">=</span><span class="n">message_lines</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="datacoveragebrowser"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.datacoveragebrowser">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/datacoveragebrowser&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@logged</span>
+<span class="nd">@limit_access</span><span class="p">(</span><span class="n">access_level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">datacoveragebrowser</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates the datacoveragebrowser view and edits the link</span>
+<span class="sd">    which directs to the actual datacoverage image which is created</span>
+<span class="sd">    according to the given parameters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">forms</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">forms</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">DatacoverageForm</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">enddate</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">startdate</span> <span class="o">=</span> <span class="n">enddate</span> <span class="o">-</span> <span class="mi">86400</span> <span class="o">*</span> <span class="mi">30</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">station_ids</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">channel_codes</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">startdate</span><span class="o">.</span><span class="n">date</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">enddate</span><span class="o">.</span><span class="n">date</span>
+
+    <span class="n">startdate</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">enddate</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span> <span class="mi">86399</span>
+    <span class="n">station_ids</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">station_ids</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">channel_codes</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">channel_codes</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">func_</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">datacoveragebrowser_func</span><span class="p">()</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">func_</span><span class="p">(</span><span class="n">station_ids</span><span class="p">,</span> <span class="n">channel_codes</span><span class="p">,</span> <span class="n">startdate</span><span class="p">,</span>
+                <span class="n">enddate</span><span class="p">,</span> <span class="n">userdef</span><span class="o">.</span><span class="n">filepathformats</span><span class="p">(</span><span class="s2">&quot;rawdata&quot;</span><span class="p">))</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">get_image_data</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span>
+        <span class="s2">&quot;datacoveragebrowser.htm&quot;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+        <span class="n">station_ids</span><span class="o">=</span><span class="n">station_ids</span><span class="p">,</span> <span class="n">channel_codes</span><span class="o">=</span><span class="n">channel_codes</span><span class="p">,</span> <span class="n">dcimage</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="datacoverageimage"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.datacoverageimage">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/datacoverageimage&#39;</span><span class="p">)</span>
+<span class="nd">@logged</span>
+<span class="nd">@limit_access</span><span class="p">(</span><span class="n">access_level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">datacoverageimage</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple site including separately created datacoverage image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dci_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;web_static&quot;</span><span class="p">,</span> <span class="n">userdef</span><span class="o">.</span><span class="n">paths</span><span class="p">(</span><span class="s2">&quot;dci_file&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dci_file</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span><span class="s1">&#39;datacoverageimage.htm&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">get_image_data</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dci_file</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span><span class="s1">&#39;datacoverageimage.htm&#39;</span><span class="p">,</span> <span class="n">dci_file</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="summary"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.summary">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/summary&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@logged</span>
+<span class="nd">@limit_access</span><span class="p">(</span><span class="n">access_level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nd">@limited</span><span class="p">(</span><span class="n">ipstorage</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">summary</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a parameter summary table</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">forms</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">forms</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">SummaryForm</span><span class="p">()</span>
+
+    <span class="n">enddate</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">startdate</span> <span class="o">=</span> <span class="n">enddate</span> <span class="o">-</span> <span class="mi">86400</span>
+
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">station_ids</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">sohpar_names</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">startdate</span><span class="o">.</span><span class="n">date</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">enddate</span><span class="o">.</span><span class="n">date</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">headerdate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">enddate</span><span class="o">.</span><span class="n">date</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">rirv</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">aor</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">csv_requested</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">fromfileformat</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;csv&quot;</span>
+
+    <span class="n">station_ids</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">station_ids</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">sohpar_names</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">sohpar_names</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">startdate</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">enddate</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">headerdate</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">headerdate</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">remove_irrationals</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">rirv</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">advanced_outlier_removal</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">aor</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">csv_requested</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">csv_requested</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">fromfileformat</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">fromfileformat</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">combinations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">station_ids</span><span class="p">,</span> <span class="n">sohpar_names</span><span class="p">))</span>
+
+    <span class="n">rows</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="n">get_summary</span><span class="p">(</span>
+        <span class="n">startdate</span><span class="o">=</span><span class="n">startdate</span><span class="p">,</span>
+        <span class="n">enddate</span><span class="o">=</span><span class="n">enddate</span><span class="p">,</span>
+        <span class="n">headerdate</span><span class="o">=</span><span class="n">headerdate</span><span class="p">,</span>
+        <span class="n">combinations</span><span class="o">=</span><span class="n">combinations</span><span class="p">,</span>
+        <span class="n">remove_irrationals</span><span class="o">=</span><span class="n">remove_irrationals</span><span class="p">,</span>
+        <span class="n">advanced_outlier_removal</span><span class="o">=</span><span class="n">advanced_outlier_removal</span><span class="p">,</span>
+        <span class="n">fext</span><span class="o">=</span><span class="n">fromfileformat</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">exectime</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">60.</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">csv_requested</span><span class="p">:</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">csv_response</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span>
+        <span class="s2">&quot;summary.htm&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+        <span class="n">aorinfolines</span><span class="o">=</span><span class="n">userdef</span><span class="o">.</span><span class="n">summary_outlierremfunc_info</span><span class="p">(),</span> <span class="n">exectime</span><span class="o">=</span><span class="n">exectime</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="alertheat"><a class="viewcode-back" href="../../../autogen/polyfemos.front.main.html#polyfemos.front.main.alertheat">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/alertheat&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@logged</span>
+<span class="nd">@limit_access</span><span class="p">(</span><span class="n">access_level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">alertheat</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a state of health table with every station and parameter</span>
+<span class="sd">    combination. Timespan selection available for time interval anaysis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">forms</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">forms</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">AlertHeatForm</span><span class="p">()</span>
+
+    <span class="n">enddate</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">startdate</span> <span class="o">=</span> <span class="n">enddate</span> <span class="o">-</span> <span class="mi">86400</span> <span class="o">*</span> <span class="mi">20</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">startdate</span><span class="o">.</span><span class="n">date</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">enddate</span><span class="o">.</span><span class="n">date</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">log_color</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">points_per_thbb</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">points_per_tib</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="n">startdate</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">startdate</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">enddate</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">enddate</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">log_color</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">log_color</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;0&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="n">form</span><span class="o">.</span><span class="n">points_per_thbb</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+        <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="n">form</span><span class="o">.</span><span class="n">points_per_tib</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">sohpar_names</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">sohpars</span><span class="p">(</span><span class="n">visibilities</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">})</span>
+    <span class="n">station_ids</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">station_ids</span><span class="p">()</span>
+    <span class="n">fpf</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">filepathformats</span><span class="p">(</span><span class="s2">&quot;alert&quot;</span><span class="p">)</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">while</span> <span class="n">startdate</span> <span class="o">&lt;=</span> <span class="n">enddate</span><span class="p">:</span>
+
+        <span class="n">julday</span><span class="p">,</span> <span class="n">year</span> <span class="o">=</span> <span class="n">get_jY</span><span class="p">(</span><span class="n">startdate</span><span class="p">)</span>
+        <span class="n">sohdict</span> <span class="o">=</span> <span class="n">get_sohdict</span><span class="p">(</span><span class="n">station_ids</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">julday</span><span class="p">,</span> <span class="n">fpf</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sohdict</span><span class="p">[</span><span class="s1">&#39;alerts&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">points</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;max&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">2.</span>
+
+        <span class="n">startdate</span> <span class="o">+=</span> <span class="mi">86400</span>
+
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="n">colors</span><span class="o">.</span><span class="n">ALERT_GREEN</span><span class="p">,</span>
+        <span class="n">colors</span><span class="o">.</span><span class="n">ALERT_YELLOW</span><span class="p">,</span>
+        <span class="n">colors</span><span class="o">.</span><span class="n">ALERT_RED</span><span class="p">,</span>
+    <span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.</span><span class="p">:</span>
+            <span class="n">v</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">GREY_3</span>
+            <span class="n">v</span><span class="p">[</span><span class="s1">&#39;tooltip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0 / 0</span><span class="se">\n</span><span class="s2">0.0%&quot;</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">percentage</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">]</span>
+        <span class="n">percents</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mf">100.</span> <span class="o">*</span> <span class="n">percentage</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log_color</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="mf">255.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">percents</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="mf">255.</span> <span class="o">*</span> <span class="n">percentage</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+        <span class="n">v</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgb2hex</span><span class="p">(</span><span class="n">cmap</span><span class="p">(</span><span class="n">color</span><span class="p">)[:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">v</span><span class="p">[</span><span class="s1">&#39;tooltip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> / </span><span class="si">{:.0f}</span><span class="se">\n</span><span class="si">{:.1f}</span><span class="s2">%&quot;</span> \
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">],</span> <span class="n">percents</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_base</span><span class="p">(</span><span class="n">render_template</span><span class="p">)(</span>
+        <span class="s1">&#39;alertheat.htm&#39;</span><span class="p">,</span> <span class="n">alertdict</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">station_ids</span><span class="o">=</span><span class="n">station_ids</span><span class="p">,</span>
+        <span class="n">sohpar_names</span><span class="o">=</span><span class="n">sohpar_names</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span></div>
+
+
+<span class="c1"># With debug=True, Flask server will auto-reload</span>
+<span class="c1"># when there are code changes</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">threaded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,91 @@
+
+paths:
+  dci_file: "FN_datacoverage_weekly.png" # datacoverage file found in web_static folder
+  map_file: "northern_finland.png" # map file found in web_static folder
+
+station_ids: [ 
+  "FN.MSF",
+  "FN.OUL",
+  "FN.RNF",
+  "FN.SGF",
+ ]
+
+channel_codes: [
+  "BHZ", "BHN", "BHE",
+  "AE1", "AE2", "AE3",
+  "AE5", "AE6", "AE7",
+  "AEP",
+]
+
+sohpars:
+  # Visibility 1
+  - {name: Digitizer_input_voltage, group: Environment, visibility:  1}
+  - {name: Digitizer_input_current, group: Environment, visibility:  1}
+  - {name: Digitizer_temperature,   group: Environment, visibility:  1}
+  - {name: Timing_error,            group: Timing,      visibility:  1}
+  - {name: Offset_U,                group: Sensor,      visibility:  1}
+  - {name: Offset_W,                group: Sensor,      visibility:  1}
+  - {name: Offset_V,                group: Sensor,      visibility:  1}
+  - {name: Data_realtimeness_BHZ,   group: Data,        visibility:  1}
+  - {name: Data_coverage_day_BHZ,   group: Data,        visibility:  1}
+  # Visibility 2
+  - {name: Timing_quality_BHZ,      group: Timing,      visibility:  2}
+  - {name: Timestamp_error_BHZ,     group: Timing,      visibility:  2}
+  - {name: Latitude,                group: GPS,         visibility:  2}
+  - {name: Longitude,               group: GPS,         visibility:  2}
+  # Visibility Other
+  - {name: Offset_N,                group: Sensor,      visibility:  3}
+  - {name: Offset_E,                group: Sensor,      visibility:  3}
+  - {name: Offset_Z,                group: Sensor,      visibility:  3}
+
+
+filepathformats:
+  rawdata: "~/polyfemos/polyfemos_example_data/&YEAR/&NETWORK/&STATION/&CHANNEL.D/&NETWORK.&STATION.*.&CHANNEL.D.&YEAR.&JULDAY"
+  stf: "~/polyfemos/data_out/FN/sohtextfiles/&YEAR/&NETWORK/&STATION/&NETWORK.&STATION.&YEAR.&JULDAY"
+  csv: "~/polyfemos/data_out/FN/sohcsvs/&YEAR/&NETWORK/&STATION/&PARNAME/&NETWORK.&STATION.&PARNAME.&YEAR"
+  alert: "~/polyfemos/data_out/FN/sohalerts/&YEAR/&NETWORK/&STATION/&NETWORK.&STATION.&YEAR.&JULDAY"
+
+
+definitions:
+  datarealtimeness: Data_realtimeness_BHZ
+  offset_n: Offset_N
+  offset_e: Offset_E
+  offset_z: Offset_Z
+  offset_u: Offset_U
+  offset_w: Offset_W
+  offset_v: Offset_V
+
+
+datacoveragebrowser_func: seismic_scanner
+
+
+
+# The following options are not needed in this example setup
+# The options are included as a example
+
+# ticklabels:
+#   GPS_status:
+#     0: "off (0)"
+#     1: "unlocked (1)"
+#     2: "locked (2)"
+#   GPS_PPL_status:
+#     0: "no lock (0)"
+#     1: "coarse lock (1)"
+#     2: "fine lock (2)"
+#     3: "free running (3)"
+#   GPS_antenna_status:
+#     0: "ok (0)"
+#     1: "no antenna (1)"
+#     2: "antenna short (2)"
+
+# summary_outlierremfunc_info:
+#   - "Advanced outlier removing info"
+#   - "FN.ASDF, Vault_temperature, Lipschitz continuity"
+
+# summary_outlierremfuncs:
+#   FN.ASDF:Vault_temperature:
+#     function: lipschitz
+#     itern: 1
+#     klim: 0.00007
+
+

@@ -1,0 +1,47 @@
+SGO Data Licence Agreement, 8.11.2019
+
+This licence is based on licence <https://www.sgo.fi/Data/licence.php>.
+
+The 'SGO' refers to Sodankylä Geophysical Observatory.
+
+The 'data set' or 'data' refers to data of four stations (SGF, MSF, RNF, OUL)
+of Northern Finland Seismological Network (FN) contained in this example data
+package. More specifically, the channels BHN, BHE, BHZ, LOG, AE1, AE2, AE3,
+AE5, AE6, AE7, AEP and dates 1.5.2019 and 2.5.2019. This licence applies
+only to this specific data set.
+
+1. SGO grants to the user a non-exclusive licence to use the data set
+in accordance with this licence.
+
+2. When the data shall be redistributed, the licensee has to ensure the
+acceptance of the license agreement by third parties.
+
+3. Retrieval, by electronic download, and the use of the data set is free of
+charge for academic research purposes. The use or reproduction of the data for
+commercial purpose requires prior written permission from SGO, and it is
+generally not free of charge.
+
+4. Regardless of whether the data are quality controlled or not, SGO and the
+data source do not accept any liability for the correctness and/or appropriate
+interpretation of the data. Interpretation should follow scientific rules and
+is always the user's responsibility. Correct and appropriate data
+interpretation is solely the responsibility of data users.
+
+5. Typically SGO requires co-authorship if SGO data are to be published in any
+media. In this case, the user must contact SGO and/or the Observer in Charge
+and agree on the details of the publication. The Observer in Charge will review
+the correct and appropriate use of SGO data in the manuscript.
+
+6. If new products are derived from the data set, the same rules apply as
+stated in the previous paragraph.
+
+7. Copies of final reports and papers must be sent to the SGO Observer in
+Charge so that the bibliography of the use of the SGO data can be kept up to
+date.
+
+8. The the data is in the public domain, and may be used freely by the public.
+Before using the data special attention should be given to the date and time of
+the data. This information shall not be modified in content and then presented
+as official material. Users are requested to inform SGO of any problems
+encountered with the data themselves or the data provision. Such feedback will
+increase the availability and quality of the data.

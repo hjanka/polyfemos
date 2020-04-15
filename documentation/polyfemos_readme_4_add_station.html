@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>How to add a station &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="State of health emailer" href="polyfemos_readme_5_sohemailer.html" />
+    <link rel="prev" title="Frontend" href="polyfemos_readme_3_frontend.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="how-to-add-a-station">
+<span id="howtoaddastation"></span><h1>How to add a station<a class="headerlink" href="#how-to-add-a-station" title="Permalink to this headline">¶</a></h1>
+<p>This guide will provide a simplified walkthrough on how to add
+a station for monitoring purposes. In this example, station “FN.MSF”
+will created and ‘process_logs’ function will be used to create
+‘*.stf’, ‘*.alert’ and ‘*.csv’ files. In addition, the station
+will be added to the web side of polyfemos (front).</p>
+<p>If other stations have been defined previously and the new station shares many
+properties (for example same digitizer and location of data files) with
+previous stations, only steps marked with 4 *-symbols might be needed.</p>
+<ol class="arabic">
+<li><p>Locate the ‘*.conf’ files, where stations, parameters, filepaths
+and executed functions are defined.
+In this case, there is 3 configuration files:</p>
+<ul class="simple">
+<li><p>‘conf/back/FN/driving_instructions.conf’</p></li>
+<li><p>‘conf/back/FN/folders.conf’</p></li>
+<li><p>‘conf/back/FN/stations.conf’</p></li>
+</ul>
+<p>All files are equal. ‘folders.conf’ and ‘stations.conf’ are imported
+into ‘driving_instruction.conf’ file.</p>
+<p>The program is executed using appropriate wrapper script.
+In this case, ‘conf/back/FN/wrapper.sh’</p>
+</li>
+<li><p>In ‘folders.conf’, check if FLAGs ‘sohtextfilepath’, ‘sohalertpath’ and
+‘sohcsvpath’ are defined correctly. Do not use relative paths. These are
+the output filepaths of the corresponding file format.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>\FLAG sohtextfilepath ~/polyfemos/data_out/FN/sohtextfiles/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;NETWORK.&amp;STATION.&amp;YEAR.&amp;JULDAY.stf
+\FLAG sohalertpath    ~/polyfemos/data_out/FN/sohalerts/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;NETWORK.&amp;STATION.&amp;YEAR.&amp;JULDAY.alert
+\FLAG sohcsvpath      ~/polyfemos/data_out/FN/sohcsvs/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;PARNAME/&amp;NETWORK.&amp;STATION.&amp;PARNAME.&amp;YEAR.csv
+</pre></div>
+</div>
+</li>
+<li><p>In ‘folders.conf’, check if FLAG ‘execution_time_file’ is defined
+correctly. The FLAG is needed if any features requiring the program
+start time information are used, e.g. codes ‘DCD’, ‘DCL’ and ‘TSE’.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>\FLAG execution_time_file conf/back/FN/program_execution_times.pkl
+</pre></div>
+</div>
+</li>
+<li><p>For convenience, define filepath variables to be used with parameter
+definitions. Suggested location is ‘folders.conf’ file.
+These are filepath to the parameter specific data files.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>\VAR ED_log_path /path/to/raw/data/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;CHANNEL.L/&amp;NETWORK.&amp;STATION.&amp;LOCATION.&amp;CHANNEL.L.&amp;YEAR.&amp;JULDAY
+\VAR Data_path   /path/to/raw/data/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;CHANNEL.D/&amp;NETWORK.&amp;STATION.&amp;LOCATION.&amp;CHANNEL.D.&amp;YEAR.&amp;JULDAY
+</pre></div>
+</div>
+</li>
+<li><p>In ‘driving_instructions.conf’ file, check file writing FLAGs. These
+FLAGs define is certain output files are created.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>\FLAG write_sohalertfile True  # boolean, defaults to True
+\FLAG write_sohtextfile  True  # boolean, defaults to True
+\FLAG write_sohcsvfile   True  # boolean, defaults to True
+</pre></div>
+</div>
+</li>
+<li><p>In ‘driving_instructions.conf’ file, set FLAG ‘save_starttime’ to ‘True’
+so that the code ‘DCL’ works properly.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>\FLAG save_starttime     True  # boolean, defaults to False
+</pre></div>
+</div>
+</li>
+<li><p>**** Define the actual station and its parameters. If variables
+containing the datapaths were defined, now those can be used to shorten
+the parameter definition.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>\STATION FN MSF NaN 7311537.718 592903.937 3067 PS6-24 STS-2 1970-001T12:12:00 2100-1
+ \PAR 2  Data_BHZ                BHZ      1    1.0       ?         []               9    (False)                 []            []                     $Data_path
+ \PAR 4  Data_coverage_day_BHZ   BHZ.DCD  1    1.0       %         [-10,110]        1    (X&lt;95.0)                [0,100]       [95.0,NaN,90.0]        $Data_path
+ \PAR 4  Data_realtimeness_BHZ   BHZ.DCL  1    1.0       %         [-10,110]        1    (X&lt;90.0)                [0,100]       [90.0,NaN]             $Data_path
+ \PAR 4  Timestamp_error_BHZ     BHZ.TSE  1    1.0       s         []               4    (X&lt;-86400|X&gt;86400)      []            []                     $Data_path
+ \PAR 3  Timing_quality_BHZ      BHZ.TQ   9    1.0       %         [-10,110]        2    (X&lt;90.0)                [0,100]       [95.0,NaN,90.0]        $Data_path
+ \PAR 1  Longitude               LOG.long 1    1.0       °         []               2    (X&lt;1.0)                 [20,34]       []                     $ED_log_path
+ \PAR 1  Latitude                LOG.lat  1    1.0       °         []               2    (X&lt;1.0)                 [34,73]       []                     $ED_log_path
+ \PAR 1  Timing_error            AEP      60   1.0       μs        [-7.0,6.0]       2    (X&lt;-6.0|X&gt;5.0)          [-50,50]      [5.0,-6.0]             $Data_path
+ \PAR 1  Digitizer_input_voltage AE1      60   1.0       V         [10.0,15.0]      1    (X&lt;12.0)                [-1,20]       [13.2,NaN,12.0]        $Data_path
+ \PAR 1  Digitizer_input_current AE2      60   0.001     A         [-0.1,0.5]       4    (X&lt;0.05|X&gt;0.4)          [-1,10]       [0.4,0.05]             $Data_path
+ \PAR 1  Digitizer_temperature   AE3      60   1.0       °C        [-20.0,50.0]     4    (X&lt;5.0|X&gt;40.0)          [-100,100]    [40.0,5.0]             $Data_path
+ \PAR 1  Offset_U                AE5      60   1.0       V         [-4.0,4.0]       3    (X&lt;-1.5|X&gt;1.5)          [-10,10]      [1.5,-1.5]             $Data_path
+ \PAR 1  Offset_W                AE6      60   1.0       V         [-4.0,4.0]       3    (X&lt;-1.5|X&gt;1.5)          [-10,10]      [1.5,-1.5]             $Data_path
+ \PAR 1  Offset_V                AE7      60   1.0       V         [-4.0,4.0]       3    (X&lt;-1.5|X&gt;1.5)          [-10,10]      [1.5,-1.5]             $Data_path
+\END
+</pre></div>
+</div>
+</li>
+<li><p>**** Call function ‘process_logs’ with the new station.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>\START
+
+...
+
+\RUN process_logs FN MSF &amp;TODAY &amp;TODAY [1,3,4]
+
+...
+
+\STOP
+</pre></div>
+</div>
+<p>The above line calls ‘process_logs’ function for
+station with network “FN” and name “MSF”. Timespan is from current
+date to current date, i.e. 1 day. Parameters with class equals 1
+are included. The line should be placed between
+START and STOP commands in the configiration file.</p>
+<p>The START command should be used before RUN command if any features
+requiring the program start time information are used, e.g. codes ‘DCD’,
+‘DCL’ and ‘TSE’.</p>
+</li>
+</ol>
+<p>At this point the back-end for the new station should be configured.</p>
+<ol class="arabic" start="9">
+<li><p>In ‘conf/front/networks/FN_config.yml’ file check the
+filepath formats in ‘filepathformats’ dictionary entry.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">filepathformats</span><span class="p">:</span>
+  <span class="nt">stf</span><span class="p">:</span> <span class="s">&quot;~polyfemos/data_out/FN/sohtextfiles/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;NETWORK.&amp;STATION.&amp;YEAR.&amp;JULDAY&quot;</span>
+  <span class="nt">csv</span><span class="p">:</span> <span class="s">&quot;~polyfemos/data_out/FN/sohcsvs/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;PARNAME/&amp;NETWORK.&amp;STATION.&amp;PARNAME.&amp;YEAR&quot;</span>
+  <span class="nt">alert</span><span class="p">:</span> <span class="s">&quot;~polyfemos/data_out/FN/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;NETWORK.&amp;STATION.&amp;YEAR.&amp;JULDAY&quot;</span>
+  <span class="nt">rawdata</span><span class="p">:</span> <span class="s">&quot;/path/to/raw/data/&amp;YEAR/&amp;NETWORK/&amp;STATION/&amp;CHANNEL.D/&amp;NETWORK.&amp;STATION.*.&amp;CHANNEL.D.&amp;YEAR.&amp;JULDAY&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>**** Add station id to the list in ‘station_ids’ entry in file
+‘conf/front/networks/FN_config.yml’. In this case the id is “FN.MSF”.</p></li>
+<li><p>If the station has channels or state of health parameters that none of the
+previously included stations had, add those in ‘channel_codes’ and
+‘sohpars’ entries in ‘conf/front/networks/FN_config.yml’.</p></li>
+<li><p>If the station’s network code is not in the list of network codes (entry
+‘network_codes’) in ‘conf/front/global_config.yml’, add it.</p></li>
+</ol>
+<p>At this point frontend should be configured, but if the station definition
+introduced some other changes to frontend, define those in files
+‘conf/front/global_config.yml’ and ‘conf/front/networks/FN_config.yml’
+respectively.</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="documentation_index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="polyfemos_readme_3_frontend.html" title="previous chapter">Frontend</a></li>
+      <li>Next: <a href="polyfemos_readme_5_sohemailer.html" title="next chapter">State of health emailer</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/polyfemos_readme_4_add_station.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

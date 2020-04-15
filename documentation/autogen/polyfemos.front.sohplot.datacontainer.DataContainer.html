@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.sohplot.datacontainer.DataContainer &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.front.sohplot.datacontainer.DataPoint" href="polyfemos.front.sohplot.datacontainer.DataPoint.html" />
+    <link rel="prev" title="polyfemos.front.sohplot.datacontainer" href="polyfemos.front.sohplot.datacontainer.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="polyfemos-front-sohplot-datacontainer-datacontainer">
+<h1>polyfemos.front.sohplot.datacontainer.DataContainer<a class="headerlink" href="#polyfemos-front-sohplot-datacontainer-datacontainer" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer">
+<em class="property">class </em><code class="sig-prename descclassname">polyfemos.front.sohplot.datacontainer.</code><code class="sig-name descname">DataContainer</code><span class="sig-paren">(</span><em class="sig-param">track_datalen=False</em>, <em class="sig-param">remove_identicals=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A class to handle timeseries data consisting of
+<a class="reference internal" href="polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a> instances.</p>
+<p>The class has <code class="docutils literal notranslate"><span class="pre">__setitem__</span></code> and <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> methods so it works like
+dictionary on that part.</p>
+<p class="rubric">Public Methods</p>
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">track_datalen=False</em>, <em class="sig-param">remove_identicals=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>track_datalen</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>, If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the amount
+of datapoints, nans, etc., is monitored.</p></li>
+<li><p><strong>remove_identicals</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+values with identical x and y values are removed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.add2info">
+<code class="sig-name descname">add2info</code><span class="sig-paren">(</span><em class="sig-param">str_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.add2info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.add2info" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>str_</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A notes appended to <code class="docutils literal notranslate"><span class="pre">self.__info</span></code> list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.add_identical_removal_info">
+<code class="sig-name descname">add_identical_removal_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.add_identical_removal_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.add_identical_removal_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds original datapoint and nan amounts and identical datapoint
+information to <code class="docutils literal notranslate"><span class="pre">self.__info</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.append">
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">dp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">self.remove_identicals</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+the datapoint is not included if it has identical x and y values
+as one of the already added datapoints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference internal" href="polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a>) – Addends
+<a class="reference internal" href="polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a>
+instance to <code class="docutils literal notranslate"><span class="pre">self.datapoints</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.count_nans">
+<code class="sig-name descname">count_nans</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.count_nans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.count_nans" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A count of nan values in <code class="docutils literal notranslate"><span class="pre">self.datapoints</span></code> list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.decimate">
+<code class="sig-name descname">decimate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.decimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.decimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decimates <code class="docutils literal notranslate"><span class="pre">self.datapoints</span></code> list by removing datapoints so that
+the after decimation, the amount of datapoints in the list is not over
+<code class="docutils literal notranslate"><span class="pre">decimation_limit</span></code>, which is set to 10000.</p>
+<p>Bokeh can plot 10000 datapoints with relative ease but
+more datapoints than that will result in slow plotting.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.get_info">
+<code class="sig-name descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.get_info" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list containing the info notes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.get_ys_wo_nans">
+<code class="sig-name descname">get_ys_wo_nans</code><span class="sig-paren">(</span><em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.get_ys_wo_nans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.get_ys_wo_nans" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>, if <code class="docutils literal notranslate"><span class="pre">True</span></code> the returned list
+is recalculated in every case.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list containing <code class="docutils literal notranslate"><span class="pre">y</span></code> values of
+<a class="reference internal" href="polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a>
+instances excluding nan values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.outlier_removal">
+<code class="sig-name descname">outlier_removal</code><span class="sig-paren">(</span><em class="sig-param">outlierremfunc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.outlier_removal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.outlier_removal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies advanced outlier removal to <code class="docutils literal notranslate"><span class="pre">datapoints</span></code> attribute.
+Changes <code class="docutils literal notranslate"><span class="pre">y</span></code> values of outlying datapoints into nan, while
+simultaneously creating dataset <code class="docutils literal notranslate"><span class="pre">self.outlier_datapoints</span></code>,
+which contains the outliers.</p>
+<p>Some functions for removing outliers are in
+<a class="reference internal" href="polyfemos.data.outlierremover.html#module-polyfemos.data.outlierremover" title="polyfemos.data.outlierremover"><code class="xref py py-mod docutils literal notranslate"><span class="pre">outlierremover</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>outlierremfunc</strong> (<em>func</em>) – a function to remove outliers, arguments of the
+<code class="docutils literal notranslate"><span class="pre">outlierremfunc</span></code> has to be predefined, except the actual data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.remove_irrationals">
+<code class="sig-name descname">remove_irrationals</code><span class="sig-paren">(</span><em class="sig-param">irlims=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.remove_irrationals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.remove_irrationals" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <a class="reference internal" href="polyfemos.front.sohplot.datacontainer.DataPoint.html#polyfemos.front.sohplot.datacontainer.DataPoint" title="polyfemos.front.sohplot.datacontainer.DataPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPoint</span></code></a>
+instance’s <code class="docutils literal notranslate"><span class="pre">y</span></code> value is not within the interval
+(including both ends) defined by <code class="docutils literal notranslate"><span class="pre">irlims</span></code>, the <code class="docutils literal notranslate"><span class="pre">y</span></code>
+is set to nan in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>irlims</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – lower and upper limit for irrational values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.sort">
+<code class="sig-name descname">sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts <code class="docutils literal notranslate"><span class="pre">self.datapoints</span></code> comparing timestamp values</p>
+</dd></dl>
+
+<p class="rubric">Special Methods</p>
+<dl class="method">
+<dt id="polyfemos.front.sohplot.datacontainer.DataContainer.__len__">
+<code class="sig-name descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/datacontainer.html#DataContainer.__len__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.datacontainer.DataContainer.__len__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>length of <code class="docutils literal notranslate"><span class="pre">self.datapoints</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../front.html">Frontend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.alertreader.html">polyfemos.front.alertreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.colors.html">polyfemos.front.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.flask_config.html">polyfemos.front.flask_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.forms.html">polyfemos.front.forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.main.html">polyfemos.front.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.request.html">polyfemos.front.request</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="polyfemos.front.sohplot.datacontainer.html">polyfemos.front.sohplot.datacontainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.offsets.html">polyfemos.front.sohplot.offsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.outfilefields.html">polyfemos.front.sohplot.outfilefields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.sohplot.html">polyfemos.front.sohplot.sohplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.trafficmonitor.html">polyfemos.front.trafficmonitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.userdef.html">polyfemos.front.userdef</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../front.html">Frontend modules</a><ul>
+  <li><a href="polyfemos.front.sohplot.datacontainer.html">polyfemos.front.sohplot.datacontainer</a><ul>
+      <li>Previous: <a href="polyfemos.front.sohplot.datacontainer.html" title="previous chapter">polyfemos.front.sohplot.datacontainer</a></li>
+      <li>Next: <a href="polyfemos.front.sohplot.datacontainer.DataPoint.html" title="next chapter">polyfemos.front.sohplot.datacontainer.DataPoint</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.front.sohplot.datacontainer.DataContainer.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

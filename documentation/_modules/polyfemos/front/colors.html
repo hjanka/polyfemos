@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.colors &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.front.colors</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains all color values for polyfemos</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">render_template</span>
+
+
+<span class="n">WHITE</span> <span class="o">=</span> <span class="s2">&quot;#ffffff&quot;</span>
+<span class="n">GREY_1</span> <span class="o">=</span> <span class="s2">&quot;#fafafa&quot;</span>
+<span class="n">GREY_2</span> <span class="o">=</span> <span class="s2">&quot;#f5f5f5&quot;</span>
+<span class="n">GREY_3</span> <span class="o">=</span> <span class="s2">&quot;#dddddd&quot;</span>
+<span class="n">GREY_4</span> <span class="o">=</span> <span class="s2">&quot;#aaaaaa&quot;</span>
+<span class="n">BLACK</span> <span class="o">=</span> <span class="s2">&quot;#000000&quot;</span>
+<span class="n">RED_1</span> <span class="o">=</span> <span class="s2">&quot;#ff4d88&quot;</span>
+<span class="n">RED_2</span> <span class="o">=</span> <span class="s2">&quot;#e60047&quot;</span>
+<span class="n">RED_3</span> <span class="o">=</span> <span class="s2">&quot;#990033&quot;</span>
+<span class="n">ALERT_GREEN</span> <span class="o">=</span> <span class="s2">&quot;#82ff82&quot;</span>
+<span class="n">ALERT_YELLOW</span> <span class="o">=</span> <span class="s2">&quot;#eeff88&quot;</span>
+<span class="n">ALERT_RED</span> <span class="o">=</span> <span class="s2">&quot;#ff4d88&quot;</span>
+<span class="n">GREEN</span> <span class="o">=</span> <span class="s2">&quot;#476b6b&quot;</span>
+<span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;#22408f&quot;</span>
+
+
+<div class="viewcode-block" id="get_color_styles"><a class="viewcode-back" href="../../../autogen/polyfemos.front.colors.html#polyfemos.front.colors.get_color_styles">[docs]</a><span class="k">def</span> <span class="nf">get_color_styles</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: css styles consisting of color variables</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;:root {</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --white: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WHITE</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --grey-1: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GREY_1</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --grey-2: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GREY_2</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --grey-3: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GREY_3</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --grey-4: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GREY_4</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --black: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">BLACK</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --red-1: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RED_1</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --red-2: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RED_2</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --red-3: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RED_3</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --alert-green: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ALERT_GREEN</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --alert-yellow: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ALERT_YELLOW</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --alert-red: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ALERT_RED</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --green: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GREEN</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;  --blue: </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">BLUE</span><span class="p">)</span>
+    <span class="n">str_</span> <span class="o">+=</span> <span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">str_</span></div>
+
+
+<div class="viewcode-block" id="render_colors"><a class="viewcode-back" href="../../../autogen/polyfemos.front.colors.html#polyfemos.front.colors.render_colors">[docs]</a><span class="k">def</span> <span class="nf">render_colors</span><span class="p">(</span><span class="n">func_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type func\_: func</span>
+<span class="sd">    :param func\_: :func:`~flask.render_template`</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: decorated function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">color_styles</span><span class="o">=</span><span class="n">get_color_styles</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<span class="n">colored_template</span> <span class="o">=</span> <span class="n">render_colors</span><span class="p">(</span><span class="n">render_template</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

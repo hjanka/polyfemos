@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.seismic.edlogreader &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.back.seismic.edlogreader</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Reads Earth Data LOG files</span>
+
+<span class="sd">Includes :func:`~polyfemos.back.seismic.edlogreader.get_data` function for</span>
+<span class="sd">extracting data from Earth Data LOG files</span>
+
+<span class="sd">Extracts 1 datapoint per day (this is everthing that is available).</span>
+<span class="sd">Other state of health parameters are available as MSEED files containing</span>
+<span class="sd">continuous data.</span>
+
+<span class="sd">Parameters available using :func:`~polyfemos.back.seismic.edlogreader.get_data`</span>
+<span class="sd">``key`` in parentheses</span>
+
+<span class="sd">- latitude (lat)</span>
+<span class="sd">- longitude (long)</span>
+<span class="sd">- date (date), a string containing year, month and day</span>
+<span class="sd">- time (time), a string containing hour, minute and second</span>
+<span class="sd">- heading (hdng) *</span>
+<span class="sd">- magnetic variation (mva) *</span>
+<span class="sd">- velocity (vel) *</span>
+<span class="sd">- 16 bit phase error in 1 second pll (plle) **</span>
+
+<span class="sd">| *  Are these important? Do they contain any useful information?</span>
+<span class="sd">| ** Also available as MSEED so better to use that</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">fileutils</span>
+
+
+<div class="viewcode-block" id="_ed_log_replacer"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.edlogreader.html#polyfemos.back.seismic.edlogreader._ed_log_replacer">[docs]</a><span class="k">def</span> <span class="nf">_ed_log_replacer</span><span class="p">(</span><span class="n">str_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The function is used to replace some string in the Earth Data LOG file</span>
+<span class="sd">    to their respective ``key`` names</span>
+
+<span class="sd">    :type str\_: str</span>
+<span class="sd">    :param str\_:</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: A string with some values replaced</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rlist</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;\x00&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;longitude&quot;</span><span class="p">,</span> <span class="s2">&quot;long&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;heading&quot;</span><span class="p">,</span> <span class="s2">&quot;hdng&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="s2">&quot;vel&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;magnetic variation&quot;</span><span class="p">,</span> <span class="s2">&quot;mva&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;16 bit phase error in 1 second pll&quot;</span><span class="p">,</span> <span class="s2">&quot;plle&quot;</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rlist</span><span class="p">:</span>
+        <span class="n">str_</span> <span class="o">=</span> <span class="n">str_</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="o">*</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">str_</span></div>
+
+
+<div class="viewcode-block" id="_ed_log_get_value_from_rows"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.edlogreader.html#polyfemos.back.seismic.edlogreader._ed_log_get_value_from_rows">[docs]</a><span class="k">def</span> <span class="nf">_ed_log_get_value_from_rows</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Searches for ``key`` in rows</span>
+<span class="sd">    If the ``key`` is found, returns the value to the &#39;right&#39; of the key</span>
+
+<span class="sd">    :type rows: list</span>
+<span class="sd">    :param rows: list of lists of strings</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key:</span>
+<span class="sd">    :rtype: None, str</span>
+<span class="sd">    :return: Value corresponding to the key or ``None``</span>
+<span class="sd">        if the key is not found in ``rows``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="c1"># Look for key, index=i</span>
+        <span class="c1"># then try to return value next to it, (i+1)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="_ed_log_valid_row"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.edlogreader.html#polyfemos.back.seismic.edlogreader._ed_log_valid_row">[docs]</a><span class="k">def</span> <span class="nf">_ed_log_valid_row</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used to filter out rows which does not contain desired information</span>
+
+<span class="sd">    :type row: list</span>
+<span class="sd">    :param row:</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;GPS&quot;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="s2">&quot;plle&quot;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="_ed_log_parse_row"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.edlogreader.html#polyfemos.back.seismic.edlogreader._ed_log_parse_row">[docs]</a><span class="k">def</span> <span class="nf">_ed_log_parse_row</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a (binary) string ``row`` to list</span>
+
+<span class="sd">    :type row: str</span>
+<span class="sd">    :param row: (binary) string</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :return: A modified ``row``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">_ed_log_replacer</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="n">r</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">row</span></div>
+
+
+<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../../../../autogen/polyfemos.back.seismic.edlogreader.html#polyfemos.back.seismic.edlogreader.get_data">[docs]</a><span class="nd">@fileutils</span><span class="o">.</span><span class="n">check_filepath</span>
+<span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    :param path: filename of the Earth Data LOG file</span>
+<span class="sd">    :type key: str</span>
+<span class="sd">    :param key: A value to be extracted</span>
+<span class="sd">    :rtype: float or None</span>
+<span class="sd">    :return: A single float value read from ED log file,</span>
+<span class="sd">        If somenthing went wrong (e.g. the path was invalid), return ``None``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Convert every row into a list</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">(</span><span class="n">_ed_log_parse_row</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">)</span>
+    <span class="c1"># Filter out unnecessary rows</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span> <span class="k">if</span> <span class="n">_ed_log_valid_row</span><span class="p">(</span><span class="n">row</span><span class="p">)]</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">_ed_log_get_value_from_rows</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">float_</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">scale</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

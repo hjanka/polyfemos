@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.parser.functionparser &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.parser.functionparser</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions to parse filepaths from strings following the internal function</span>
+<span class="sd">syntax</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
+
+<div class="viewcode-block" id="compose"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.functionparser.html#polyfemos.parser.functionparser.compose">[docs]</a><span class="k">def</span> <span class="nf">compose</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function to compose functions</span>
+
+<span class="sd">    :type op: func</span>
+<span class="sd">    :param op: A two argument function</span>
+<span class="sd">    :type f1,f2: float, int, bool, func</span>
+<span class="sd">    :param f1,f2: value or function, given function should take one argument,</span>
+<span class="sd">        if value given, it will be changed in to one-argument function</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: A one argument function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># make &#39;arg&#39; callable if it is not</span>
+    <span class="n">wrap</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">arg</span><span class="p">:</span> <span class="n">arg</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">else</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">arg</span>
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">op</span><span class="p">(</span><span class="n">wrap</span><span class="p">(</span><span class="n">f1</span><span class="p">)(</span><span class="n">x</span><span class="p">),</span> <span class="n">wrap</span><span class="p">(</span><span class="n">f2</span><span class="p">)(</span><span class="n">x</span><span class="p">))</span></div>
+
+
+<span class="c1"># aliases are used for defining multicharacter operations</span>
+<span class="c1"># boolean aliases are just for convenience</span>
+<span class="n">_aliases</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;{&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;}&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;**&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">],</span>
+<span class="p">]</span>
+<span class="c1"># possible operations with 2 arguments</span>
+<span class="n">_operations</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;^&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">pow</span><span class="p">,</span>
+    <span class="s2">&quot;*&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span>
+    <span class="s2">&quot;/&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">truediv</span><span class="p">,</span>
+    <span class="s2">&quot;+&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span>
+    <span class="s2">&quot;-&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">sub</span><span class="p">,</span>
+    <span class="s2">&quot;&lt;&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">lt</span><span class="p">,</span>
+    <span class="s2">&quot;{&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">le</span><span class="p">,</span>
+    <span class="s2">&quot;&gt;&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">gt</span><span class="p">,</span>
+    <span class="s2">&quot;}&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span>
+    <span class="s2">&quot;=&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">eq</span><span class="p">,</span>
+    <span class="s2">&quot;!&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">ne</span><span class="p">,</span>
+    <span class="s2">&quot;&amp;&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">and_</span><span class="p">,</span>
+    <span class="s2">&quot;|&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">or_</span><span class="p">,</span>
+    <span class="s2">&quot;r&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="c1"># boolean values and identity function to include variable</span>
+<span class="n">_vals</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+    <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_reserved</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_operations</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">_vals</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="function_from_str"><a class="viewcode-back" href="../../../autogen/polyfemos.parser.functionparser.html#polyfemos.parser.functionparser.function_from_str">[docs]</a><span class="k">def</span> <span class="nf">function_from_str</span><span class="p">(</span><span class="n">functionstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a simple function from given string.</span>
+
+<span class="sd">    The ``functionstr`` may or may not be inside parentheses, the</span>
+<span class="sd">    ``functionstr`` may not contain any other brackets (except curly brackets</span>
+<span class="sd">    intead of ``&lt;=`` and ``&gt;=`` operations if wanted).</span>
+
+<span class="sd">    Available operations in execution order,</span>
+<span class="sd">    Order of execution of same operations is from left to right.</span>
+<span class="sd">    Note that all of the operations take two arguments.</span>
+
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |Operation | Alias | Description                |</span>
+<span class="sd">    +==========+=======+============================+</span>
+<span class="sd">    |   ``**`` | ``^`` | power                      |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``*``  |       | multiplication             |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``/``  |       | division                   |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``+``  |       | addition                   |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``-``  |       | substracion                |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``&lt;``  |       | lesser than                |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``&lt;=`` | ``{`` | lesser or equal            |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``&gt;``  |       | greater than               |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``&gt;=`` | ``}`` | greater or equal           |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``==`` | ``=`` | equal                      |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``!=`` | ``!`` | not equal                  |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``&amp;``  |       | and                        |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``|``  |       | or                         |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+<span class="sd">    |   ``r``  |       | round, &lt;num&gt;r&lt;decimals&gt;    |</span>
+<span class="sd">    +----------+-------+----------------------------+</span>
+
+<span class="sd">    Available values</span>
+
+<span class="sd">    +-------------+-------+---------------------------------------------------+</span>
+<span class="sd">    |  Value      | Alias | Description                                       |</span>
+<span class="sd">    +=============+=======+===================================================+</span>
+<span class="sd">    |   ``X``     |       | The variable/argument in the resulting function   |</span>
+<span class="sd">    +-------------+-------+---------------------------------------------------+</span>
+<span class="sd">    |   ``False`` | ``F`` | boolean False                                     |</span>
+<span class="sd">    +-------------+-------+---------------------------------------------------+</span>
+<span class="sd">    |   ``True``  | ``T`` | boolean False                                     |</span>
+<span class="sd">    +-------------+-------+---------------------------------------------------+</span>
+
+
+<span class="sd">    Example ``functionstr`` values</span>
+
+<span class="sd">    .. code-block:: text</span>
+
+<span class="sd">        (False)</span>
+<span class="sd">        (X&lt;4.0|X&gt;7|X==5)</span>
+<span class="sd">        (X&lt;4.0|X&gt;7)</span>
+<span class="sd">        (X&lt;=4.0|X&gt;=7)</span>
+<span class="sd">        (X*0.001r3)</span>
+<span class="sd">        (X*10./27.+5.r3)</span>
+<span class="sd">        (X&lt;=-1)</span>
+
+
+<span class="sd">    :type functionstr: str</span>
+<span class="sd">    :param functionstr:</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: A one-argument function which returns either boolean or numeral</span>
+<span class="sd">        depending on the used operations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">functionstr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;(&quot;</span> <span class="ow">or</span> <span class="n">functionstr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
+        <span class="c1"># Should the parentheses be forced?</span>
+        <span class="k">pass</span>
+
+    <span class="n">functionstr</span> <span class="o">=</span> <span class="n">functionstr</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;()&quot;</span><span class="p">)</span>
+
+    <span class="c1"># replace aliases</span>
+    <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">_aliases</span><span class="p">:</span>
+        <span class="n">functionstr</span> <span class="o">=</span> <span class="n">functionstr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="o">*</span><span class="n">alias</span><span class="p">)</span>
+
+    <span class="c1"># distinguish operations from other values</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_operations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">functionstr</span> <span class="o">=</span> <span class="n">functionstr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+
+    <span class="c1"># distinguish unary operation &#39;-&#39; from the subtraction operation</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_operations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">functionstr</span> <span class="o">=</span> <span class="n">functionstr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="s2">&quot; </span><span class="si">{}</span><span class="s2">  - &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2"> -&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+
+    <span class="c1"># create list containing operations, values and numerals</span>
+    <span class="n">functionstr</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">functionstr</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="n">s</span><span class="p">]</span>
+    <span class="c1"># evaluate numerals</span>
+    <span class="n">functionstr</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">s</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">_reserved</span> <span class="k">else</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">functionstr</span><span class="p">]</span>
+    <span class="c1"># replace values with their respective functions</span>
+    <span class="n">functionstr</span> <span class="o">=</span> <span class="p">[</span><span class="n">_vals</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">_vals</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">functionstr</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_operations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">while</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">functionstr</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">functionstr</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="c1"># Apply arguments to the operation and insert the</span>
+            <span class="c1"># resulting function in place of the operation</span>
+            <span class="n">functionstr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">compose</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">functionstr</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">functionstr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="c1"># Remove arguments from the list</span>
+            <span class="n">functionstr</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">functionstr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">functionstr</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">functionstr</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="n">func</span> <span class="o">=</span> <span class="n">functionstr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">func</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">func</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">fstrs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;(False)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;(X&lt;4.0|X&gt;7|X==5)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;(X&lt;4.0|X&gt;7)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;(X&lt;=4.0|X&gt;=7)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;(X*0.001r3)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;(X*10./27.+5.r3)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;(X&lt;=-1)&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">fstr</span> <span class="ow">in</span> <span class="n">fstrs</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">function_from_str</span><span class="p">(</span><span class="n">fstr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">fstr</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">14</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">3</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)))</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

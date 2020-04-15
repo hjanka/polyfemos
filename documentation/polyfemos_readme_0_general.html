@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>General Notes &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Setup" href="polyfemos_readme_1_setup.html" />
+    <link rel="prev" title="polyfemos documentation" href="documentation_index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="general-notes">
+<h1>General Notes<a class="headerlink" href="#general-notes" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">organization</dt>
+<dd class="field-odd"><p>Sodankylä Geophysical Observatory, University of Oulu</p>
+</dd>
+<dt class="field-even">copyright</dt>
+<dd class="field-even"><p>University of Oulu, Sodankylä Geophysical Observatory</p>
+</dd>
+<dt class="field-odd">date</dt>
+<dd class="field-odd"><p>2019</p>
+</dd>
+</dl>
+<p>The polyfemos package and its documentation is distributed under
+<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">GNU Lesser General Public License v3.0 or later</a>. Exceptions are listed
+below.</p>
+<p>The polyfemos package comes with <code class="docutils literal notranslate"><span class="pre">sorttable.js</span></code> table sorter by
+Stuart Langridge, &lt;<a class="reference external" href="http://www.kryogenix.org/code/browser/sorttable/">http://www.kryogenix.org/code/browser/sorttable/</a>&gt;. The
+source file is not modified. The <code class="docutils literal notranslate"><span class="pre">sorttable.js</span></code> is provided under licence
+&lt;<a class="reference external" href="http://www.kryogenix.org/code/browser/licence.html">http://www.kryogenix.org/code/browser/licence.html</a>&gt;.</p>
+<p>The ‘northern_finland.png’ example png map file is licensed as CC BY-SA
+&lt;<a class="reference external" href="https://creativecommons.org/licenses/by-sa/2.0/">https://creativecommons.org/licenses/by-sa/2.0/</a>&gt;. Copyright OpenStreetMap
+contributors &lt;<a class="reference external" href="https://www.openstreetmap.org/copyright">https://www.openstreetmap.org/copyright</a>&gt;.</p>
+<p>The data contained in folder ‘polyfemos_example_data’ is licenced under ‘SGO
+Data Licence Agreement, 8.11.2019’. The licence file
+‘SGO_DATA_LICENCE_AGREEMENT.txt’ is provided with the data.</p>
+<p>The polyfemos backend is made seismic studies in mind and currently supports
+only seismic instruments. For the most part, the frontend (polyfemos web) on
+the other hand should be compatible with anything that is capable of producing
+‘*.stf’, ‘*.csv’ and ‘*.alert’ files in suitable formats. See
+<a class="reference internal" href="polyfemos_readme_2_backend.html#stfformat"><span class="std std-ref">Sohtextfile Format</span></a>, <a class="reference internal" href="polyfemos_readme_2_backend.html#alertformat"><span class="std std-ref">Alert file Format</span></a> and <a class="reference internal" href="polyfemos_readme_2_backend.html#csvformat"><span class="std std-ref">State of health CSV Format</span></a> for more information.</p>
+<div class="section" id="supported-hardware">
+<h2>Supported Hardware<a class="headerlink" href="#supported-hardware" title="Permalink to this headline">¶</a></h2>
+<p>The polyfemos (back and front) currently supports following hardware.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 21%" />
+<col style="width: 33%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Brand</p></th>
+<th class="head"><p>Model</p></th>
+<th class="head"><p>Internal code</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td rowspan="4"><p>Sensor</p></td>
+<td><p>Nanometrics</p></td>
+<td><p>Trillium 120PA</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Trillium_120PA</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Nanometrics</p></td>
+<td><p>Trillium Posthole</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Trillium_120PH</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Nanometrics</p></td>
+<td><p>Trillium Compact 120s</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Trillium_Co120</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Streckeisen</p></td>
+<td><p>STS-2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">STS-2</span></code></p></td>
+</tr>
+<tr class="row-even"><td rowspan="4"><p>Digitizer</p></td>
+<td><p>Earth Data</p></td>
+<td><p>PS6-24</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PS6-24</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Earth Data</p></td>
+<td><p>EDR-210</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EDR-210</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Nanometrics</p></td>
+<td><p>Centaur 3 channels</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Centaur_3ch</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Nanometrics</p></td>
+<td><p>Centaur 6 channels</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Centaur_6ch</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="comments-considering-internal-naming-conventions">
+<h2>Comments considering internal naming conventions<a class="headerlink" href="#comments-considering-internal-naming-conventions" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Internal name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>network_code*</p></td>
+<td><p>Network code, e.g. “FN”</p></td>
+</tr>
+<tr class="row-odd"><td><p>station_code*</p></td>
+<td><p>Station code, e.g. “MSF”</p></td>
+</tr>
+<tr class="row-even"><td><p>location_code*</p></td>
+<td><p>Location code, usually empty or “00”</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_code*</p></td>
+<td><p>Channel code, e.g. “HHZ”</p></td>
+</tr>
+<tr class="row-even"><td><p>station_id</p></td>
+<td><p>Combination of network and station codes, e.g. “FN.MSF”</p></td>
+</tr>
+<tr class="row-odd"><td><p>sohpar_name,
+parname</p></td>
+<td><p>State of health parameter name,
+e.g. “Digitizer_input_voltage”</p></td>
+</tr>
+<tr class="row-even"><td><p>year</p></td>
+<td><p>Year</p></td>
+</tr>
+<tr class="row-odd"><td><p>julday</p></td>
+<td><p>Day of the year</p></td>
+</tr>
+</tbody>
+</table>
+<p>* The ‘code’ is omitted in case of the reserved variables, see
+Chapter <a class="reference internal" href="polyfemos_readme_2_backend.html#reservedvariables"><span class="std std-ref">Reserved variables</span></a>.</p>
+<p>Polyfemos web and polyfemos frontend will be synonymous in the documentation.</p>
+</div>
+<div class="section" id="console-scripts">
+<h2>Console scripts<a class="headerlink" href="#console-scripts" title="Permalink to this headline">¶</a></h2>
+<p>Polyfemos provides next command line scripts</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 72%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Script alias</p></th>
+<th class="head"><p>Link to code</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>polyfemos-readconf</p></td>
+<td><p><a class="reference internal" href="autogen/polyfemos.back.main.html#polyfemos.back.main.readconf" title="polyfemos.back.main.readconf"><code class="xref py py-func docutils literal notranslate"><span class="pre">polyfemos.back.main.readconf()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>polyfemos-devserver</p></td>
+<td><p><a class="reference internal" href="autogen/polyfemos.scripts.devserver.html#polyfemos.scripts.devserver.main" title="polyfemos.scripts.devserver.main"><code class="xref py py-func docutils literal notranslate"><span class="pre">polyfemos.scripts.devserver.main()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>polyfemos-rwt</p></td>
+<td><p><a class="reference internal" href="autogen/polyfemos.scripts.render_web_templates.html#polyfemos.scripts.render_web_templates.main" title="polyfemos.scripts.render_web_templates.main"><code class="xref py py-func docutils literal notranslate"><span class="pre">polyfemos.scripts.render_web_templates.main()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>polyfemos-tfp</p></td>
+<td><p><a class="reference internal" href="autogen/polyfemos.scripts.test_front_paths.html#polyfemos.scripts.test_front_paths.main" title="polyfemos.scripts.test_front_paths.main"><code class="xref py py-func docutils literal notranslate"><span class="pre">polyfemos.scripts.test_front_paths.main()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>polyfemos-secret_key</p></td>
+<td><p><a class="reference internal" href="autogen/polyfemos.util.randomizer.html#polyfemos.util.randomizer.get_secret_key" title="polyfemos.util.randomizer.get_secret_key"><code class="xref py py-func docutils literal notranslate"><span class="pre">polyfemos.util.randomizer.get_secret_key()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>polyfemos-sohemailer</p></td>
+<td><p><a class="reference internal" href="autogen/polyfemos.scripts.sohemailer.html#polyfemos.scripts.sohemailer.main" title="polyfemos.scripts.sohemailer.main"><code class="xref py py-func docutils literal notranslate"><span class="pre">polyfemos.scripts.sohemailer.main()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>polyfemos-check</p></td>
+<td><p><a class="reference internal" href="autogen/polyfemos.scripts.check_output_files.html#polyfemos.scripts.check_output_files.main" title="polyfemos.scripts.check_output_files.main"><code class="xref py py-func docutils literal notranslate"><span class="pre">polyfemos.scripts.check_output_files.main()</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">General Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#supported-hardware">Supported Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#comments-considering-internal-naming-conventions">Comments considering internal naming conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#console-scripts">Console scripts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="documentation_index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="documentation_index.html" title="previous chapter">polyfemos documentation</a></li>
+      <li>Next: <a href="polyfemos_readme_1_setup.html" title="next chapter">Setup</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/polyfemos_readme_0_general.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

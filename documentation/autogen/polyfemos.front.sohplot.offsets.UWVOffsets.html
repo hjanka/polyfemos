@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.sohplot.offsets.UWVOffsets &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.front.sohplot.outfilefields" href="polyfemos.front.sohplot.outfilefields.html" />
+    <link rel="prev" title="polyfemos.front.sohplot.offsets" href="polyfemos.front.sohplot.offsets.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="polyfemos-front-sohplot-offsets-uwvoffsets">
+<h1>polyfemos.front.sohplot.offsets.UWVOffsets<a class="headerlink" href="#polyfemos-front-sohplot-offsets-uwvoffsets" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="polyfemos.front.sohplot.offsets.UWVOffsets">
+<em class="property">class </em><code class="sig-prename descclassname">polyfemos.front.sohplot.offsets.</code><code class="sig-name descname">UWVOffsets</code><a class="reference internal" href="../_modules/polyfemos/front/sohplot/offsets.html#UWVOffsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.offsets.UWVOffsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A class for UWV to NEZ conversion</p>
+<p>The transforming function for each sensor is defined in
+<a class="reference internal" href="polyfemos.front.userdef.html#polyfemos.front.userdef.transform_func" title="polyfemos.front.userdef.transform_func"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform_func()</span></code></a></p>
+<p class="rubric">Public Methods</p>
+<dl class="method">
+<dt id="polyfemos.front.sohplot.offsets.UWVOffsets.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/offsets.html#UWVOffsets.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.offsets.UWVOffsets.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.offsets.UWVOffsets.clear">
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/offsets.html#UWVOffsets.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.offsets.UWVOffsets.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes <code class="docutils literal notranslate"><span class="pre">self.offsets</span></code> attribute into it’s default value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.offsets.UWVOffsets.isnan">
+<code class="sig-name descname">isnan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/offsets.html#UWVOffsets.isnan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.offsets.UWVOffsets.isnan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if every value (U, W and V) is defined. If every one is defined,
+the coordinate transformation can be done.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns <code class="docutils literal notranslate"><span class="pre">False</span></code> if the coordinate trasformation is possible.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.offsets.UWVOffsets.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">sensor</em>, <em class="sig-param">component</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/offsets.html#UWVOffsets.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.offsets.UWVOffsets.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform offsets, UWV to NEZ</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensor</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which transformation function is used,
+defined in <a class="reference internal" href="polyfemos.front.userdef.html#polyfemos.front.userdef.transform_func" title="polyfemos.front.userdef.transform_func"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform_func()</span></code></a></p></li>
+<li><p><strong>conponent</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which component after transformation is returned,
+N, E or Z.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>, float</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>timevalue and value of N, E or Z offset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.front.sohplot.offsets.UWVOffsets.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">dtstr</em>, <em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/offsets.html#UWVOffsets.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.offsets.UWVOffsets.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores given <code class="docutils literal notranslate"><span class="pre">value</span></code> to offset U, W or V.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – datetime compatible string or other value compatible
+with <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a></p></li>
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which offset is updated, U, W or V</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – string representing float value of the offset,</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Special Methods</p>
+<dl class="method">
+<dt id="polyfemos.front.sohplot.offsets.UWVOffsets.__bool__">
+<code class="sig-name descname">__bool__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/front/sohplot/offsets.html#UWVOffsets.__bool__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.front.sohplot.offsets.UWVOffsets.__bool__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the coordinate trasformation is possible.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../front.html">Frontend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.alertreader.html">polyfemos.front.alertreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.colors.html">polyfemos.front.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.flask_config.html">polyfemos.front.flask_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.forms.html">polyfemos.front.forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.main.html">polyfemos.front.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.request.html">polyfemos.front.request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.datacontainer.html">polyfemos.front.sohplot.datacontainer</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="polyfemos.front.sohplot.offsets.html">polyfemos.front.sohplot.offsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.outfilefields.html">polyfemos.front.sohplot.outfilefields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.sohplot.sohplot.html">polyfemos.front.sohplot.sohplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.trafficmonitor.html">polyfemos.front.trafficmonitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.front.userdef.html">polyfemos.front.userdef</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../front.html">Frontend modules</a><ul>
+  <li><a href="polyfemos.front.sohplot.offsets.html">polyfemos.front.sohplot.offsets</a><ul>
+      <li>Previous: <a href="polyfemos.front.sohplot.offsets.html" title="previous chapter">polyfemos.front.sohplot.offsets</a></li>
+      <li>Next: <a href="polyfemos.front.sohplot.outfilefields.html" title="next chapter">polyfemos.front.sohplot.outfilefields</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.front.sohplot.offsets.UWVOffsets.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

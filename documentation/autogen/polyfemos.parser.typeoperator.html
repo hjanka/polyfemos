@@ -1,0 +1,619 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.parser.typeoperator &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.scripts.check_output_files" href="polyfemos.scripts.check_output_files.html" />
+    <link rel="prev" title="polyfemos.parser.resources" href="polyfemos.parser.resources.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-polyfemos.parser.typeoperator">
+<span id="polyfemos-parser-typeoperator"></span><h1>polyfemos.parser.typeoperator<a class="headerlink" href="#module-polyfemos.parser.typeoperator" title="Permalink to this headline">¶</a></h1>
+<p>Functions representing types used internally in polyfemos</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2019, University of Oulu, Sodankyla Geophysical Observatory</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GNU Lesser General Public License v3.0 or later
+(<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">https://spdx.org/licenses/LGPL-3.0-or-later.html</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Public Functions</p>
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.NaN2None">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">NaN2None</code><span class="sig-paren">(</span><em class="sig-param">func_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#NaN2None"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.NaN2None" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator to be composed with a one-argument function,
+If the argument of the decorated function (<code class="docutils literal notranslate"><span class="pre">func_</span></code>) is NaN
+return <code class="docutils literal notranslate"><span class="pre">None</span></code>, else call function <code class="docutils literal notranslate"><span class="pre">func_</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func_</strong> (<em>func</em>) – A one-argument function</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">wrapper</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.anything">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">anything</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#anything"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.anything" title="Permalink to this definition">¶</a></dt>
+<dd><p>Has no effect whatsoever.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.bool_">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">bool_</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#bool_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.bool_" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">inputstr</span></code> converted into boolean, values <code class="docutils literal notranslate"><span class="pre">True</span></code> and
+<code class="docutils literal notranslate"><span class="pre">False</span></code> follow the boolean rules of python, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span> <span class="pre">=</span> <span class="pre">0</span> <span class="pre">=</span> <span class="pre">False</span></code>
+and <code class="docutils literal notranslate"><span class="pre">&quot;asd&quot;</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">=</span> <span class="pre">9.</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.check_type">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">check_type</code><span class="sig-paren">(</span><em class="sig-param">func_</em>, <em class="sig-param">invalid_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#check_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.check_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator to be composed with function where <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+or <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> might occur.
+If the error occurs while <code class="docutils literal notranslate"><span class="pre">func_</span></code> is called, the return value of the
+<code class="docutils literal notranslate"><span class="pre">func_</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func_</strong> (<em>func</em>) – </p></li>
+<li><p><strong>invalid_value</strong> (<em>anything</em><em>, </em><em>optional</em>) – If the type conversion is not possible, given invalid
+value is returned, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">wrapper</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.dict_">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">dict_</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#dict_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.dict_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <a class="reference internal" href="#polyfemos.parser.typeoperator.literal_eval" title="polyfemos.parser.typeoperator.literal_eval"><code class="xref py py-func docutils literal notranslate"><span class="pre">literal_eval()</span></code></a>
+to for a dictionary from <code class="docutils literal notranslate"><span class="pre">inputstr</span></code> and returns the dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A string representation of a python dictionary</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.filepath">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">filepath</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#filepath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.filepath" title="Permalink to this definition">¶</a></dt>
+<dd><p>see <a class="reference internal" href="polyfemos.parser.filepathparser.html#polyfemos.parser.filepathparser.path_from_str" title="polyfemos.parser.filepathparser.path_from_str"><code class="xref py py-func docutils literal notranslate"><span class="pre">path_from_str()</span></code></a> for more info.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A string representing a filepath, reserved variables
+may be used to create mutable filepaths.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.float_">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">float_</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#float_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.float_" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">inputstr</span></code> converted into float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.floatlist">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">floatlist</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#floatlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.floatlist" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – a string representation of a list containing floating
+point values</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of float values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.function">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">function</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.function" title="Permalink to this definition">¶</a></dt>
+<dd><p>See the function syntax and more info in
+<a class="reference internal" href="polyfemos.parser.functionparser.html#polyfemos.parser.functionparser.function_from_str" title="polyfemos.parser.functionparser.function_from_str"><code class="xref py py-func docutils literal notranslate"><span class="pre">function_from_str()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A string representing a function</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.getNaN">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">getNaN</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#getNaN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.getNaN" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">float('nan')</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.int_">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">int_</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em>, <em class="sig-param">to_float_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#int_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.int_" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p></li>
+<li><p><strong>to_float_first</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>, If <code class="docutils literal notranslate"><span class="pre">True</span></code> the input string
+is first converted to float and then to integer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">inputstr</span></code> converted into integer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.intlist">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">intlist</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#intlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.intlist" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – a string representation of a list containing integer
+values</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of integer values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.isNaN">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">isNaN</code><span class="sig-paren">(</span><em class="sig-param">num</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#isNaN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.isNaN" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if <code class="docutils literal notranslate"><span class="pre">num</span></code> is NaN</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>num</strong> (<em>numlike</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.isStrNaN">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">isStrNaN</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#isStrNaN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.isStrNaN" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code>, if <code class="docutils literal notranslate"><span class="pre">inputstr</span></code> is is equal any string representation of
+nan.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.list_">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">list_</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em>, <em class="sig-param">type_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#list_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.list_" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list may be defined with square brackets or the brackets may be omitted.
+Note that, the whitespaces are treated literally and empty list entries
+are removed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – a string representation of a list containing either
+string, int, or float values.</p></li>
+<li><p><strong>type_</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Either ‘str’, ‘float’ or ‘int’, describing the resulting
+type of the list entries.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of either string, int, or float values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.literal_eval">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">literal_eval</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em>, <em class="sig-param">type_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#literal_eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.literal_eval" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – a string representation of the value to be passed to
+<a class="reference external" href="https://docs.python.org/3.7/library/ast.html#ast.literal_eval" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">ast.literal_eval()</span></code></a>.</p></li>
+<li><p><strong>type_</strong> (<em>class</em><em> or </em><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#type" title="(in Python v3.7)"><em>type</em></a>) – desired type of the resulting value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>anything</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The retrun type is <code class="docutils literal notranslate"><span class="pre">type_</span></code>.
+Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if something went wrong while trying to
+convert <code class="docutils literal notranslate"><span class="pre">inputstr</span></code> into it’s desired type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.ordinal">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">ordinal</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em>, <em class="sig-param">today=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#ordinal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.ordinal" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A string compatible with
+<a class="reference internal" href="polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal" title="polyfemos.almanac.ordinal.Ordinal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ordinal</span></code></a> constructor.
+If symbol ‘+’ is contained in <code class="docutils literal notranslate"><span class="pre">inputstr</span></code>, an offset is
+applied to the returned value. The offset is an integer value
+representing days.</p></li>
+<li><p><strong>today</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>, optional) – defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>, if proper <code class="docutils literal notranslate"><span class="pre">today</span></code> is given,
+‘TODAY’ reserved variable is replaced with the given value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal" title="polyfemos.almanac.ordinal.Ordinal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ordinal</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.replaceNaN">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">replaceNaN</code><span class="sig-paren">(</span><em class="sig-param">func_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#replaceNaN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.replaceNaN" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator to replace NaN (see
+<a class="reference internal" href="#polyfemos.parser.typeoperator.isStrNaN" title="polyfemos.parser.typeoperator.isStrNaN"><code class="xref py py-func docutils literal notranslate"><span class="pre">isStrNaN()</span></code></a>)
+values of <code class="docutils literal notranslate"><span class="pre">args</span></code> and <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>  of <code class="docutils literal notranslate"><span class="pre">func_</span></code> with an empty string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func_</strong> (<em>func</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>func</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">wrapper</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.staticfilepath">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">staticfilepath</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#staticfilepath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.staticfilepath" title="Permalink to this definition">¶</a></dt>
+<dd><p>see <a class="reference internal" href="polyfemos.parser.filepathparser.html#polyfemos.parser.filepathparser.path_from_str" title="polyfemos.parser.filepathparser.path_from_str"><code class="xref py py-func docutils literal notranslate"><span class="pre">path_from_str()</span></code></a> for more info.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A string representing a filepath, the <code class="docutils literal notranslate"><span class="pre">inputstr</span></code>
+may not contain reserved variables</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A string representing a filepath</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.strNaN">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">strNaN</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#strNaN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.strNaN" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>string representation of NaN</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.str_">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">str_</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em>, <em class="sig-param">check_empty=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#str_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.str_" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">inputstr</span></code> converted into string, but nothing happened!</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.strlist">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">strlist</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#strlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.strlist" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – a string representation of a list containing string
+values, for example: <code class="docutils literal notranslate"><span class="pre">[1,asd,3,</span> <span class="pre">4]</span></code>. The resulting list will
+be <code class="docutils literal notranslate"><span class="pre">[&quot;1&quot;,</span> <span class="pre">&quot;asd&quot;,</span> <span class="pre">&quot;3&quot;,</span> <span class="pre">&quot;</span> <span class="pre">4&quot;]</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of string values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.utcdatetime">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">utcdatetime</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em>, <em class="sig-param">today=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#utcdatetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.utcdatetime" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A string compatible with
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> constructor.
+If symbol ‘+’ is contained in <code class="docutils literal notranslate"><span class="pre">inputstr</span></code>, an offset is
+applied to the returned value. The offset is an integer value
+representing days. If the <code class="docutils literal notranslate"><span class="pre">inputstr</span></code> is not string type, the value
+is passed to <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> constructor
+as is.</p></li>
+<li><p><strong>today</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>, optional) – defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>, if proper <code class="docutils literal notranslate"><span class="pre">today</span></code> is given,
+‘TODAY’ reserved variable is replaced with the given value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator.var">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">var</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator.var" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Adds the variable symbol to the start of the <code class="docutils literal notranslate"><span class="pre">inputstr</span></code>, if the
+<code class="docutils literal notranslate"><span class="pre">inputstr</span></code> lacks it.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Private Functions</p>
+<dl class="function">
+<dt id="polyfemos.parser.typeoperator._get_offset">
+<code class="sig-prename descclassname">polyfemos.parser.typeoperator.</code><code class="sig-name descname">_get_offset</code><span class="sig-paren">(</span><em class="sig-param">inputstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/parser/typeoperator.html#_get_offset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.parser.typeoperator._get_offset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputstr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An integer number after ‘+’ symbol in <code class="docutils literal notranslate"><span class="pre">inputstr</span></code>,
+negative or positive. For negative offsets, the <code class="docutils literal notranslate"><span class="pre">inputstr</span></code> has to
+be for example: <code class="docutils literal notranslate"><span class="pre">SOMETHING+-5</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../front.html">Frontend modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.ordinal.html">polyfemos.almanac.ordinal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.timer.html">polyfemos.almanac.timer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.almanac.utils.html">polyfemos.almanac.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.outlierremover.html">polyfemos.data.outlierremover</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.statistics.html">polyfemos.data.statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.data.utils.html">polyfemos.data.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.filepathparser.html">polyfemos.parser.filepathparser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.functionparser.html">polyfemos.parser.functionparser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.parser.resources.html">polyfemos.parser.resources</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">polyfemos.parser.typeoperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.check_output_files.html">polyfemos.scripts.check_output_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.devserver.html">polyfemos.scripts.devserver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.render_web_templates.html">polyfemos.scripts.render_web_templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.test_front_paths.html">polyfemos.scripts.test_front_paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.scripts.sohemailer.html">polyfemos.scripts.sohemailer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.tests.test_python_packages.html">polyfemos.tests.test_python_packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.coordinator.html">polyfemos.util.coordinator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.fileutils.html">polyfemos.util.fileutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.messenger.html">polyfemos.util.messenger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.util.randomizer.html">polyfemos.util.randomizer</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../other.html">Scripts, tests and other modules</a><ul>
+      <li>Previous: <a href="polyfemos.parser.resources.html" title="previous chapter">polyfemos.parser.resources</a></li>
+      <li>Next: <a href="polyfemos.scripts.check_output_files.html" title="next chapter">polyfemos.scripts.check_output_files</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.parser.typeoperator.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

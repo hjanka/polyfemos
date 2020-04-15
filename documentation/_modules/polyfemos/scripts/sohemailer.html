@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.scripts.sohemailer &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.scripts.sohemailer</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A script for sending state of health alerts via email</span>
+
+<span class="sd">The script may be run for example using cron to check and notify about</span>
+<span class="sd">the active alerts daily. See more information in :ref:`SOHEmailer`.</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">email</span>
+<span class="kn">import</span> <span class="nn">smtplib</span>
+
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">ArgumentParser</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.parser</span> <span class="k">import</span> <span class="n">typeoperator</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">fileutils</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front.alertreader</span> <span class="k">import</span> <span class="n">get_sohdict</span>
+<span class="kn">from</span> <span class="nn">polyfemos.almanac.utils</span> <span class="k">import</span> <span class="n">parse_date</span><span class="p">,</span> <span class="n">get_jY</span>
+
+
+<span class="n">_template_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span>
+    <span class="s2">&quot;sohemailer_templates&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sohemailer_template.htm&quot;</span>
+<span class="p">)</span>
+
+
+<span class="n">CONFIG_DICT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;passwd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="s2">&quot;State of Health alert&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;alert_filepathformat&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;station_ids&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s2">&quot;sohpars&quot;</span><span class="p">:</span> <span class="p">[],</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="send_email"><a class="viewcode-back" href="../../../autogen/polyfemos.scripts.sohemailer.html#polyfemos.scripts.sohemailer.send_email">[docs]</a><span class="k">def</span> <span class="nf">send_email</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">to_</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send email using &#39;smtp.gmail.com&#39; smtp server.</span>
+
+<span class="sd">    :type from\_: str</span>
+<span class="sd">    :param from\_: email address of the sender</span>
+<span class="sd">    :type to\_: list[str]</span>
+<span class="sd">    :param to\_: list of email address of recipients</span>
+<span class="sd">    :type passwd: str</span>
+<span class="sd">    :param passwd: sender email account password</span>
+<span class="sd">    :type subject: str</span>
+<span class="sd">    :param subject: email subject</span>
+<span class="sd">    :type content: str</span>
+<span class="sd">    :param content: message contents</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">to_</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">Message</span><span class="p">()</span>
+    <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;From&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">from_</span>
+    <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;Subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject</span>
+    <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_</span>
+    <span class="n">msg</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/html&#39;</span><span class="p">)</span>
+    <span class="n">msg</span><span class="o">.</span><span class="n">set_payload</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="n">server</span> <span class="o">=</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP</span><span class="p">(</span><span class="s1">&#39;smtp.gmail.com: 587&#39;</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">starttls</span><span class="p">()</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="s1">&#39;From&#39;</span><span class="p">],</span> <span class="n">passwd</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">sendmail</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="s1">&#39;From&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="o">.</span><span class="n">as_string</span><span class="p">())</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../autogen/polyfemos.scripts.sohemailer.html#polyfemos.scripts.sohemailer.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :type argv: list</span>
+<span class="sd">    :param argv: command line arguments</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="s1">&#39;polyfemos-sohemailer&#39;</span><span class="p">,</span>
+                            <span class="n">description</span><span class="o">=</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;YAML file containing emailing configuration&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--date&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Alert file date, in format YEAR-JULDAY, &#39;</span>
+                             <span class="s1">&#39;YEAR-MONTH-DAY, or &#39;</span>
+                             <span class="s1">&#39;empty for current date.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="s1">&#39;--dry-run&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Shows what the command would have done without &#39;</span>
+                             <span class="s1">&#39;actually doing anything.&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="n">dry_run</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">dry_run</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">path</span>
+    <span class="n">date_</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">date</span>
+
+    <span class="n">yaml_config</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">load_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">yaml_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No valid YAML file given.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">CONFIG_DICT</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">yaml_config</span><span class="p">)</span>
+
+    <span class="n">fpf</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">filepath</span><span class="p">(</span><span class="n">CONFIG_DICT</span><span class="p">[</span><span class="s2">&quot;alert_filepathformat&quot;</span><span class="p">])</span>
+
+    <span class="n">date_</span> <span class="o">=</span> <span class="n">parse_date</span><span class="p">(</span><span class="n">date_</span><span class="p">)</span>
+    <span class="n">datestr</span> <span class="o">=</span> <span class="n">date_</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">julday</span><span class="p">,</span> <span class="n">year</span> <span class="o">=</span> <span class="n">get_jY</span><span class="p">(</span><span class="n">date_</span><span class="p">)</span>
+    <span class="n">infolines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Currently active alerts for date </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datestr</span><span class="p">)]</span>
+
+    <span class="n">sohdict</span> <span class="o">=</span> <span class="n">get_sohdict</span><span class="p">(</span><span class="n">CONFIG_DICT</span><span class="p">[</span><span class="s2">&quot;station_ids&quot;</span><span class="p">],</span> <span class="n">year</span><span class="p">,</span> <span class="n">julday</span><span class="p">,</span> <span class="n">fpf</span><span class="p">)</span>
+    <span class="n">alerts</span> <span class="o">=</span> <span class="n">sohdict</span><span class="p">[</span><span class="s2">&quot;alerts&quot;</span><span class="p">]</span>
+
+    <span class="n">msglines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_product</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
+        <span class="n">CONFIG_DICT</span><span class="p">[</span><span class="s2">&quot;station_ids&quot;</span><span class="p">],</span> <span class="n">CONFIG_DICT</span><span class="p">[</span><span class="s2">&quot;sohpars&quot;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">station_id</span><span class="p">,</span> <span class="n">parname</span> <span class="ow">in</span> <span class="n">_product</span><span class="p">:</span>
+        <span class="n">alert</span> <span class="o">=</span> <span class="n">alerts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">station_id</span> <span class="o">+</span> <span class="n">parname</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">msgline</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:&lt;10}</span><span class="s2"> </span><span class="si">{:&lt;30}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">station_id</span><span class="p">,</span> <span class="n">parname</span><span class="p">)</span>
+        <span class="c1"># Only currently active alerts will be added to message.</span>
+        <span class="k">if</span> <span class="n">alert</span> <span class="o">==</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msgline</span><span class="p">)</span>
+            <span class="n">msglines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msgline</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s2">&quot;&amp;nbsp;&quot;</span><span class="p">))</span>
+
+    <span class="c1"># Email is sent if there are currently active alerts</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msglines</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">msglines</span> <span class="o">=</span> <span class="n">infolines</span> <span class="o">+</span> <span class="n">msglines</span>
+        <span class="n">email_content</span> <span class="o">=</span> \
+            <span class="n">fileutils</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="n">_template_file</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;msglines&quot;</span><span class="p">:</span> <span class="n">msglines</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Email contents</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">email_content</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">to_</span> <span class="ow">in</span> <span class="n">CONFIG_DICT</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sending email to &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">to_</span><span class="p">))</span>
+            <span class="n">send_email</span><span class="p">(</span>
+                <span class="n">to_</span><span class="o">=</span><span class="n">to_</span><span class="p">,</span>
+                <span class="n">from_</span><span class="o">=</span><span class="n">CONFIG_DICT</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">],</span>
+                <span class="n">passwd</span><span class="o">=</span><span class="n">CONFIG_DICT</span><span class="p">[</span><span class="s2">&quot;passwd&quot;</span><span class="p">],</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">CONFIG_DICT</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">],</span>
+                <span class="n">content</span><span class="o">=</span><span class="n">email_content</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No alerts, no email sent&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

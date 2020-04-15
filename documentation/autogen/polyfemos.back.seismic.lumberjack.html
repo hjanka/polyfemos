@@ -1,0 +1,743 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.seismic.lumberjack &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.back.seismic.scanner" href="polyfemos.back.seismic.scanner.html" />
+    <link rel="prev" title="polyfemos.back.seismic.edlogreader" href="polyfemos.back.seismic.edlogreader.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-polyfemos.back.seismic.lumberjack">
+<span id="polyfemos-back-seismic-lumberjack"></span><h1>polyfemos.back.seismic.lumberjack<a class="headerlink" href="#module-polyfemos.back.seismic.lumberjack" title="Permalink to this headline">¶</a></h1>
+<p>Functions for reading and parsing data from state of health and data files.</p>
+<p>The main public functions that return list of lists of timestamps and values:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack.data_mseed" title="polyfemos.back.seismic.lumberjack.data_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_mseed()</span></code></a> (not yet)</p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack.centaur_mseed" title="polyfemos.back.seismic.lumberjack.centaur_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">centaur_mseed()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack.earthdata_mseed" title="polyfemos.back.seismic.lumberjack.earthdata_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">earthdata_mseed()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily" title="polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_timing_quality_obspy_daily()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack.data_timing_quality" title="polyfemos.back.seismic.lumberjack.data_timing_quality"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_timing_quality()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack.data_coverage" title="polyfemos.back.seismic.lumberjack.data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_coverage()</span></code></a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2019, University of Oulu, Sodankyla Geophysical Observatory</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GNU Lesser General Public License v3.0 or later
+(<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">https://spdx.org/licenses/LGPL-3.0-or-later.html</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Public Functions</p>
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.centaur_mseed">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">centaur_mseed</code><span class="sig-paren">(</span><em class="sig-param">path=''</em>, <em class="sig-param">scale=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#centaur_mseed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.centaur_mseed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to miniseed file</p></li>
+<li><p><strong>scale</strong> (<em>func</em><em>, </em><em>optional</em>) – defaults to identity function,
+scaling function applied to data values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a> or <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of lists containing timestamp (as
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> instance) and data value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.data_coverage">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">data_coverage</code><span class="sig-paren">(</span><em class="sig-param">paths=[]</em>, <em class="sig-param">starttime=None</em>, <em class="sig-param">endtime=None</em>, <em class="sig-param">scale=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">invalid_value=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#data_coverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.data_coverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the datacoverage percentage between <code class="docutils literal notranslate"><span class="pre">starttime</span></code> and
+<code class="docutils literal notranslate"><span class="pre">endtime</span></code>.</p>
+<p>See <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.imaging.scripts.scan.Scanner.html#obspy.imaging.scripts.scan.Scanner" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scanner</span></code></a> and
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.imaging.scripts.scan.Scanner.analyze_parsed_data.html#obspy.imaging.scripts.scan.Scanner.analyze_parsed_data" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">analyze_parsed_data()</span></code></a>
+for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paths</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of filepaths (as string values)
+to the datefiles to be scanned</p></li>
+<li><p><strong>starttime</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>) – </p></li>
+<li><p><strong>endtime</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>) – </p></li>
+<li><p><strong>scale</strong> (<em>func</em><em>, </em><em>optional</em>) – defaults to identity function,
+scaling function applied to data values</p></li>
+<li><p><strong>invalid_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em>) – default to <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a> or <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of lists containing timestamp (as
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> instance), data value,
+and additional z value as string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.data_mseed">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">data_mseed</code><span class="sig-paren">(</span><em class="sig-param">path=''</em>, <em class="sig-param">scale=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#data_mseed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.data_mseed" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – </p></li>
+<li><p><strong>scale</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.data_timing_quality">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">data_timing_quality</code><span class="sig-paren">(</span><em class="sig-param">path=''</em>, <em class="sig-param">average_calc_length=1</em>, <em class="sig-param">scale=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#data_timing_quality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.data_timing_quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads timing quality values from miniseed file using
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.io.mseed.util.get_record_information.html#obspy.io.mseed.util.get_record_information" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_record_information()</span></code></a> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to miniseed file</p></li>
+<li><p><strong>average_calc_length</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – defaults to one, setting this value greater
+than one will result in a little bit smoothed timing quality curve,
+since the returned datapoints will be averages over
+<code class="docutils literal notranslate"><span class="pre">average_calc_length</span></code> values.</p></li>
+<li><p><strong>scale</strong> (<em>func</em><em>, </em><em>optional</em>) – defaults to identity function,
+scaling function applied to data values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a> or <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of lists containing timestamp (as
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> instance) and data value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">data_timing_quality_obspy_daily</code><span class="sig-paren">(</span><em class="sig-param">path=''</em>, <em class="sig-param">key=''</em>, <em class="sig-param">scale=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#data_timing_quality_obspy_daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract timing quality flags from given miniseed file. One value per
+file, which means one value per day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to miniseed file</p></li>
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – key available with <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.io.mseed.util.get_flags.html#obspy.io.mseed.util.get_flags" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_flags()</span></code></a> and
+<code class="docutils literal notranslate"><span class="pre">timinig_quality</span></code> key.</p></li>
+<li><p><strong>scale</strong> (<em>func</em><em>, </em><em>optional</em>) – defaults to identity function,
+scaling function applied to data values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a> or <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of lists containing timestamp (as
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> instance) and data value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.earthdata_mseed">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">earthdata_mseed</code><span class="sig-paren">(</span><em class="sig-param">path=''</em>, <em class="sig-param">scale=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#earthdata_mseed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.earthdata_mseed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to miniseed file</p></li>
+<li><p><strong>scale</strong> (<em>func</em><em>, </em><em>optional</em>) – defaults to identity function,
+scaling function applied to data values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a> or <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of lists containing timestamp (as
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> instance) and data value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.get_earthdata_stream">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">get_earthdata_stream</code><span class="sig-paren">(</span><em class="sig-param">path=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#get_earthdata_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.get_earthdata_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function used with Earth Data state of health miniseed files.
+Parameter specific scaling function is applied to the raw data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to miniseed file</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> or None</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>seismic data stream</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.get_tibs">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">get_tibs</code><span class="sig-paren">(</span><em class="sig-param">alertfunc</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#get_tibs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.get_tibs" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">alertfunc</span></code> is applied to the <code class="docutils literal notranslate"><span class="pre">data</span></code>, starting from the first
+value of the <code class="docutils literal notranslate"><span class="pre">data</span></code> iterable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alertfunc</strong> (<em>func</em>) – A function taking (usually) a numerical value as
+an argument and returning a boolean value. Returned value is <code class="docutils literal notranslate"><span class="pre">True</span></code>
+if the ‘threshold is broken’.</p></li>
+<li><p><strong>data</strong> (<em>iterable</em>) – An iterable containing the data values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a>, <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The <code class="docutils literal notranslate"><span class="pre">tib</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> if the first value of the <code class="docutils literal notranslate"><span class="pre">data</span></code>
+breaks the threshold, <code class="docutils literal notranslate"><span class="pre">thbb</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> if any value of the
+<code class="docutils literal notranslate"><span class="pre">data</span></code> breaks the threshold. NaN value may be returned if
+all data points are NaNs or the alerts are not valid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.process_logs">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">process_logs</code><span class="sig-paren">(</span><em class="sig-param">flags</em>, <em class="sig-param">stations</em>, <em class="sig-param">network_code</em>, <em class="sig-param">station_code</em>, <em class="sig-param">starttime</em>, <em class="sig-param">endtime</em>, <em class="sig-param">classes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#process_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.process_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gathers data from various sources, parses the data and
+writes ‘*.stf’, ‘*.alert’ and ‘*.csv’ files.</p>
+<p>Processes data for stations with given
+<code class="docutils literal notranslate"><span class="pre">network_code</span></code> and <code class="docutils literal notranslate"><span class="pre">station_code</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Flag variables from
+<a class="reference internal" href="polyfemos.back.interpreter.Interpreter.html#polyfemos.back.interpreter.Interpreter" title="polyfemos.back.interpreter.Interpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interpreter</span></code></a></p></li>
+<li><p><strong>stations</strong> (<a class="reference internal" href="polyfemos.back.station.Stations.html#polyfemos.back.station.Stations" title="polyfemos.back.station.Stations"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stations</span></code></a>) – The station information collected from ‘*.conf’ files.</p></li>
+<li><p><strong>network_code</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Network name as a string, e.g. “FN”</p></li>
+<li><p><strong>station_code</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the station as a string, e.g. “MSF”</p></li>
+<li><p><strong>startime</strong> (<a class="reference internal" href="polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal" title="polyfemos.almanac.ordinal.Ordinal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ordinal</span></code></a>) – </p></li>
+<li><p><strong>endtime</strong> (<a class="reference internal" href="polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal" title="polyfemos.almanac.ordinal.Ordinal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ordinal</span></code></a>) – </p></li>
+<li><p><strong>classes</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of strings containing all parameter classes
+which are included in the station’s state of health processing.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack.stream_to_xy_data">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">stream_to_xy_data</code><span class="sig-paren">(</span><em class="sig-param">st</em>, <em class="sig-param">scale=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#stream_to_xy_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack.stream_to_xy_data" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>st</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a>) – seismic data stream</p></li>
+<li><p><strong>scale</strong> (<em>func</em><em>, </em><em>optional</em>) – defaults to identity function,
+scaling function applied to data values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a> or <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of lists containing timestamp (as
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> instance) and data value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Private Functions</p>
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._centaur_mseed">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_centaur_mseed</code><span class="sig-paren">(</span><em class="sig-param">pathfunc</em>, <em class="sig-param">times</em>, <em class="sig-param">flags</em>, <em class="sig-param">funckwargs={}</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_centaur_mseed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._centaur_mseed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator calling function
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.centaur_mseed" title="polyfemos.back.seismic.lumberjack.centaur_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">centaur_mseed()</span></code></a>
+[*] see the documentation of
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathfunc</strong> (<em>func</em>) – [*]</p></li>
+<li><p><strong>times</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – [*]</p></li>
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – [*]</p></li>
+<li><p><strong>funckwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – defaults to empty dict, keyword arguments for
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.centaur_mseed" title="polyfemos.back.seismic.lumberjack.centaur_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">centaur_mseed()</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>generator yielding <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>
+and list of lists of timestamps and data values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._data_coverage">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_data_coverage</code><span class="sig-paren">(</span><em class="sig-param">pathfunc</em>, <em class="sig-param">times</em>, <em class="sig-param">flags</em>, <em class="sig-param">funckwargs={}</em>, <em class="sig-param">key='DCL'</em>, <em class="sig-param">invalid_value=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_data_coverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>The documentation of this function will cover all of the
+next private generator functions of lumberjack:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_mseed" title="polyfemos.back.seismic.lumberjack._data_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_mseed()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack._centaur_mseed" title="polyfemos.back.seismic.lumberjack._centaur_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">_centaur_mseed()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack._earthdata_mseed" title="polyfemos.back.seismic.lumberjack._earthdata_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">_earthdata_mseed()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack._earthdata_log" title="polyfemos.back.seismic.lumberjack._earthdata_log"><code class="xref py py-func docutils literal notranslate"><span class="pre">_earthdata_log()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_timing_quality" title="polyfemos.back.seismic.lumberjack._data_timing_quality"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_timing_quality()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_timing_quality_obspy_daily" title="polyfemos.back.seismic.lumberjack._data_timing_quality_obspy_daily"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_timing_quality_obspy_daily()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_timestamp_error" title="polyfemos.back.seismic.lumberjack._data_timestamp_error"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_timestamp_error()</span></code></a></p></li>
+</ul>
+<p>All of these generator functions are decorated with
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack._none2invalid" title="polyfemos.back.seismic.lumberjack._none2invalid"><code class="xref py py-func docutils literal notranslate"><span class="pre">_none2invalid()</span></code></a>
+which means that all <code class="docutils literal notranslate"><span class="pre">None</span></code>
+data values are replaced with <code class="docutils literal notranslate"><span class="pre">invalid_value</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathfunc</strong> (<em>func</em>) – A function taking julian date and year as keyword
+arguments and returning path as a string</p></li>
+<li><p><strong>times</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – a list of <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>
+instances</p></li>
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Flag variables from
+<a class="reference internal" href="polyfemos.back.interpreter.Interpreter.html#polyfemos.back.interpreter.Interpreter" title="polyfemos.back.interpreter.Interpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interpreter</span></code></a></p></li>
+<li><p><strong>funckwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – defaults to empty dict, keyword arguments for
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.data_coverage" title="polyfemos.back.seismic.lumberjack.data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_coverage()</span></code></a></p></li>
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – “DCD” (for data coverage from the startof the day) or “DCL”
+(for the data coverage from the start program start, i.e.
+realtimeness)</p></li>
+<li><p><strong>invalid_value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">0.0</span></code>, i.e. no data available</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>generator yielding <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>
+and list of lists of timestamps and data values, in this case, the
+data contains only one value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._data_mseed">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_data_mseed</code><span class="sig-paren">(</span><em class="sig-param">pathfunc</em>, <em class="sig-param">times</em>, <em class="sig-param">flags</em>, <em class="sig-param">funckwargs={}</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_data_mseed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._data_mseed" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO</p>
+<p>See the documentation of
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathfunc</strong> – </p></li>
+<li><p><strong>times</strong> – </p></li>
+<li><p><strong>flags</strong> – </p></li>
+<li><p><strong>funckwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._data_timestamp_error">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_data_timestamp_error</code><span class="sig-paren">(</span><em class="sig-param">pathfunc</em>, <em class="sig-param">times</em>, <em class="sig-param">flags</em>, <em class="sig-param">funckwargs={}</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_data_timestamp_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._data_timestamp_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the time difference (in seconds) between current program
+starttime and timestamp of the last datapoint in the data file. The
+difference is positive if datapoint’s timestamp is lesser of the two.</p>
+<p>[*] see the documentation of
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathfunc</strong> (<em>func</em>) – [*]</p></li>
+<li><p><strong>times</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – [*]</p></li>
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – [*]</p></li>
+<li><p><strong>funckwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – defaults to empty dict,</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._data_timing_quality">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_data_timing_quality</code><span class="sig-paren">(</span><em class="sig-param">pathfunc</em>, <em class="sig-param">times</em>, <em class="sig-param">flags</em>, <em class="sig-param">funckwargs={}</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_data_timing_quality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._data_timing_quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator calling function
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.data_timing_quality" title="polyfemos.back.seismic.lumberjack.data_timing_quality"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_timing_quality()</span></code></a>
+[*] see the documentation of
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathfunc</strong> (<em>func</em>) – [*]</p></li>
+<li><p><strong>times</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – [*]</p></li>
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – [*], adds <code class="docutils literal notranslate"><span class="pre">average_calc_lengthy</span></code> flag to <code class="docutils literal notranslate"><span class="pre">funckwargs</span></code></p></li>
+<li><p><strong>funckwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – defaults to empty dict, keyword arguments for
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.data_timing_quality" title="polyfemos.back.seismic.lumberjack.data_timing_quality"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_timing_quality()</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>generator yielding <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>
+and list of lists of timestamps and data values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._data_timing_quality_obspy_daily">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_data_timing_quality_obspy_daily</code><span class="sig-paren">(</span><em class="sig-param">pathfunc</em>, <em class="sig-param">times</em>, <em class="sig-param">flags</em>, <em class="sig-param">funckwargs={}</em>, <em class="sig-param">key=''</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_data_timing_quality_obspy_daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._data_timing_quality_obspy_daily" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator calling function
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily" title="polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_timing_quality_obspy_daily()</span></code></a>
+[*] see the documentation of
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathfunc</strong> (<em>func</em>) – [*]</p></li>
+<li><p><strong>times</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – [*]</p></li>
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – [*]</p></li>
+<li><p><strong>funckwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – defaults to empty dict, keyword arguments for
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily" title="polyfemos.back.seismic.lumberjack.data_timing_quality_obspy_daily"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_timing_quality_obspy_daily()</span></code></a></p></li>
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Adds the <code class="docutils literal notranslate"><span class="pre">key</span></code> to <code class="docutils literal notranslate"><span class="pre">funckwargs</span></code>,
+see <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.io.mseed.util.get_flags.html#obspy.io.mseed.util.get_flags" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_flags()</span></code></a> <code class="docutils literal notranslate"><span class="pre">timing_quality</span></code>
+for available keys</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>generator yielding <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>
+and list of lists of timestamps and data values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._earthdata_log">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_earthdata_log</code><span class="sig-paren">(</span><em class="sig-param">pathfunc</em>, <em class="sig-param">times</em>, <em class="sig-param">flags</em>, <em class="sig-param">funckwargs={}</em>, <em class="sig-param">key=''</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_earthdata_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._earthdata_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator calling function
+<a class="reference internal" href="polyfemos.back.seismic.edlogreader.html#polyfemos.back.seismic.edlogreader.get_data" title="polyfemos.back.seismic.edlogreader.get_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data()</span></code></a>
+[*] see the documentation of
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathfunc</strong> (<em>func</em>) – [*]</p></li>
+<li><p><strong>times</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – [*]</p></li>
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – [*]</p></li>
+<li><p><strong>funckwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – defaults to empty dict, keyword arguments for
+<a class="reference internal" href="polyfemos.back.seismic.edlogreader.html#polyfemos.back.seismic.edlogreader.get_data" title="polyfemos.back.seismic.edlogreader.get_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data()</span></code></a></p></li>
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Adds the <code class="docutils literal notranslate"><span class="pre">key</span></code> to <code class="docutils literal notranslate"><span class="pre">funckwargs</span></code>,
+see <a class="reference internal" href="polyfemos.back.seismic.edlogreader.html#module-polyfemos.back.seismic.edlogreader" title="polyfemos.back.seismic.edlogreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">edlogreader</span></code></a> for available keys</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>generator yielding <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>
+and list of lists of timestamps and data values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._earthdata_mseed">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_earthdata_mseed</code><span class="sig-paren">(</span><em class="sig-param">pathfunc</em>, <em class="sig-param">times</em>, <em class="sig-param">flags</em>, <em class="sig-param">funckwargs={}</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_earthdata_mseed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._earthdata_mseed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator calling function
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.earthdata_mseed" title="polyfemos.back.seismic.lumberjack.earthdata_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">earthdata_mseed()</span></code></a>
+[*] see the documentation of
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathfunc</strong> (<em>func</em>) – [*]</p></li>
+<li><p><strong>times</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – [*]</p></li>
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – [*]</p></li>
+<li><p><strong>funckwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – defaults to empty dict, keyword arguments for
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.earthdata_mseed" title="polyfemos.back.seismic.lumberjack.earthdata_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">earthdata_mseed()</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>generator yielding <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>
+and list of lists of timestamps and data values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._get_data">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_get_data</code><span class="sig-paren">(</span><em class="sig-param">station</em>, <em class="sig-param">par</em>, <em class="sig-param">times</em>, <em class="sig-param">flags</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format of the values yielded by the returned generator</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(day1,
+    [
+        [timestamp11, value11],
+        [timestamp12, value12],
+        ...
+    ],
+),
+(day2,
+    [
+        [timestamp21, value21],
+        [timestamp22, value22],
+        ...
+    ],
+),
+...
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>station</strong> (<a class="reference internal" href="polyfemos.back.station.Station.html#polyfemos.back.station.Station" title="polyfemos.back.station.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a>) – station object containing</p></li>
+<li><p><strong>par</strong> (<a class="reference internal" href="polyfemos.back.parameter.Parameter.html#polyfemos.back.parameter.Parameter" title="polyfemos.back.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a>) – </p></li>
+<li><p><strong>times</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – a list of <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>
+instances</p></li>
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Flag variables from
+<a class="reference internal" href="polyfemos.back.interpreter.Interpreter.html#polyfemos.back.interpreter.Interpreter" title="polyfemos.back.interpreter.Interpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interpreter</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>generator</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A generator yielding timestamp for each day and the data of that
+day, (timestamps and datapoints) for that day.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._get_tibs">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_get_tibs</code><span class="sig-paren">(</span><em class="sig-param">par</em>, <em class="sig-param">data</em>, <em class="sig-param">alertfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_get_tibs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._get_tibs" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>par</strong> (<a class="reference internal" href="polyfemos.back.parameter.Parameter.html#polyfemos.back.parameter.Parameter" title="polyfemos.back.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a>) – </p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list of lists of timestamps and data values</p></li>
+<li><p><strong>alertfile</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – see
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack._get_tibs_dc" title="polyfemos.back.seismic.lumberjack._get_tibs_dc"><code class="xref py py-func docutils literal notranslate"><span class="pre">_get_tibs_dc()</span></code></a> for more info</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a>, <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>see <a class="reference internal" href="#polyfemos.back.seismic.lumberjack.get_tibs" title="polyfemos.back.seismic.lumberjack.get_tibs"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tibs()</span></code></a>
+for more info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._get_tibs_dc">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_get_tibs_dc</code><span class="sig-paren">(</span><em class="sig-param">alertfunc</em>, <em class="sig-param">data</em>, <em class="sig-param">alertfile</em>, <em class="sig-param">parname=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_get_tibs_dc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._get_tibs_dc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Since <a class="reference internal" href="#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a> function return only one data point
+each time it is called. The ‘threshold has been broken’ (<code class="docutils literal notranslate"><span class="pre">thbb</span></code>)
+value is not meaningfull. This function is used to read earlier <code class="docutils literal notranslate"><span class="pre">tib</span></code>
+and <code class="docutils literal notranslate"><span class="pre">thbb</span></code> values adn to set the <code class="docutils literal notranslate"><span class="pre">thbb</span></code> value accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alertfunc</strong> (<em>func</em>) – see
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.get_tibs" title="polyfemos.back.seismic.lumberjack.get_tibs"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tibs()</span></code></a> for more info</p></li>
+<li><p><strong>data</strong> (<em>iterable</em>) – An iterable containing the data values</p></li>
+<li><p><strong>alertfile</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A path to ‘*.alert’ file, the
+‘threshold has been broken’ value is read from the file if it exists.</p></li>
+<li><p><strong>parname</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the name of the parameter with a code ‘DCD’ or ‘DCL’.
+The <code class="docutils literal notranslate"><span class="pre">thbb</span></code> value is searched from the <code class="docutils literal notranslate"><span class="pre">alertfile</span></code> using the
+<code class="docutils literal notranslate"><span class="pre">parname</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a>, <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>see
+<a class="reference internal" href="#polyfemos.back.seismic.lumberjack.get_tibs" title="polyfemos.back.seismic.lumberjack.get_tibs"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tibs()</span></code></a> for more info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._none2invalid">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_none2invalid</code><span class="sig-paren">(</span><em class="sig-param">generator</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_none2invalid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._none2invalid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorates private lumberjack functions.
+Replaces <code class="docutils literal notranslate"><span class="pre">None</span></code> values with function specific invalid values.
+The default invalid value is defined in function
+<a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.getNaN" title="polyfemos.parser.typeoperator.getNaN"><code class="xref py py-func docutils literal notranslate"><span class="pre">getNaN()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>generator</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/types.html#types.GeneratorType" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorType</span></code></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/types.html#types.GeneratorType" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorType</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>decorated generator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.lumberjack._station_and_times">
+<code class="sig-prename descclassname">polyfemos.back.seismic.lumberjack.</code><code class="sig-name descname">_station_and_times</code><span class="sig-paren">(</span><em class="sig-param">stations</em>, <em class="sig-param">network_code</em>, <em class="sig-param">station_code</em>, <em class="sig-param">starttime</em>, <em class="sig-param">endtime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/lumberjack.html#_station_and_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.lumberjack._station_and_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function used to select right
+<a class="reference internal" href="polyfemos.back.station.Station.html#polyfemos.back.station.Station" title="polyfemos.back.station.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> instances
+for time within timeinterval from <code class="docutils literal notranslate"><span class="pre">starttime</span></code> to <code class="docutils literal notranslate"><span class="pre">endtime</span></code>.</p>
+<p>The names of the network_code and station will be same for all
+<a class="reference internal" href="polyfemos.back.station.Station.html#polyfemos.back.station.Station" title="polyfemos.back.station.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a>
+instances returned, but other values
+and parameters of the station may change during the timespan.
+At the moment, only day accuracy is supported when selecting right
+stations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stations</strong> (<a class="reference internal" href="polyfemos.back.station.Stations.html#polyfemos.back.station.Stations" title="polyfemos.back.station.Stations"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stations</span></code></a>) – </p></li>
+<li><p><strong>network_code</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Network code as a string, e.g. “FN”</p></li>
+<li><p><strong>station_code</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Code of the station as a string, e.g. “MSF”</p></li>
+<li><p><strong>starttime</strong> (<a class="reference internal" href="polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal" title="polyfemos.almanac.ordinal.Ordinal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ordinal</span></code></a>) – </p></li>
+<li><p><strong>endtime</strong> (<a class="reference internal" href="polyfemos.almanac.ordinal.Ordinal.html#polyfemos.almanac.ordinal.Ordinal" title="polyfemos.almanac.ordinal.Ordinal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ordinal</span></code></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>generator yielding
+<a class="reference internal" href="polyfemos.back.station.Station.html#polyfemos.back.station.Station" title="polyfemos.back.station.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> instances and
+list of times when the station is valid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../back.html">Backend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.filewriter.html">polyfemos.back.filewriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.interpreter.html">polyfemos.back.interpreter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.main.html">polyfemos.back.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.parameter.html">polyfemos.back.parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.edlogreader.html">polyfemos.back.seismic.edlogreader</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">polyfemos.back.seismic.lumberjack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.scanner.html">polyfemos.back.seismic.scanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.station.html">polyfemos.back.station</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../back.html">Backend modules</a><ul>
+      <li>Previous: <a href="polyfemos.back.seismic.edlogreader.html" title="previous chapter">polyfemos.back.seismic.edlogreader</a></li>
+      <li>Next: <a href="polyfemos.back.seismic.scanner.html" title="next chapter">polyfemos.back.seismic.scanner</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.back.seismic.lumberjack.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

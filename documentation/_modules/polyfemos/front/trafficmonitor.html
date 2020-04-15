@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.front.trafficmonitor &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for polyfemos.front.trafficmonitor</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># This file is part of Polyfemos.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is free software: you can redistribute it and/or modify it under</span>
+<span class="c1"># the terms of the GNU Lesser General Public License as published by the Free</span>
+<span class="c1"># Software Foundation, either version 3 of the License, or any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Polyfemos is distributed in the hope that it will be useful, but WITHOUT ANY</span>
+<span class="c1"># WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR</span>
+<span class="c1"># A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more</span>
+<span class="c1"># details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License and</span>
+<span class="c1"># GNU General Public License along with Polyfemos. If not, see</span>
+<span class="c1"># &lt;https://www.gnu.org/licenses/&gt;.&#39;</span>
+<span class="c1">#</span>
+<span class="c1"># Author: Henrik Jänkävaara</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Monitors and limits website usage</span>
+
+<span class="sd">:copyright:</span>
+<span class="sd">    2019, University of Oulu, Sodankyla Geophysical Observatory</span>
+<span class="sd">:license:</span>
+<span class="sd">    GNU Lesser General Public License v3.0 or later</span>
+<span class="sd">    (https://spdx.org/licenses/LGPL-3.0-or-later.html)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Daisy, Daisy, give me your answer do.</span>
+<span class="c1"># I&#39;m half crazy all for the love of you.</span>
+<span class="c1"># It won&#39;t be a stylish marriage,</span>
+<span class="c1"># I can&#39;t afford a carriage.</span>
+<span class="c1"># But you&#39;ll look sweet upon the seat</span>
+<span class="c1"># Of a bicycle built for two.</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="kn">import</span> <span class="nn">flask</span>
+<span class="kn">from</span> <span class="nn">obspy</span> <span class="k">import</span> <span class="n">UTCDateTime</span>
+
+<span class="kn">from</span> <span class="nn">polyfemos.util</span> <span class="k">import</span> <span class="n">fileutils</span>
+<span class="kn">from</span> <span class="nn">polyfemos.front</span> <span class="k">import</span> <span class="n">userdef</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">colors</span>
+
+
+<div class="viewcode-block" id="IPStorage"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage">[docs]</a><span class="k">class</span> <span class="nc">IPStorage</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class which handles IP addresses of the users</span>
+
+<span class="sd">    Every instance of the class uses the same file to save the IP addresses.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="IPStorage.__init__"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears the ipstorage file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__file</span> <span class="o">=</span> <span class="s2">&quot;.ipstorage.txt&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IPStorage.write"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type str\_: str</span>
+<span class="sd">        :param str\_: A string to be written into the ipstorage file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fileutils</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__file</span><span class="p">,</span> <span class="n">str_</span><span class="p">,</span> <span class="n">cmf</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IPStorage.clear"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears the ipstorage file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IPStorage.append"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type str\_: str</span>
+<span class="sd">        :param str\_: A string to be appended into the ipstorage file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fileutils</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__file</span><span class="p">,</span> <span class="n">str_</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">cmf</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IPStorage.add"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type ip: str</span>
+<span class="sd">        :param ip: IP address to be added to the ipstorage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ip</span><span class="p">(</span><span class="n">ip</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ip</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IPStorage.has_ip"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage.has_ip">[docs]</a>    <span class="k">def</span> <span class="nf">has_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type ip: str</span>
+<span class="sd">        :param ip: IP address</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :return: ``True`` if ipstorage has the given ``ip``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ip</span> <span class="ow">in</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="IPStorage.remove"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type ip: str</span>
+<span class="sd">        :param ip: an IP address to be removed from the ipstorage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">stored_ip</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ip</span> <span class="o">!=</span> <span class="n">stored_ip</span><span class="p">:</span>
+                <span class="n">str_</span> <span class="o">+=</span> <span class="n">stored_ip</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IPStorage.__iter__"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage.__iter__">[docs]</a>    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: generator</span>
+<span class="sd">        :return: all IP addresses stored in the ipstrorage file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">fileutils</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IPStorage.__str__"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.IPStorage.html#polyfemos.front.trafficmonitor.IPStorage.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :return: A list of all IP addresses stored in the ipstorage file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="gip"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.html#polyfemos.front.trafficmonitor.gip">[docs]</a><span class="k">def</span> <span class="nf">gip</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: IP address of the user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s2">&quot;X-Forwarded-For&quot;</span><span class="p">):</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s2">&quot;X-Forwarded-For&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="gun"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.html#polyfemos.front.trafficmonitor.gun">[docs]</a><span class="k">def</span> <span class="nf">gun</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :return: Username of the user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">authorization</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;-&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">authorization</span><span class="o">.</span><span class="n">username</span></div>
+
+
+<div class="viewcode-block" id="check_permission"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.html#polyfemos.front.trafficmonitor.check_permission">[docs]</a><span class="k">def</span> <span class="nf">check_permission</span><span class="p">(</span><span class="n">access_level</span><span class="p">,</span> <span class="n">limit_network</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The users and their access levels are defined in YAML config files.</span>
+<span class="sd">    See :func:`~polyfemos.front.userdef.users` for more info.</span>
+
+<span class="sd">    The local user (ip=&#39;127.0.0.1&#39;) has the maximum access level (1).</span>
+<span class="sd">    An unidentified user will have the minimum access level (the function</span>
+<span class="sd">    always returns ``False``).</span>
+
+<span class="sd">    :type access_level: int</span>
+<span class="sd">    :param access_level: requested access level</span>
+<span class="sd">    :type limit_network: bool, optional</span>
+<span class="sd">    :param limit_network: Defaults to ``False``. If ``True``, the allowed</span>
+<span class="sd">        networks of the user are checked in addition to access level.</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    :return: Returns ``True`` if the users access level is smaller or</span>
+<span class="sd">        equal to requested access level (``access_level``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">gip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">gun</span><span class="p">()</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">users</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="s2">&quot;access_level&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">users</span><span class="p">[</span><span class="n">user</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">limit_network</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;allowed_networks&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">users</span><span class="p">[</span><span class="n">user</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">network_code</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">cookie</span><span class="p">(</span><span class="s2">&quot;network_code&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">network_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">users</span><span class="p">[</span><span class="n">user</span><span class="p">][</span><span class="s2">&quot;allowed_networks&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">users</span><span class="p">[</span><span class="n">user</span><span class="p">][</span><span class="s2">&quot;access_level&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">access_level</span></div>
+
+
+<div class="viewcode-block" id="logged"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.html#polyfemos.front.trafficmonitor.logged">[docs]</a><span class="k">def</span> <span class="nf">logged</span><span class="p">(</span><span class="n">func_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator used to log usage of the functions</span>
+<span class="sd">    Logs the time, IP address and username of the user and the function</span>
+<span class="sd">    (``func_``) used.</span>
+
+<span class="sd">    :type func\_: func</span>
+<span class="sd">    :param func\_:</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">gip</span><span class="p">()</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">gun</span><span class="p">()</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S+0000Z&quot;</span><span class="p">)</span>
+        <span class="n">functionname</span> <span class="o">=</span> <span class="n">func_</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:30}</span><span class="s2"> </span><span class="si">{:25}</span><span class="s2"> </span><span class="si">{:25}</span><span class="s2"> </span><span class="si">{:25}</span><span class="se">\n</span><span class="s2">&quot;</span> \
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">functionname</span><span class="p">)</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">userdef</span><span class="o">.</span><span class="n">paths</span><span class="p">(</span><span class="s2">&quot;webusagelog_file&quot;</span><span class="p">)</span>
+        <span class="n">fileutils</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">str_</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">cmf</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="limited"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.html#polyfemos.front.trafficmonitor.limited">[docs]</a><span class="k">def</span> <span class="nf">limited</span><span class="p">(</span><span class="n">ipstorage</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function call limiter.</span>
+<span class="sd">    The functions with limited decorator</span>
+<span class="sd">    may only be called one at the time per IP address.</span>
+<span class="sd">    Use as a decorator with arguments. This applies to users with</span>
+<span class="sd">    access level equal or more than 2.</span>
+
+<span class="sd">    The access level check made by calling</span>
+<span class="sd">    :func:`~polyfemos.front.trafficmonitor.check_permission`.</span>
+
+<span class="sd">    :type ipstorage: :class:`~polyfemos.front.trafficmonitor.IPStorage`</span>
+<span class="sd">    :param ipstorage:</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: A decorator using</span>
+<span class="sd">        :class:`~polyfemos.front.trafficmonitor.IPStorage`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func_</span><span class="p">):</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="n">gip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">check_permission</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">ipstorage</span><span class="p">:</span>
+                <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;You (</span><span class="si">{}</span><span class="s2">) already have an execution underway.&quot;</span> \
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">colored_template</span><span class="p">(</span><span class="s2">&quot;message.htm&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">str_</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ipstorage</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+                <span class="n">return_</span> <span class="o">=</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">ipstorage</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">return_</span>
+        <span class="k">return</span> <span class="n">wrapper</span>
+    <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+<div class="viewcode-block" id="limit_access"><a class="viewcode-back" href="../../../autogen/polyfemos.front.trafficmonitor.html#polyfemos.front.trafficmonitor.limit_access">[docs]</a><span class="k">def</span> <span class="nf">limit_access</span><span class="p">(</span><span class="n">access_level</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">limit_network</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator used limit access of users. Users with</span>
+<span class="sd">    access level equal or greater than 3 are not permitted to enter the site.</span>
+
+<span class="sd">    The access level check made by calling</span>
+<span class="sd">    :func:`~polyfemos.front.trafficmonitor.check_permission`.</span>
+
+<span class="sd">    :type access_level: int, optional</span>
+<span class="sd">    :param access_level: requested access level, defaults to ``2``</span>
+<span class="sd">    :type limit_network: bool, optional</span>
+<span class="sd">    :param limit_network: Defaults to ``True``. If ``True``, the allowed</span>
+<span class="sd">        networks of the user are checked in addition to access level.</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :return: a decorator to limit access</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func_</span><span class="p">):</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func_</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">check_permission</span><span class="p">(</span><span class="n">access_level</span><span class="p">,</span> <span class="n">limit_network</span><span class="o">=</span><span class="n">limit_network</span><span class="p">):</span>
+                <span class="n">str_</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t have access to this site.&quot;</span>
+                <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">colored_template</span><span class="p">(</span><span class="s2">&quot;message.htm&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">str_</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wrapper</span>
+    <span class="k">return</span> <span class="n">decorator</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../back.html">Backend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

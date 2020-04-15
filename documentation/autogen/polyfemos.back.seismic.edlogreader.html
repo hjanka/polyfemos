@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.seismic.edlogreader &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.back.seismic.lumberjack" href="polyfemos.back.seismic.lumberjack.html" />
+    <link rel="prev" title="polyfemos.back.parameter.Parameter" href="polyfemos.back.parameter.Parameter.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-polyfemos.back.seismic.edlogreader">
+<span id="polyfemos-back-seismic-edlogreader"></span><h1>polyfemos.back.seismic.edlogreader<a class="headerlink" href="#module-polyfemos.back.seismic.edlogreader" title="Permalink to this headline">¶</a></h1>
+<p>Reads Earth Data LOG files</p>
+<p>Includes <a class="reference internal" href="#polyfemos.back.seismic.edlogreader.get_data" title="polyfemos.back.seismic.edlogreader.get_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data()</span></code></a> function for
+extracting data from Earth Data LOG files</p>
+<p>Extracts 1 datapoint per day (this is everthing that is available).
+Other state of health parameters are available as MSEED files containing
+continuous data.</p>
+<p>Parameters available using <a class="reference internal" href="#polyfemos.back.seismic.edlogreader.get_data" title="polyfemos.back.seismic.edlogreader.get_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data()</span></code></a>
+<code class="docutils literal notranslate"><span class="pre">key</span></code> in parentheses</p>
+<ul class="simple">
+<li><p>latitude (lat)</p></li>
+<li><p>longitude (long)</p></li>
+<li><p>date (date), a string containing year, month and day</p></li>
+<li><p>time (time), a string containing hour, minute and second</p></li>
+<li><p>heading (hdng) *</p></li>
+<li><p>magnetic variation (mva) *</p></li>
+<li><p>velocity (vel) *</p></li>
+<li><p>16 bit phase error in 1 second pll (plle) **</p></li>
+</ul>
+<div class="line-block">
+<div class="line">*  Are these important? Do they contain any useful information?</div>
+<div class="line">** Also available as MSEED so better to use that</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2019, University of Oulu, Sodankyla Geophysical Observatory</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GNU Lesser General Public License v3.0 or later
+(<a class="reference external" href="https://spdx.org/licenses/LGPL-3.0-or-later.html">https://spdx.org/licenses/LGPL-3.0-or-later.html</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Public Functions</p>
+<dl class="function">
+<dt id="polyfemos.back.seismic.edlogreader.get_data">
+<code class="sig-prename descclassname">polyfemos.back.seismic.edlogreader.</code><code class="sig-name descname">get_data</code><span class="sig-paren">(</span><em class="sig-param">path=''</em>, <em class="sig-param">key=''</em>, <em class="sig-param">scale=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/edlogreader.html#get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.edlogreader.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename of the Earth Data LOG file</p></li>
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A value to be extracted</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)">float</a> or <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A single float value read from ED log file,
+If somenthing went wrong (e.g. the path was invalid), return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Private Functions</p>
+<dl class="function">
+<dt id="polyfemos.back.seismic.edlogreader._ed_log_get_value_from_rows">
+<code class="sig-prename descclassname">polyfemos.back.seismic.edlogreader.</code><code class="sig-name descname">_ed_log_get_value_from_rows</code><span class="sig-paren">(</span><em class="sig-param">rows</em>, <em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/edlogreader.html#_ed_log_get_value_from_rows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.edlogreader._ed_log_get_value_from_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches for <code class="docutils literal notranslate"><span class="pre">key</span></code> in rows
+If the <code class="docutils literal notranslate"><span class="pre">key</span></code> is found, returns the value to the ‘right’ of the key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rows</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of lists of strings</p></li>
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)">None</a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Value corresponding to the key or <code class="docutils literal notranslate"><span class="pre">None</span></code>
+if the key is not found in <code class="docutils literal notranslate"><span class="pre">rows</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.edlogreader._ed_log_parse_row">
+<code class="sig-prename descclassname">polyfemos.back.seismic.edlogreader.</code><code class="sig-name descname">_ed_log_parse_row</code><span class="sig-paren">(</span><em class="sig-param">row</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/edlogreader.html#_ed_log_parse_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.edlogreader._ed_log_parse_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a (binary) string <code class="docutils literal notranslate"><span class="pre">row</span></code> to list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>row</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – (binary) string</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A modified <code class="docutils literal notranslate"><span class="pre">row</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.edlogreader._ed_log_replacer">
+<code class="sig-prename descclassname">polyfemos.back.seismic.edlogreader.</code><code class="sig-name descname">_ed_log_replacer</code><span class="sig-paren">(</span><em class="sig-param">str_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/edlogreader.html#_ed_log_replacer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.edlogreader._ed_log_replacer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function is used to replace some string in the Earth Data LOG file
+to their respective <code class="docutils literal notranslate"><span class="pre">key</span></code> names</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>str_</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A string with some values replaced</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="polyfemos.back.seismic.edlogreader._ed_log_valid_row">
+<code class="sig-prename descclassname">polyfemos.back.seismic.edlogreader.</code><code class="sig-name descname">_ed_log_valid_row</code><span class="sig-paren">(</span><em class="sig-param">row</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/seismic/edlogreader.html#_ed_log_valid_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.seismic.edlogreader._ed_log_valid_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to filter out rows which does not contain desired information</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>row</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../back.html">Backend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.filewriter.html">polyfemos.back.filewriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.interpreter.html">polyfemos.back.interpreter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.main.html">polyfemos.back.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.parameter.html">polyfemos.back.parameter</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">polyfemos.back.seismic.edlogreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.lumberjack.html">polyfemos.back.seismic.lumberjack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.scanner.html">polyfemos.back.seismic.scanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.station.html">polyfemos.back.station</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../back.html">Backend modules</a><ul>
+      <li>Previous: <a href="polyfemos.back.parameter.Parameter.html" title="previous chapter">polyfemos.back.parameter.Parameter</a></li>
+      <li>Next: <a href="polyfemos.back.seismic.lumberjack.html" title="next chapter">polyfemos.back.seismic.lumberjack</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.back.seismic.edlogreader.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

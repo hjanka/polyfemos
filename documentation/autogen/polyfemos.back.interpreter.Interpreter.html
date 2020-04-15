@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>polyfemos.back.interpreter.Interpreter &#8212; polyfemos 0.3.29 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="polyfemos.back.main" href="polyfemos.back.main.html" />
+    <link rel="prev" title="polyfemos.back.interpreter" href="polyfemos.back.interpreter.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="polyfemos-back-interpreter-interpreter">
+<h1>polyfemos.back.interpreter.Interpreter<a class="headerlink" href="#polyfemos-back-interpreter-interpreter" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="polyfemos.back.interpreter.Interpreter">
+<em class="property">class </em><code class="sig-prename descclassname">polyfemos.back.interpreter.</code><code class="sig-name descname">Interpreter</code><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class for reading ‘*.conf’ files</p>
+<p>Contents of the ‘*.conf’ files are
+interpreted at run time.</p>
+<p class="rubric">Public Methods</p>
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the global program starttime, <code class="docutils literal notranslate"><span class="pre">self.__now</span></code>.
+Calls <a class="reference internal" href="#polyfemos.back.interpreter.Interpreter._init_timedict" title="polyfemos.back.interpreter.Interpreter._init_timedict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_init_timedict()</span></code></a>
+to initialize <code class="docutils literal notranslate"><span class="pre">self.__timedict</span></code>.</p>
+<p>Creates empty <a class="reference internal" href="polyfemos.back.station.Stations.html#polyfemos.back.station.Stations" title="polyfemos.back.station.Stations"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stations()</span></code></a> instance
+(<code class="docutils literal notranslate"><span class="pre">self.station</span></code>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.add_par">
+<code class="sig-name descname">add_par</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.add_par"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.add_par" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates <a class="reference internal" href="polyfemos.back.parameter.Parameter.html#polyfemos.back.parameter.Parameter" title="polyfemos.back.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a>
+instance and adds it to the most recently defined station in
+<code class="docutils literal notranslate"><span class="pre">self.stations</span></code>. <code class="docutils literal notranslate"><span class="pre">args</span></code> are passed straight to the
+<a class="reference internal" href="polyfemos.back.parameter.Parameter.html#polyfemos.back.parameter.Parameter.__init__" title="polyfemos.back.parameter.Parameter.__init__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.add_station">
+<code class="sig-name descname">add_station</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.add_station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.add_station" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to define and add a station
+(<a class="reference internal" href="polyfemos.back.station.Station.html#polyfemos.back.station.Station" title="polyfemos.back.station.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a>)
+instance to <code class="docutils literal notranslate"><span class="pre">self.stations</span></code>. <code class="docutils literal notranslate"><span class="pre">args</span></code> are passed straight to the
+<a class="reference internal" href="polyfemos.back.station.Station.html#polyfemos.back.station.Station.__init__" title="polyfemos.back.station.Station.__init__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.apply_async">
+<code class="sig-name descname">apply_async</code><span class="sig-paren">(</span><em class="sig-param">func_</em>, <em class="sig-param">args</em>, <em class="sig-param">deepcopy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.apply_async"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.apply_async" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asynchronously calls <code class="docutils literal notranslate"><span class="pre">func_</span></code> with <code class="docutils literal notranslate"><span class="pre">args</span></code> using
+<a class="reference external" href="https://pathos.readthedocs.io/en/latest/pathos.html#pathos.multiprocessing.ProcessPool" title="(in pathos v0.2.6.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPool</span></code></a> (alias of
+<code class="docutils literal notranslate"><span class="pre">multiprocess.pool.Pool</span></code> from
+<a class="reference external" href="https://pypi.org/project/multiprocess/">multiprocess</a>). Additional
+information in Python’s own multiprocessing package
+<a class="reference external" href="https://docs.python.org/3.7/library/multiprocessing.html#multiprocessing.pool.Pool" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pool</span></code></a>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">deepcopy</span></code> and
+<code class="docutils literal notranslate"><span class="pre">self.flags[&quot;multiprocessing&quot;]</span></code> are both <code class="docutils literal notranslate"><span class="pre">False</span></code>, the function is
+called normally <code class="docutils literal notranslate"><span class="pre">func_(*args)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func_</strong> (<em>func</em>) – </p></li>
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – arguments to the <code class="docutils literal notranslate"><span class="pre">func_</span></code></p></li>
+<li><p><strong>deepcopy</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>, only used if multiprocessing
+is not used. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the <code class="docutils literal notranslate"><span class="pre">args</span></code> are deepcopied before
+calling the <code class="docutils literal notranslate"><span class="pre">func_</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.call_func">
+<code class="sig-name descname">call_func</code><span class="sig-paren">(</span><em class="sig-param">funckey</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.call_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.call_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls function available in <code class="docutils literal notranslate"><span class="pre">self.functions</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">args</span></code> are the
+arguments passed to the function <code class="docutils literal notranslate"><span class="pre">self.functions[funckey]['func']</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>funckey</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of the function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.close_and_join">
+<code class="sig-name descname">close_and_join</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.close_and_join"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.close_and_join" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">self.pool</span></code> is previously set up, terminates the pool workers by
+calling methods close and join.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.data_coverage_image">
+<code class="sig-name descname">data_coverage_image</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.data_coverage_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.data_coverage_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <a class="reference internal" href="polyfemos.back.seismic.scanner.html#polyfemos.back.seismic.scanner.data_coverage_image" title="polyfemos.back.seismic.scanner.data_coverage_image"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_coverage_image()</span></code></a>
+with <code class="docutils literal notranslate"><span class="pre">self.flags</span></code> and <code class="docutils literal notranslate"><span class="pre">args</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.define_flag">
+<code class="sig-name descname">define_flag</code><span class="sig-paren">(</span><em class="sig-param">flag</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.define_flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.define_flag" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flag</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of the FLAG</p></li>
+<li><p><strong>value</strong> – value of the FLAG, the type depends on the flag</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.define_var">
+<code class="sig-name descname">define_var</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.define_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.define_var" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – variable name</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – value to be set to variable</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.exit_scope">
+<code class="sig-name descname">exit_scope</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.exit_scope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.exit_scope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Effectively does nothing at the moment</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.plot_ppsd">
+<code class="sig-name descname">plot_ppsd</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.plot_ppsd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.plot_ppsd" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO</p>
+<p><code class="docutils literal notranslate"><span class="pre">args</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.process_logs">
+<code class="sig-name descname">process_logs</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.process_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.process_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes all stations in <code class="docutils literal notranslate"><span class="pre">self.stations</span></code>.
+Calls <a class="reference internal" href="polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.process_logs" title="polyfemos.back.seismic.lumberjack.process_logs"><code class="xref py py-func docutils literal notranslate"><span class="pre">process_logs()</span></code></a>
+with <code class="docutils literal notranslate"><span class="pre">self.flags</span></code>, <code class="docutils literal notranslate"><span class="pre">self.stations</span></code>, and <code class="docutils literal notranslate"><span class="pre">args</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.readfile">
+<code class="sig-name descname">readfile</code><span class="sig-paren">(</span><em class="sig-param">conffile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.readfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.readfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads and interprets contents of the ‘*.conf’ files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>conffile</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to ‘*.conf’ file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.replace_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the name of the variable starting with the variable symbol</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Anything contained in <code class="docutils literal notranslate"><span class="pre">self.vars[key]</span></code>, if <code class="docutils literal notranslate"><span class="pre">key</span></code> is
+previously defined variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.save_starttime">
+<code class="sig-name descname">save_starttime</code><span class="sig-paren">(</span><em class="sig-param">tolast=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.save_starttime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.save_starttime" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">tolast</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, loads the ‘laststarttime’ value from the
+pklfile (FLAG <cite>execution_time_file</cite>) before saving the
+<code class="docutils literal notranslate"><span class="pre">self.__timedict</span></code>. After this the ‘laststarttime’ should be
+unchanged, and ‘thisstarttime’ should contain the starttime of this
+exact program run.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">tolast</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the value of ‘thisstarttime’ is saved
+to ‘laststarttime’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tolast</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Program execution is halted if the difference between program
+starttime and midnight is lesser than value of the FLAG
+‘wait_after_midnight’.</p>
+<p>Saves the current program starttime to ‘thisstarttime’.
+see <a class="reference internal" href="#polyfemos.back.interpreter.Interpreter.save_starttime" title="polyfemos.back.interpreter.Interpreter.save_starttime"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_starttime()</span></code></a>
+for more info.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param">quit_=True</em>, <em class="sig-param">save_starttime=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter.stop" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quit_</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>, If <code class="docutils literal notranslate"><span class="pre">True</span></code> the program does
+nothing anymore.</p></li>
+<li><p><strong>save_starttime</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>, In order to save
+starttime value, <code class="docutils literal notranslate"><span class="pre">save_starttime</span></code> and FLAG ‘save_starttime’
+both are required to be <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Private Methods</p>
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter._init_flags">
+<code class="sig-name descname">_init_flags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter._init_flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter._init_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ititializes <code class="docutils literal notranslate"><span class="pre">self.__flags</span></code> and <code class="docutils literal notranslate"><span class="pre">self.flags</span></code> dictionaries.
+<code class="docutils literal notranslate"><span class="pre">self.__flags</span></code> consists of flag types and default values.
+<code class="docutils literal notranslate"><span class="pre">self.flags</span></code> will store the flag values, changed or default.</p>
+<p>If default value of the FLAG is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the user most likely needs
+to provide correct value in the ‘*.conf’ file.</p>
+<p>All available FLAGs, their types and default values:</p>
+<p class="rubric">sohtextfilepath</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.filepath" title="polyfemos.parser.typeoperator.filepath"><code class="xref py py-func docutils literal notranslate"><span class="pre">filepath()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+Filepath of the output ‘*.stf’ file. Do not include
+file extension when defining the path, the corresponding
+extension will be automatically included.</p>
+<p class="rubric">sohalertpath</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.filepath" title="polyfemos.parser.typeoperator.filepath"><code class="xref py py-func docutils literal notranslate"><span class="pre">filepath()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+Filepath of the output ‘*.alert’ file. Do not include
+file extension when defining the path, the corresponding
+extension will be automatically included.</p>
+<p class="rubric">sohcsvpath</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.filepath" title="polyfemos.parser.typeoperator.filepath"><code class="xref py py-func docutils literal notranslate"><span class="pre">filepath()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+Filepath of the output ‘*.csv’ file. Do not include
+file extension when defining the path, the corresponding
+extension will be automatically included.</p>
+<p class="rubric">wait_after_midnight</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.int_" title="polyfemos.parser.typeoperator.int_"><code class="xref py py-func docutils literal notranslate"><span class="pre">int_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">0</span></code>,
+Given in seconds. As the START command is called, if difference
+between current program starttime and midnight is lesser
+than this value, program execution is halted
+(without saving any starttime values).</p>
+<p class="rubric">write_sohalertfile</p>
+<p>[not in use]</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.bool_" title="polyfemos.parser.typeoperator.bool_"><code class="xref py py-func docutils literal notranslate"><span class="pre">bool_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+Defines if ‘*.alert’ file is created/updated</p>
+<p class="rubric">write_sohtextfile</p>
+<p>[not in use]</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.bool_" title="polyfemos.parser.typeoperator.bool_"><code class="xref py py-func docutils literal notranslate"><span class="pre">bool_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+Defines if ‘*.stf’ file is created/updated</p>
+<p class="rubric">write_sohcsvfile</p>
+<p>[not in use]</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.bool_" title="polyfemos.parser.typeoperator.bool_"><code class="xref py py-func docutils literal notranslate"><span class="pre">bool_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+Defines if ‘*.csv’ file is created/updated</p>
+<p class="rubric">retroactive</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.bool_" title="polyfemos.parser.typeoperator.bool_"><code class="xref py py-func docutils literal notranslate"><span class="pre">bool_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, appends lines to previously created files.
+One new line per station-parameter combination.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, creates ‘*.stf’ and ‘*.csv’ files from scratch,
+Files created retroactively, have an additional ‘retro’
+identifier in the filename. Retroactive option
+overwrites previously created ‘retro’-files.</p>
+<p class="rubric">save_starttime</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.bool_" title="polyfemos.parser.typeoperator.bool_"><code class="xref py py-func docutils literal notranslate"><span class="pre">bool_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+Defines if current program starttime is saved to ‘laststarttime’
+when program execution is finished</p>
+<p class="rubric">realtimeness_limit</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.int_" title="polyfemos.parser.typeoperator.int_"><code class="xref py py-func docutils literal notranslate"><span class="pre">int_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">0</span></code>,
+Given in seconds, for datacoverage parameters (codes ‘DCD’ and
+‘DCL’), defines the time interval in which the data is still
+considered to be in “realtime”. See
+<a class="reference internal" href="polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack._data_coverage" title="polyfemos.back.seismic.lumberjack._data_coverage"><code class="xref py py-func docutils literal notranslate"><span class="pre">_data_coverage()</span></code></a>
+for more info.</p>
+<p class="rubric">average_calc_length</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.int_" title="polyfemos.parser.typeoperator.int_"><code class="xref py py-func docutils literal notranslate"><span class="pre">int_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">1</span></code>,
+Sets the <code class="docutils literal notranslate"><span class="pre">average_calc_length</span></code> in
+<a class="reference internal" href="polyfemos.back.seismic.lumberjack.html#polyfemos.back.seismic.lumberjack.data_timing_quality" title="polyfemos.back.seismic.lumberjack.data_timing_quality"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_timing_quality()</span></code></a>,
+which is used for codes ‘XXX.TQ’.</p>
+<p class="rubric">execution_time_file</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.staticfilepath" title="polyfemos.parser.typeoperator.staticfilepath"><code class="xref py py-func docutils literal notranslate"><span class="pre">staticfilepath()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+A pickle file where ‘thisstarttime’ and ‘laststarttime’ program
+starttime values are saved and available for reference via
+this FLAG during program execution. Include the full path in the
+definition including the extension (*.pkl).</p>
+<p class="rubric">multiprocessing</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.bool_" title="polyfemos.parser.typeoperator.bool_"><code class="xref py py-func docutils literal notranslate"><span class="pre">bool_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+Defines if multiprocessing is used or not.</p>
+<p class="rubric">max_processes</p>
+<p><a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.int_" title="polyfemos.parser.typeoperator.int_"><code class="xref py py-func docutils literal notranslate"><span class="pre">int_()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">4</span></code>,
+Maximum number of CPUs used for multiprocessing,
+see <a class="reference internal" href="#polyfemos.back.interpreter.Interpreter._init_pool" title="polyfemos.back.interpreter.Interpreter._init_pool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_init_pool()</span></code></a> for
+more info.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter._init_funcs_and_commands">
+<code class="sig-name descname">_init_funcs_and_commands</code><span class="sig-paren">(</span><em class="sig-param">today</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter._init_funcs_and_commands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter._init_funcs_and_commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>All possible commands in addition to functions called using the
+‘RUN’ command are defined here. Additionally, the amount of arguments
+and their types for each function and command is defined.</p>
+<p>If today special variable is used in case of types
+<a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.ordinal" title="polyfemos.parser.typeoperator.ordinal"><code class="xref py py-func docutils literal notranslate"><span class="pre">ordinal()</span></code></a> or
+<a class="reference internal" href="polyfemos.parser.typeoperator.html#polyfemos.parser.typeoperator.utcdatetime" title="polyfemos.parser.typeoperator.utcdatetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">utcdatetime()</span></code></a>,
+the variable is replaced with
+the value of <code class="docutils literal notranslate"><span class="pre">today</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>today</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy Documentation (1.1.1) v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter._init_pool">
+<code class="sig-name descname">_init_pool</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter._init_pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter._init_pool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes <code class="docutils literal notranslate"><span class="pre">self.pool</span></code>
+(<a class="reference external" href="https://pathos.readthedocs.io/en/latest/pathos.html#pathos.multiprocessing.ProcessPool" title="(in pathos v0.2.6.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPool</span></code></a>)
+attribute. Sets the maximum amount of CPUs used by the pool,
+this is defined with the FLAG <cite>max_processes</cite>.
+Two CPUs are left unused if possible (i.e. the machine has 3 or more
+CPUs). In every case the pool will use at least 1 CPU.
+See <a class="reference internal" href="#polyfemos.back.interpreter.Interpreter.apply_async" title="polyfemos.back.interpreter.Interpreter.apply_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_async()</span></code></a>
+for more info.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">self.pool</span></code> is already initialized, do nothing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polyfemos.back.interpreter.Interpreter._init_timedict">
+<code class="sig-name descname">_init_timedict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/polyfemos/back/interpreter.html#Interpreter._init_timedict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polyfemos.back.interpreter.Interpreter._init_timedict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets ‘thisstarttime’ and ‘laststarttime’ values to
+<code class="docutils literal notranslate"><span class="pre">self.__now</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../documentation_index.html">polyfemos</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">readme</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_0_general.html">General Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_1_setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_2_backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_3_frontend.html">Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_4_add_station.html">How to add a station</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../polyfemos_readme_5_sohemailer.html">State of health emailer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../back.html">Backend modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.filewriter.html">polyfemos.back.filewriter</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="polyfemos.back.interpreter.html">polyfemos.back.interpreter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.main.html">polyfemos.back.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.parameter.html">polyfemos.back.parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.edlogreader.html">polyfemos.back.seismic.edlogreader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.lumberjack.html">polyfemos.back.seismic.lumberjack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.seismic.scanner.html">polyfemos.back.seismic.scanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyfemos.back.station.html">polyfemos.back.station</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../front.html">Frontend modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../other.html">Scripts, tests and other modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../documentation_index.html">Documentation overview</a><ul>
+  <li><a href="../back.html">Backend modules</a><ul>
+  <li><a href="polyfemos.back.interpreter.html">polyfemos.back.interpreter</a><ul>
+      <li>Previous: <a href="polyfemos.back.interpreter.html" title="previous chapter">polyfemos.back.interpreter</a></li>
+      <li>Next: <a href="polyfemos.back.main.html" title="next chapter">polyfemos.back.main</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, University of Oulu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/autogen/polyfemos.back.interpreter.Interpreter.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
