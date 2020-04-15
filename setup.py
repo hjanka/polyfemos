@@ -72,7 +72,7 @@ def setup_package():
         version=version,
         description='Observatory State of Health monitoring package',
         long_description='',
-        url='https://bitbucket.org/hjanka/polyfemos_source/src/master/',
+        url='https://github.com/hjanka/polyfemos',
         author='HJ',
         author_email='polyfemos.dev@gmail.com',
         license='GNU Lesser General Public License v3 or later (LGPLv3+)',
